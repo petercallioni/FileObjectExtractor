@@ -1,0 +1,9 @@
+NOTICES FOR THIS PROJECT
+---------------------------
+This project includes the Tesseract OCR engine, which is licensed under the Apache License 2.0.
+
+You can find the full text of the Tesseract OCR license in the `tessdata` directory of this project.
+---------------------------
+---------------------------
+IMPORTANT NOTICE:
+Please review the terms of the Apache License 2.0 and comply with them in your use of Tesseract.
