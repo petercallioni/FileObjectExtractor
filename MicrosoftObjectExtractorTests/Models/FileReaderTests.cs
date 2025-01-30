@@ -9,7 +9,7 @@ namespace MicrosoftObjectExtractor.Models.Tests
         public void ParseFileTest()
         {
             FileReader reader = new FileReader();
-            List<ExtractedFiles> files = reader.ParseFile(TestResources.DOCX);
+            List<ExtractedFile> files = reader.ParseFile(TestResources.DOCX);
 
             Assert.IsTrue(files.Select(x => x.FileName).Contains("EmbeddedTestDocx.docx"));
             Assert.IsTrue(files.Select(x => x.FileName).Contains("EmbeddedTestPDF.pdf"));

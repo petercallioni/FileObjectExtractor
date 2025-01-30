@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using MicrosoftObjectExtractor.Models.EMF;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Xml;
 
 namespace MicrosoftObjectExtractor.Models
@@ -13,11 +15,11 @@ namespace MicrosoftObjectExtractor.Models
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public List<ExtractedFiles> ParseFile(string filePath)
+        public List<ExtractedFile> ParseFile(string filePath)
         {
             List<EmbeddedObjects> objects = new List<EmbeddedObjects>();
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
-            List<ExtractedFiles> files = new List<ExtractedFiles>();
+            List<ExtractedFile> files = new List<ExtractedFile>();
             Dictionary<string, string> rIdsAndFiles = new Dictionary<string, string>();
             Dictionary<string, string> rIdsIconsAndFiles = new Dictionary<string, string>();
 
@@ -46,18 +48,31 @@ namespace MicrosoftObjectExtractor.Models
             return files;
         }
 
-        private List<ExtractedFiles> CombineLists(Dictionary<string, string> iconRids, Dictionary<string, string> fileRids, List<ZipArchiveEntry> archiveFiles)
+        private List<ExtractedFile> CombineLists(Dictionary<string, string> iconRids, Dictionary<string, string> fileRids, List<ZipArchiveEntry> archiveFiles)
         {
-            List<ExtractedFiles> extractedFiles = iconRids.Select(key =>
+            List<ExtractedFile> extractedFiles = iconRids.Select(key =>
             {
                 string icon_path = fileRids[key.Key];
                 string file_path = fileRids[key.Value];
 
-                return new ExtractedFiles(
+                return new ExtractedFile(
                     archiveFiles.First(x => x.FullName.EndsWith(icon_path)),
                     archiveFiles.First(x => x.FullName.EndsWith(file_path))
                 );
             }).ToList();
+
+            EmfParser parser = new EmfParser();
+
+            foreach (ExtractedFile file in extractedFiles)
+            {
+                EmfFile emfFile = parser.Parse(file.IconFile);
+                StringBuilder returnText = new StringBuilder();
+                foreach (EmfTextRecord textRecord in emfFile.EmfTextRecords)
+                {
+                    returnText.Append(textRecord.OutputString.Value);
+                }
+                file.FileName = returnText.ToString();
+            }
 
             return extractedFiles;
         }
