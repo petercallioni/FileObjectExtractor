@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace MicrosoftObjectExtractor.Models.EMF
 {
@@ -23,6 +24,18 @@ namespace MicrosoftObjectExtractor.Models.EMF
             EmfDescriptionBuffer = new();
             EmfPixelFormatBuffer = new();
             EmfTextRecords = new();
+        }
+
+        public string GetTextContent()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (EmfTextRecord record in EmfTextRecords)
+            {
+                sb.Append(record.OutputString.Value);
+            }
+
+            return sb.ToString();
         }
     }
 }

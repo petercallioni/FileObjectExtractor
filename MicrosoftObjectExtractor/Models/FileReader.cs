@@ -17,7 +17,6 @@ namespace MicrosoftObjectExtractor.Models
         /// <returns></returns>
         public List<ExtractedFile> ParseFile(string filePath)
         {
-            List<EmbeddedObjects> objects = new List<EmbeddedObjects>();
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
             List<ExtractedFile> files = new List<ExtractedFile>();
             Dictionary<string, string> rIdsAndFiles = new Dictionary<string, string>();
@@ -43,6 +42,13 @@ namespace MicrosoftObjectExtractor.Models
                 }
 
                 files = CombineLists(rIdsIconsAndFiles, rIdsAndFiles, embeddedFiles);
+
+                EmfParser emfParser = new EmfParser();
+                foreach (ExtractedFile extractFile in files)
+                {
+                    EmfFile emfFile = emfParser.Parse(extractFile.IconFile);
+                    extractFile.FileName = emfFile.GetTextContent();
+                }
             }
 
             return files;
@@ -92,15 +98,19 @@ namespace MicrosoftObjectExtractor.Models
                 {
                     string id = "";
                     string target = "";
-                    foreach (XmlAttribute attribute in relationship.Attributes)
+
+                    if (relationship.Attributes != null)
                     {
-                        if (attribute.Name.Equals("Id"))
+                        foreach (XmlAttribute attribute in relationship.Attributes)
                         {
-                            id = attribute.Value;
-                        }
-                        else if (attribute.Name.Equals("Target"))
-                        {
-                            target = attribute.Value;
+                            if (attribute.Name.Equals("Id"))
+                            {
+                                id = attribute.Value;
+                            }
+                            else if (attribute.Name.Equals("Target"))
+                            {
+                                target = attribute.Value;
+                            }
                         }
                     }
 
@@ -132,22 +142,17 @@ namespace MicrosoftObjectExtractor.Models
 
                 foreach (XmlNode wObject in wObjects)
                 {
-                    string iconRId = "";
-                    string fileRId = "";
-
                     XmlNode? vImageData = wObject.SelectSingleNode(".//v:imagedata", nsmgr);
                     XmlNode? oOleObject = wObject.SelectSingleNode(".//o:OLEObject[@Type='Embed']", nsmgr);
 
-                    if (oOleObject != null && vImageData != null)
+                    if (oOleObject?.Attributes != null && vImageData?.Attributes != null)
                     {
-                        {
-                            fileRId = oOleObject.Attributes["r:id"].Value;
-                            iconRId = vImageData.Attributes["r:id"].Value;
-                        }
+                        XmlAttribute? fileRIdAttribute = oOleObject.Attributes["r:id"];
+                        XmlAttribute? iconRIdAttribute = vImageData.Attributes["r:id"];
 
-                        if (iconRId.Length > 0 && fileRId.Length > 0)
+                        if ((fileRIdAttribute != null && fileRIdAttribute.Value.Length > 0) && (iconRIdAttribute != null && iconRIdAttribute.Value.Length > 0))
                         {
-                            rIds.Add(iconRId, fileRId);
+                            rIds.Add(iconRIdAttribute.Value, fileRIdAttribute.Value);
                         }
                     }
                 }
