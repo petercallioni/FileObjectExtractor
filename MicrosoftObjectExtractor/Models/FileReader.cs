@@ -1,4 +1,5 @@
 ﻿using MicrosoftObjectExtractor.Models.EMF;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -22,7 +23,9 @@ namespace MicrosoftObjectExtractor.Models
             Dictionary<string, string> rIdsAndFiles = new Dictionary<string, string>();
             Dictionary<string, string> rIdsIconsAndFiles = new Dictionary<string, string>();
 
-            using (FileStream file = File.OpenRead(filePath))
+            Uri uri = new Uri(filePath);
+
+            using (FileStream file = File.OpenRead(uri.AbsolutePath))
             using (ZipArchive zip = new ZipArchive(file, ZipArchiveMode.Read))
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)

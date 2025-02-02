@@ -9,12 +9,23 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="MicrosoftObjectExtractor">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	<StackPanel DragDrop.AllowDrop="True">
+		<TextBlock Text="Extracted Files:" Margin="10"/>
+		<Border BorderBrush="Black" BorderThickness="1" Padding="10" Margin="10" Background="LightGray">
+			<ListBox ItemsSource="{Binding ExtractedFiles}" Margin="10">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding ExtractedFile.FileName}" />
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</Border>
 
+	</StackPanel>
 </Window>

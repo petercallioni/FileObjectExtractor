@@ -5,14 +5,18 @@ namespace MicrosoftObjectExtractor.Models
 {
     public class ExtractedFile
     {
-        public readonly byte[] IconFile;
-        public readonly byte[] ArchivedFile;
-        public string FileName;
+        private readonly byte[] iconFile;
+        private readonly byte[] embeddedFile;
+        private string? fileName;
+
+        public string? FileName { get => fileName; set => fileName = value; }
+        public byte[] EmbeddedFile => embeddedFile;
+        public byte[] IconFile => iconFile;
 
         public ExtractedFile(ZipArchiveEntry iconFileEntry, ZipArchiveEntry archivedFileEntry)
         {
-            IconFile = ExtractToMemory(iconFileEntry);
-            ArchivedFile = ExtractToMemory(archivedFileEntry);
+            iconFile = ExtractToMemory(iconFileEntry);
+            embeddedFile = ExtractToMemory(archivedFileEntry);
         }
 
         private byte[] ExtractToMemory(ZipArchiveEntry entry)
@@ -25,6 +29,11 @@ namespace MicrosoftObjectExtractor.Models
                 }
                 return memoryStream.ToArray();
             }
+        }
+
+        public void SaveEmbeddedFile(string path)
+        {
+            File.WriteAllBytes(path, EmbeddedFile);
         }
     }
 }
