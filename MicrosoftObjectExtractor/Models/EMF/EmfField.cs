@@ -11,7 +11,7 @@ namespace MicrosoftObjectExtractor.Models.EMF
         public Type? Type { get; set; }
         public string RawValue { get; set; }
         public dynamic Value { get; set; }
-        public EmfField(int byteLength, Type? type = null)
+        public EmfField(int byteLength = -1, Type? type = null)
         {
             ByteLength = byteLength;
             Type = type;
@@ -19,13 +19,10 @@ namespace MicrosoftObjectExtractor.Models.EMF
             Value = string.Empty;
         }
 
-        public EmfField(Type? type = null)
-        {
-            ByteLength = -1; // Variable, set later
-            Type = type;
-            RawValue = string.Empty;
-            Value = string.Empty;
-        }
+        // Alternative constructors
+        public EmfField(Type? type) : this(-1, type) { }
+
+        public EmfField() : this(-1, null) { }
 
         public void Intitialize(StringBuilder input)
         {
