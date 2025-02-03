@@ -7,6 +7,7 @@ namespace MicrosoftObjectExtractor.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
+        protected static string DefaultText = "Drop Here";
         private ObservableCollection<ExtractedFileVM> extractedFiles;
         private FileReader fileReader { get; init; }
         private string droppedFile;
@@ -17,13 +18,25 @@ namespace MicrosoftObjectExtractor.ViewModels
         }
 
         public ObservableCollection<ExtractedFileVM> ExtractedFiles { get => extractedFiles; set => extractedFiles = value; }
-        public string DroppedFile { get => droppedFile; set => droppedFile = value; }
+        public string DroppedFile
+        {
+            get => droppedFile; set
+            {
+                if (droppedFile != value)
+                {
+                    {
+                        droppedFile = value;
+                        OnPropertyChanged();
+                    }
+                }
+            }
+        }
 
         public MainWindowViewModel()
         {
             extractedFiles = new ObservableCollection<ExtractedFileVM>();
             fileReader = new FileReader();
-            droppedFile = string.Empty;
+            droppedFile = DefaultText;
             ProcessCommand = new RelayCommand(ProcessSelectedItems);
         }
 
