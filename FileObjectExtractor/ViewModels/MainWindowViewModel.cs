@@ -2,15 +2,17 @@
 using FileObjectExtractor.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace FileObjectExtractor.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        protected static string DefaultText = "Drop Here";
+        protected static string DefaultText = "Drop\n+\nHere";
         private ObservableCollection<ExtractedFileVM> extractedFiles;
         private FileReader fileReader { get; init; }
         private string droppedFile;
+        private string filePassword;
 
         public IRelayCommand ProcessCommand
         {
@@ -32,9 +34,24 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public string FilePassword
+        {
+            get => filePassword; set
+            {
+                if (filePassword != value)
+                {
+                    {
+                        filePassword = value;
+                        OnPropertyChanged();
+                    }
+                }
+            }
+        }
+
         public MainWindowViewModel()
         {
             extractedFiles = new ObservableCollection<ExtractedFileVM>();
+            filePassword = string.Empty;
             fileReader = new FileReader();
             droppedFile = DefaultText;
             ProcessCommand = new RelayCommand(ProcessSelectedItems);
@@ -44,7 +61,9 @@ namespace FileObjectExtractor.ViewModels
         {
             ExtractedFiles.Clear();
 
-            List<ExtractedFile> embeddedFiles = fileReader.ParseFile(DroppedFile);
+            List<ExtractedFile> embeddedFiles = fileReader.ParseFile(DroppedFile)
+                .OrderBy(x => x.FileName)
+                .ToList();
 
             foreach (ExtractedFile file in embeddedFiles)
             {

@@ -12,6 +12,11 @@ namespace FileObjectExtractor.Models
         public string? FileName { get => fileName; set => fileName = value; }
         public byte[] EmbeddedFile => embeddedFile;
         public byte[] IconFile => iconFile;
+        public ExtractedFile(byte[] iconFile, byte[] embeddedFile)
+        {
+            this.iconFile = iconFile;
+            this.embeddedFile = embeddedFile;
+        }
 
         public ExtractedFile(ZipArchiveEntry iconFileEntry, ZipArchiveEntry archivedFileEntry)
         {

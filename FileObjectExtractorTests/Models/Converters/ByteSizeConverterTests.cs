@@ -15,21 +15,22 @@ namespace FileObjectExtractor.Models.Converters.Tests
         [TestMethod()]
         public void ConvertTest()
         {
-            (byte[] byteArray, string expected)[] testCases = new (byte[] byteArray, string expected)[]
+            (int byteSize, string expected)[] testCases = new (int byteSize, string expected)[]
             {
-                (new byte[0], "0 B"),
-                (new byte[512], "512 B"),
-                (new byte[1023], "1023 B"),
-                (new byte[1024], "1 KiB"),
-                (new byte[2048], "2 KiB"),
-                (new byte[1048576], "1 MiB"),
-                (new byte[1073741824], "1 GiB"),
+                (0, "0 B"),
+                (512, "512 B"),
+                (1023, "1023 B"),
+                (1024, "1 KiB"),
+                (2048, "2 KiB"),
+                (1048576, "1 MiB"),
+                (1073741824, "1 GiB"),
             };
 
-            foreach ((byte[] byteArray, string expected) in testCases)
+            foreach ((int byteSize, string expected) in testCases)
             {
+                byte[] bytes = new byte[byteSize];
                 // Act
-                object result = _converter.Convert(byteArray, typeof(string), null, CultureInfo.InvariantCulture);
+                object result = _converter.Convert(bytes, typeof(string), null, CultureInfo.InvariantCulture);
 
                 // Assert
                 Assert.AreEqual(expected, result);

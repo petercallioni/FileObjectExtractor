@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
@@ -12,6 +13,11 @@ namespace FileObjectExtractor.Views
         public MainWindow()
         {
             InitializeComponent();
+
+#if DEBUG
+            this.AttachDevTools();
+#endif
+
             AddHandler(DragDrop.DropEvent, Drop);
             AddHandler(DragDrop.DragOverEvent, DragOver);
         }
