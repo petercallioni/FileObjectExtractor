@@ -35,19 +35,18 @@
 			<Setter Property="Width" Value="40"/>
 			<Setter Property="Height" Value="40"/>
 			<Setter Property="Padding" Value="3"/>
-			<Setter Property="Background" Value="Beige"/>
-		</Style>
-
-		<Style Selector="Button.saveSelected">
-			<Setter Property="Background" Value="Beige"/>
 		</Style>
 
 		<Style Selector="Button.toggle">
 			<Setter Property="Width" Value="30"/>
 			<Setter Property="Height" Value="30"/>
-			<Setter Property="Background" Value="Beige"/>
+
 			<Setter	Property="HorizontalContentAlignment" Value="Center"/>
 			<Setter	Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="Button">
+			<Setter Property="Background" Value="LightGray"/>
 		</Style>
 	</Window.Styles>
 
@@ -57,7 +56,7 @@
 
 				<StackPanel DockPanel.Dock="Top" Margin="5,5,0,5" Orientation="Horizontal">
 					<TextBlock Classes="h1" VerticalAlignment="Center" Margin="0,0,5,0">Select File:</TextBlock>
-					<Button Classes="selectFile">
+					<Button Classes="selectFile" Command="{Binding SelectFileCommand}">
 						<Button.Content>
 							<Svg Stretch="UniformToFill" Path="/Assets/select-file-icon.svg"/>
 						</Button.Content>
@@ -87,10 +86,11 @@
 		<DockPanel DockPanel.Dock="Right" LastChildFill="True">
 			<DockPanel LastChildFill="True">
 				<StackPanel DockPanel.Dock="Top" Margin="0,10,0,0" Orientation="Horizontal">
-					<Button Classes="toggle">-</Button>
-					<Button Classes="toggle">+</Button>
-					<TextBox Margin="10,0,0,0" Width="100" Watermark="Filter" VerticalContentAlignment="Center"/>
-					<Button Classes="saveSelected" Height="40" Margin="10,0,0,0">
+					<Button Classes="toggle" Command="{Binding SelectNoneCommand}">-</Button>
+					<Button Classes="toggle" Command="{Binding SelectAllCommand}">+</Button>
+					<TextBox Margin="10,0,0,0" Width="200" Watermark="Filter" VerticalContentAlignment="Center"
+							 Text="{Binding Filter, Mode=TwoWay}"/>
+					<Button Height="40" Margin="10,0,0,0">
 						<Button.Content>
 							<StackPanel Orientation="Horizontal">
 								<TextBlock VerticalAlignment="Center">Save Selected</TextBlock>
@@ -106,7 +106,7 @@
 								<DockPanel>
 									<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
 									<TextBlock VerticalAlignment="Center" Text="{Binding ExtractedFile.FileName}"/>
-									<Button Background="Transparent" Padding="3" HorizontalAlignment="Right">
+									<Button Background="Transparent" Padding="3" HorizontalAlignment="Right" Command="{Binding SaveFileCommand}">
 										<Button.Content>
 											<StackPanel Orientation="Horizontal">
 												<TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Text="{Binding ExtractedFile.EmbeddedFile, Converter={StaticResource ByteSizeConverter}}"/>

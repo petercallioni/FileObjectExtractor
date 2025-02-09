@@ -40,7 +40,6 @@ namespace FileObjectExtractor.Views
                     }
                 }
             }
-
         }
     }
 }
