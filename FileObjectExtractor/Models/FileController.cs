@@ -102,38 +102,36 @@ namespace FileObjectExtractor.Models
         private byte[] ExtractOle10NativeData(byte[] data)
         {
             Queue<byte> bytes = new Queue<byte>(data);
-            string text = Encoding.UTF8.GetString(data);
             List<byte> fileName = new List<byte>();
             List<byte> sourcePath = new List<byte>();
 
-            bytes.DequeueMultiple<byte>(6);
-            do
+            // Skip 6 bytes
+            bytes.DequeueMultiple(6);
+
+            // Get the file name, ends with null terminator
+            byte currentByte;
+            while ((currentByte = bytes.Dequeue()) != 0)
             {
-                fileName.Add(bytes.Dequeue());
-            } while (bytes.First() != 0);
+                fileName.Add(currentByte);
+            }
 
-            bytes.Dequeue();
-
-            do
+            // Get the source path, ends with null terminator
+            while ((currentByte = bytes.Dequeue()) != 0)
             {
-                sourcePath.Add(bytes.Dequeue());
-            } while (bytes.First() != 0);
+                sourcePath.Add(currentByte);
+            }
 
-            bytes.Dequeue();
-
+            // Skip 4 bytes
             bytes.DequeueMultiple(4);
 
-            byte[] dwSize = bytes.DequeueMultiple(4);
+            // Gets the temporary file path size
+            int dwSizeInt = BitConverter.ToInt32(bytes.DequeueMultiple(4), 0);
+            bytes.DequeueMultiple(dwSizeInt); // Skip that many characters because we do not need them
 
-            uint dwSizeInt = HexConverter.LittleEndianHexToUInt(Convert.ToHexString(dwSize));
+            // Gets the actual data size
+            int dataSizeInt = BitConverter.ToInt32(bytes.DequeueMultiple(4), 0);
 
-            bytes.DequeueMultiple((int)dwSizeInt);
-
-            byte[] dataSize = bytes.DequeueMultiple(4);
-            uint dataSizeInt = HexConverter.LittleEndianHexToUInt(Convert.ToHexString(dataSize));
-            byte[] returnData = bytes.DequeueMultiple((int)dataSizeInt);
-
-            return returnData;
+            return bytes.DequeueMultiple(dataSizeInt);
         }
     }
 }
