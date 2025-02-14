@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +11,6 @@ namespace FileObjectExtractor.ViewModels
     {
         protected static string DefaultText = "Drop\n+\nHere";
         private ObservableCollection<ExtractedFileVM> extractedFiles;
-        private FileReader fileReader { get; init; }
         private string droppedFile;
         private string filePassword;
         private string filter;
@@ -71,7 +71,6 @@ namespace FileObjectExtractor.ViewModels
             extractedFiles = new ObservableCollection<ExtractedFileVM>();
             filePassword = string.Empty;
             filter = string.Empty;
-            fileReader = new FileReader();
             droppedFile = DefaultText;
             ProcessCommand = new RelayCommand(ProcessSelectedItems);
             SelectAllCommand = new RelayCommand(SelectAll);
@@ -84,7 +83,9 @@ namespace FileObjectExtractor.ViewModels
         {
             ExtractedFiles.Clear();
 
-            List<ExtractedFile> embeddedFiles = fileReader.ParseFile(DroppedFile)
+            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(DroppedFile);
+
+            List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(DroppedFile)
                 .OrderBy(x => x.FileName)
                 .ToList();
 

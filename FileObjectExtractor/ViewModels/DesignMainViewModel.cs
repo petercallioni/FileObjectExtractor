@@ -12,7 +12,7 @@ namespace FileObjectExtractor.ViewModels
 
             for (int i = 0; i < 3; i++)
             {
-                ExtractedFile extractedFile = new ExtractedFile(new byte[1], new byte[1000 * i]);
+                ExtractedFile extractedFile = new ExtractedFile(new byte[1000 * i]);
                 ExtractedFileVM extractedFileVM = new ExtractedFileVM(extractedFile, null!);
                 extractedFileVM.IsSelected = i % 2 == 0;
                 extractedFileVM.ExtractedFile.FileName = $"Embedded File {i}.docx";

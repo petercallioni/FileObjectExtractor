@@ -37,27 +37,18 @@ namespace FileObjectExtractor.Models
             saveOptions.SuggestedFileName = extractedFile.FileName;
             IStorageFile? file = await window.StorageProvider.SaveFilePickerAsync(saveOptions);
 
-            using (MemoryStream memoryStream = new MemoryStream(extractedFile.EmbeddedFile))
+            byte[] dataToSave = extractedFile.IsBinary ? ExtractEmbeddedData(extractedFile.EmbeddedFile) : extractedFile.EmbeddedFile;
+
+            if (file != null)
             {
-                CompoundFile cf = new CompoundFile(memoryStream);
-                // Iterate through all the streams in the root storage
-                cf.RootStorage.VisitEntries((x) =>
-                {
-                    Console.WriteLine(x.Name);
-                },
-                false);
-
-                if (file != null)
-                {
-                    File.WriteAllBytes(file.Path.AbsolutePath, extractedFile.EmbeddedFile);
-                    return true;
-                }
-
-                return false;
+                File.WriteAllBytes(file.Path.AbsolutePath, dataToSave);
+                return true;
             }
+
+            return false;
         }
 
-        public byte[] StripHeaderAndTrailer(byte[] inputBin)
+        public byte[] ExtractEmbeddedData(byte[] inputBin)
         {
             byte[] contentArray = [];
             using (MemoryStream memoryStream = new MemoryStream(inputBin))
