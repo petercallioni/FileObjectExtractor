@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
-using FileObjectExtractor.Models.Converters;
+using FileObjectExtractor.Extensions;
 using OpenMcdf;
 using System;
 using System.Collections.Generic;
@@ -95,34 +95,72 @@ namespace FileObjectExtractor.Models
             Queue<byte> bytes = new Queue<byte>(data);
             List<byte> fileName = new List<byte>();
             List<byte> sourcePath = new List<byte>();
+            byte[] returnBytes = null;
 
-            // Skip 6 bytes
-            bytes.DequeueMultiple(6);
-
-            // Get the file name, ends with null terminator
-            byte currentByte;
-            while ((currentByte = bytes.Dequeue()) != 0)
-            {
-                fileName.Add(currentByte);
-            }
-
-            // Get the source path, ends with null terminator
-            while ((currentByte = bytes.Dequeue()) != 0)
-            {
-                sourcePath.Add(currentByte);
-            }
-
-            // Skip 4 bytes
+            // Total Size, not including these 4 bytes
             bytes.DequeueMultiple(4);
 
-            // Gets the temporary file path size
-            int dwSizeInt = BitConverter.ToInt32(bytes.DequeueMultiple(4), 0);
-            bytes.DequeueMultiple(dwSizeInt); // Skip that many characters because we do not need them
+            byte[] fileTypeIndicator = bytes.DequeueMultiple(2);
 
-            // Gets the actual data size
-            int dataSizeInt = BitConverter.ToInt32(bytes.DequeueMultiple(4), 0);
+            if (fileTypeIndicator.SequenceEqual(new byte[] { 0x42, 0x4d })) // Indicates file type? Is a bit map
+            {
+                List<byte> bitMapBytes = new List<byte>(fileTypeIndicator);
+                bitMapBytes.AddRange(bytes);
+                TrimEndButOneNull(bitMapBytes);
+                returnBytes = bitMapBytes.ToArray();
+            }
+            else if (fileTypeIndicator.SequenceEqual(new byte[] { 0x02, 0x00 })) // Indicates file type? Is normal binary file?
+            {
+                // Get the file name, ends with null terminator
+                byte currentByte;
+                while ((currentByte = bytes.Dequeue()) != 0)
+                {
+                    fileName.Add(currentByte);
+                }
 
-            return bytes.DequeueMultiple(dataSizeInt);
+                // Get the source path, ends with null terminator
+                while ((currentByte = bytes.Dequeue()) != 0)
+                {
+                    sourcePath.Add(currentByte);
+                }
+
+                // Skip 4 bytes
+                bytes.DequeueMultiple(4);
+
+                // Gets the temporary file path size
+                int dwSizeInt = BitConverter.ToInt32(bytes.DequeueMultiple(4), 0);
+                bytes.DequeueMultiple(dwSizeInt); // Skip that many characters because we do not need them
+
+                // Gets the actual data size
+                int dataSizeInt = BitConverter.ToInt32(bytes.DequeueMultiple(4), 0);
+
+                returnBytes = bytes.DequeueMultiple(dataSizeInt);
+            }
+            else
+            {
+                throw new NotImplementedException("This type of embedded file is unknown: " + Convert.ToHexString(fileTypeIndicator));
+            }
+
+            return returnBytes;
+        }
+
+        public void TrimEndButOneNull(List<byte> byteList)
+        {
+            if (byteList == null || byteList.Count == 0)
+            {
+                return;
+            }
+
+            int i = byteList.Count - 1;
+
+            // Find the first non-null byte from the end
+            while (i >= 0 && byteList[i] == 0)
+            {
+                i--;
+            }
+
+            // Remove all but one null byte
+            byteList.RemoveRange(i + 2, byteList.Count - (i + 2));
         }
     }
 }

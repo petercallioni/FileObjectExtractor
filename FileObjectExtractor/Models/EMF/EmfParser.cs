@@ -50,7 +50,7 @@ namespace FileObjectExtractor.Models.EMF
                 EmfTextRecord emfTextRecord = new EmfTextRecord();
                 emfTextRecord.Initialize(baseString); // Only partial initialization
                 emfTextRecord.OutputString.ByteLength = (int)emfTextRecord.Chars.Value * 2; // Two characters to a byte
-                emfTextRecord.OutputString.Intitialize(baseString);
+                emfTextRecord.OutputString.Initialize(baseString);
 
                 file.EmfTextRecords.Add(emfTextRecord);
             }

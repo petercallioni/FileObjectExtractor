@@ -94,6 +94,19 @@ namespace FileObjectExtractor.Models.Tests
             Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
         }
 
+        [TestMethod()]
+        public void ParseWordExtractInsertedBmpTest()
+        {
+            string embeddedPdfSha256 = "FC3F16FCC06DEBDBCF75D076CF2B10ACD8CD06067DC2E495C359FFB1C3A1F3C8";
+            FileController fileController = new FileController(null!);
+            byte[] extractedFile = fileController.ExtractEmbeddedData(files
+                .Where(x => x.FileName == "EmbeddedPng.bmp")
+                .Select(x => x.EmbeddedFile)
+                .First());
+
+            Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
+        }
+
         private string GetHashSHA256(byte[] data)
         {
             using (System.Security.Cryptography.SHA256 sha256 = System.Security.Cryptography.SHA256.Create())

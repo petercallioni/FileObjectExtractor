@@ -17,23 +17,25 @@ namespace FileObjectExtractor.Models
         {
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
             List<ExtractedFile> files = new List<ExtractedFile>();
-            Dictionary<string, string> rIdsAndFiles = new Dictionary<string, string>();
-            Dictionary<string, string> rIdsIconsAndFiles = new Dictionary<string, string>();
 
             Uri uri = new Uri(filePath);
 
             using (FileStream file = File.OpenRead(uri.AbsolutePath))
             using (ZipArchive zip = new ZipArchive(file, ZipArchiveMode.Read))
             {
+                List<ZipArchiveEntry> sheetEntries = new List<ZipArchiveEntry>();
+                Dictionary<string, ZipArchiveEntry> relsEntries = new Dictionary<string, ZipArchiveEntry>();
+
+                // Collect sheet and relationship entries
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
-                    if (entry.FullName.EndsWith("document.xml"))
+                    if (entry.FullName.Contains("sheet") && entry.FullName.EndsWith(".xml"))
                     {
-                        rIdsIconsAndFiles = ParseDocumentFile(entry);
+                        sheetEntries.Add(entry);
                     }
-                    else if (entry.FullName.EndsWith("xml.rels"))
+                    else if (entry.FullName.Contains("sheet") && entry.FullName.EndsWith(".xml.rels"))
                     {
-                        rIdsAndFiles = ParseRelsFile(entry);
+                        relsEntries[entry.Name] = entry;
                     }
                     else if (entry.FullName.Contains("embeddings") || entry.FullName.Contains("media"))
                     {
@@ -41,13 +43,23 @@ namespace FileObjectExtractor.Models
                     }
                 }
 
-                files = CombineLists(rIdsIconsAndFiles, rIdsAndFiles, embeddedFiles);
+                // Process each sheet and its corresponding relationship file
+                foreach (ZipArchiveEntry sheetEntry in sheetEntries)
+                {
+                    string relsFileName = sheetEntry.Name + ".rels";
+                    if (relsEntries.ContainsKey(relsFileName))
+                    {
+                        Dictionary<string, string> rIdsIconsAndFiles = ParseSheetFile(sheetEntry);
+                        Dictionary<string, string> rIdsAndFiles = ParseRelsFile(relsEntries[relsFileName]);
+                        files.AddRange(CombineLists(rIdsIconsAndFiles, rIdsAndFiles, embeddedFiles));
+                    }
+                }
             }
 
             return files;
         }
 
-        private Dictionary<string, string> ParseDocumentFile(ZipArchiveEntry archiveEntry)
+        private Dictionary<string, string> ParseSheetFile(ZipArchiveEntry archiveEntry)
         {
             Dictionary<string, string> rIds = new Dictionary<string, string>();
 
@@ -56,26 +68,24 @@ namespace FileObjectExtractor.Models
                 XmlDocument xmlDoc = new XmlDocument(); // Create an XML document object
                 xmlDoc.Load(stream); // Load the XML document from the specified file
 
-                XmlNamespaceManager nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
-                nsmgr.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
-                nsmgr.AddNamespace("v", "urn:schemas-microsoft-com:vml");
-                nsmgr.AddNamespace("o", "urn:schemas-microsoft-com:office:office");
+                XmlNodeList oleObjects = xmlDoc.GetElementsByTagName("objectPr");
 
-                XmlNodeList wObjects = xmlDoc.GetElementsByTagName("w:object");
-
-                foreach (XmlNode wObject in wObjects)
+                foreach (XmlNode oleObject in oleObjects)
                 {
-                    XmlNode? vImageData = wObject.SelectSingleNode(".//v:imagedata", nsmgr);
-                    XmlNode? oOleObject = wObject.SelectSingleNode(".//o:OLEObject[@Type='Embed']", nsmgr);
+                    XmlAttribute? iconRIdAttribute = oleObject?.Attributes?["r:id"];
+                    XmlAttribute? fileRIdAttribute = oleObject?.ParentNode?.Attributes?["r:id"];
 
-                    if (oOleObject?.Attributes != null && vImageData?.Attributes != null)
+                    if (oleObject?.ParentNode?.LocalName == "oleObject")
                     {
-                        XmlAttribute? fileRIdAttribute = oOleObject.Attributes["r:id"];
-                        XmlAttribute? iconRIdAttribute = vImageData.Attributes["r:id"];
-
-                        if ((fileRIdAttribute != null && fileRIdAttribute.Value.Length > 0) && (iconRIdAttribute != null && iconRIdAttribute.Value.Length > 0))
+                        if (fileRIdAttribute != null && iconRIdAttribute != null)
                         {
-                            rIds.Add(iconRIdAttribute.Value, fileRIdAttribute.Value);
+                            string fileRIdValue = fileRIdAttribute.Value;
+                            string iconRIdValue = iconRIdAttribute.Value;
+
+                            if (!string.IsNullOrEmpty(fileRIdValue) && !string.IsNullOrEmpty(iconRIdValue))
+                            {
+                                rIds.Add(iconRIdValue, fileRIdValue);
+                            }
                         }
                     }
                 }

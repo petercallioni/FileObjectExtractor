@@ -31,7 +31,7 @@ namespace FileObjectExtractor.Models
                     {
                         rIdsIconsAndFiles = ParseDocumentFile(entry);
                     }
-                    else if (entry.FullName.EndsWith("xml.rels"))
+                    else if (entry.FullName.EndsWith("document.xml.rels"))
                     {
                         rIdsAndFiles = ParseRelsFile(entry);
                     }

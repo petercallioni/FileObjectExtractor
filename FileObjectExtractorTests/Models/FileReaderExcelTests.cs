@@ -9,7 +9,7 @@ namespace FileObjectExtractor.Models.Tests
         public FileReaderExcelTests()
         {
             ParseOfficeXml reader = new ParseOfficeXmlExcel();
-            files = reader.GetExtractedFiles(TestResources.DOCX);
+            files = reader.GetExtractedFiles(TestResources.EXCEL);
         }
 
         [TestMethod()]

@@ -11,7 +11,7 @@ namespace FileObjectExtractor.Models.EMF
         {
             foreach (EmfField field in Fields)
             {
-                field.Intitialize(input);
+                field.Initialize(input);
             }
         }
     }

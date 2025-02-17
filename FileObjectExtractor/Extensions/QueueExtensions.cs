@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FileObjectExtractor.Models.Converters
+namespace FileObjectExtractor.Extensions
 {
     public static class QueueExtensions
     {

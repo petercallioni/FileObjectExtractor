@@ -25,8 +25,8 @@ namespace FileObjectExtractor.Models
                 string iconPath = fileRids[key];
                 string filePath = fileRids[iconRids[key]];
 
-                ZipArchiveEntry iconEntry = archiveFiles.First(x => x.FullName.EndsWith(iconPath));
-                ZipArchiveEntry fileEntry = archiveFiles.First(x => x.FullName.EndsWith(filePath));
+                ZipArchiveEntry iconEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(iconPath)));
+                ZipArchiveEntry fileEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(filePath)));
 
                 EmfFile emfFile = parser.Parse(iconEntry.GetBytes());
 
@@ -78,6 +78,11 @@ namespace FileObjectExtractor.Models
             }
 
             return relIds;
+        }
+
+        private string StripFirstElement(string input)
+        {
+            return input.Substring(input.IndexOf('/'));
         }
     }
 }
