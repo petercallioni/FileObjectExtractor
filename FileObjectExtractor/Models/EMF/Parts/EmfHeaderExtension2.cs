@@ -1,4 +1,4 @@
-﻿namespace FileObjectExtractor.Models.EMF
+﻿namespace FileObjectExtractor.Models.EMF.EmfPart
 {
     public class EmfHeaderExtension2 : EmfFilePart
     {

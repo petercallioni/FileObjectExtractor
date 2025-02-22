@@ -3,7 +3,7 @@ using FileObjectExtractor.Models.Converters;
 using System;
 using System.Text;
 
-namespace FileObjectExtractor.Models.EMF
+namespace FileObjectExtractor.Models.EMF.EmfPart
 {
     public class EmfField
     {

@@ -1,4 +1,5 @@
-﻿using FileObjectExtractorTests;
+﻿using FileObjectExtractor.Interfaces;
+using FileObjectExtractorTests;
 
 namespace FileObjectExtractor.Models.Tests
 {
@@ -8,8 +9,8 @@ namespace FileObjectExtractor.Models.Tests
         private List<ExtractedFile> files;
         public FileReaderExcelTests()
         {
-            ParseOfficeXml reader = new ParseOfficeXmlExcel();
-            files = reader.GetExtractedFiles(TestResources.EXCEL);
+            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(TestResources.EXCEL);
+            files = parseOffice.GetExtractedFiles(TestResources.EXCEL);
         }
 
         [TestMethod()]

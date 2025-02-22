@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace FileObjectExtractor.Models.EMF
+namespace FileObjectExtractor.Models.EMF.EmfPart
 {
     public class EmfFile
     {
@@ -35,7 +35,7 @@ namespace FileObjectExtractor.Models.EMF
                 sb.Append(record.OutputString.Value);
             }
 
-            return sb.ToString();
+            return sb.ToString().TrimEnd();
         }
     }
 }

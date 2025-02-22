@@ -1,6 +1,7 @@
 ﻿using FileObjectExtractor.Extensions;
 using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models.EMF;
+using FileObjectExtractor.Models.EMF.EmfPart;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;

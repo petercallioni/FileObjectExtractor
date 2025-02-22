@@ -4,19 +4,19 @@ using FileObjectExtractorTests;
 namespace FileObjectExtractor.Models.Tests
 {
     [TestClass()]
-    public class FileReaderDocxTests
+    public class FileReaderPowerpointTests
     {
         private List<ExtractedFile> files;
-        public FileReaderDocxTests()
+        public FileReaderPowerpointTests()
         {
-            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(TestResources.DOCX);
-            files = parseOffice.GetExtractedFiles(TestResources.DOCX);
+            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(TestResources.POWERPOINT);
+            files = parseOffice.GetExtractedFiles(TestResources.POWERPOINT);
         }
 
         [TestMethod()]
         public void ParseFileNameTest()
         {
-            Assert.IsTrue(files.Select(x => x.FileName).Contains("EmbeddedTestDocx.docx"));
+            Assert.IsTrue(files.Select(x => x.FileName).Contains("Microsoft Word Document"));
         }
 
         [TestMethod()]
@@ -25,7 +25,7 @@ namespace FileObjectExtractor.Models.Tests
             string embeddedDocxSha256 = "6F003AA51A0ACB6B3CE172084BB8B17E75B60D3A2B5DE88AF758D36903ABB6A4";
 
             Assert.AreEqual(embeddedDocxSha256, GetHashSHA256(files
-                .Where(x => x.FileName == "EmbeddedTestDocx.docx")
+                .Where(x => x.FileName == "Microsoft Word Document")
                 .Select(x => x.EmbeddedFile)
                 .First()));
         }
@@ -36,7 +36,7 @@ namespace FileObjectExtractor.Models.Tests
             string embeddedPdfSha256 = "1FD733DF0DC966147734C6C858456A25E3B8D3855DEA0BDBBE6E6767F7E05107";
             FileController fileController = new FileController(null!);
             byte[] extractedFile = fileController.ExtractEmbeddedData(files
-                .Where(x => x.FileName == "EmbeddedTestPDF.pdf")
+                .Where(x => x.FileName == "Adobe Acrobat Document")
                 .Select(x => x.EmbeddedFile)
                 .First());
 
@@ -91,19 +91,6 @@ namespace FileObjectExtractor.Models.Tests
                 .Where(x => x.FileName == "TEST_INSERT")
                 .Select(x => x.EmbeddedFile)
                 .First();
-
-            Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
-        }
-
-        [TestMethod()]
-        public void ParseWordExtractInsertedBmpTest()
-        {
-            string embeddedPdfSha256 = "FC3F16FCC06DEBDBCF75D076CF2B10ACD8CD06067DC2E495C359FFB1C3A1F3C8";
-            FileController fileController = new FileController(null!);
-            byte[] extractedFile = fileController.ExtractEmbeddedData(files
-                .Where(x => x.FileName == "EmbeddedPng.bmp")
-                .Select(x => x.EmbeddedFile)
-                .First());
 
             Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
         }

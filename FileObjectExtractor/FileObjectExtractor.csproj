@@ -13,6 +13,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Include="Models\ParseOfficeXmlPowerpoint.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="11.2.3" />
 		<PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
 		<PackageReference Include="Avalonia.Svg.Skia" Version="11.2.0.2" />

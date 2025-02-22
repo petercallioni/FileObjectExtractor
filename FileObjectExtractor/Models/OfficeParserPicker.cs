@@ -16,6 +16,8 @@ namespace FileObjectExtractor.Models
                     return new ParseOfficeXmlWord();
                 case (".XLSX"):
                     return new ParseOfficeXmlExcel();
+                case (".PPTX"):
+                    return new ParseOfficeXmlPowerpoint();
             }
 
             throw new NotImplementedException("Parsing specified file type not implemented.");
