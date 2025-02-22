@@ -2,8 +2,8 @@
 {
     public class EmfFileHeader : EmfFilePart
     {
-        public EmfField Type = new(4, typeof(uint));
-        public EmfField Size = new(4, typeof(uint));
+        public EmfField<uint> Type = new(4);
+        public EmfField<uint> Size = new(4);
 
         public EmfFileHeader()
         {

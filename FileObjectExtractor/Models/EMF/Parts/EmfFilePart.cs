@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using FileObjectExtractor.Interfaces;
+using System.Collections.Generic;
 using System.Text;
 
 namespace FileObjectExtractor.Models.EMF.EmfPart
 {
     public abstract class EmfFilePart
     {
-        protected List<EmfField> Fields = new List<EmfField>();
+        protected List<IEmfField> Fields = new List<IEmfField>();
 
         public void Initialize(StringBuilder input)
         {
-            foreach (EmfField field in Fields)
+            foreach (IEmfField field in Fields)
             {
                 field.Initialize(input);
             }

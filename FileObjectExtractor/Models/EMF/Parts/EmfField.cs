@@ -1,28 +1,28 @@
 ﻿using FileObjectExtractor.Extensions;
+using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models.Converters;
 using System;
 using System.Text;
 
 namespace FileObjectExtractor.Models.EMF.EmfPart
 {
-    public class EmfField
+    public class EmfField : IEmfField
     {
         public int ByteLength { get; set; } = -1;
-        public Type? Type { get; set; }
         public string RawValue { get; set; } = string.Empty;
-        public dynamic Value { get; set; } = string.Empty;
+        public object Value { get; set; }
 
-        public EmfField(int byteLength = -1, Type? type = null)
+        // Constructor with byteLength parameter
+        public EmfField(int byteLength = -1)
         {
             ByteLength = byteLength;
-            Type = type;
+            Value = string.Empty;
         }
 
-        // Alternative constructors
-        public EmfField(Type? type) : this(-1, type) { }
-        public EmfField() : this(-1, null) { }
+        // Parameterless constructor
+        public EmfField() : this(-1) { }
 
-        public void Initialize(StringBuilder input)
+        public virtual void Initialize(StringBuilder input)
         {
             if (ByteLength == -1)
             {
@@ -31,13 +31,38 @@ namespace FileObjectExtractor.Models.EMF.EmfPart
 
             RawValue = input.Shift(0, ByteLength * 2);
 
-            Value = Type switch
+            Value = RawValue;
+        }
+    }
+
+    public class EmfField<T> : EmfField
+    {
+        public new T? Value { get; set; }
+
+        // Constructor with byteLength parameter
+        public EmfField(int byteLength = -1) : base(byteLength)
+        {
+            Value = default(T);
+        }
+
+        // Parameterless constructor
+        public EmfField() : this(-1) { }
+
+        public override void Initialize(StringBuilder input)
+        {
+            if (ByteLength == -1)
             {
-                null => RawValue,
-                Type t when t == typeof(string) => HexConverter.HexToString(RawValue),
-                Type t when t == typeof(uint) => HexConverter.LittleEndianHexToUInt(RawValue),
-                Type t when t == typeof(float) => HexConverter.LittleEndianHexToFloat(RawValue),
-                _ => RawValue,
+                throw new InvalidOperationException("Byte length of field not set");
+            }
+
+            RawValue = input.Shift(0, ByteLength * 2);
+
+            Value = typeof(T) switch
+            {
+                Type t when t == typeof(string) => (T)(object)HexConverter.HexToString(RawValue),
+                Type t when t == typeof(uint) => (T)(object)HexConverter.LittleEndianHexToUInt(RawValue),
+                Type t when t == typeof(float) => (T)(object)HexConverter.LittleEndianHexToFloat(RawValue),
+                _ => (T)(object)RawValue,
             };
         }
     }

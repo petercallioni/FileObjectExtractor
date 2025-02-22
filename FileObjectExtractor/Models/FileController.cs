@@ -95,7 +95,7 @@ namespace FileObjectExtractor.Models
             Queue<byte> bytes = new Queue<byte>(data);
             List<byte> fileName = new List<byte>();
             List<byte> sourcePath = new List<byte>();
-            byte[] returnBytes = null;
+            byte[] returnBytes;
 
             // Total Size, not including these 4 bytes
             bytes.DequeueMultiple(4);

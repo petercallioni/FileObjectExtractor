@@ -2,6 +2,7 @@
 using FileObjectExtractor.Models.EMF.EmfPart;
 using FileObjectExtractor.Models.EMF.Enums;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace FileObjectExtractor.Models.EMF
@@ -13,11 +14,12 @@ namespace FileObjectExtractor.Models.EMF
         public EmfFile Parse(byte[] data)
         {
             EmfFile file = new EmfFile();
+            Queue<byte> dataQueue = new Queue<byte>(data);
             StringBuilder baseString = new StringBuilder(Convert.ToHexString(data));
 
             file.EmfFileHeader.Initialize(baseString);
             file.EmfHeader.Initialize(baseString);
-            int headerSize = 80;
+            uint headerSize = 80;
 
             if (file.EmfFileHeader.Size.Value >= 88)
             {
@@ -33,15 +35,15 @@ namespace FileObjectExtractor.Models.EMF
 
             if (file.EmfHeader.nDescription.Value != 0 || file.EmfHeader.offDescription.Value != 0)
             {
-                baseString.Remove(0, file.EmfHeader.offDescription.Value - headerSize); // Skip to description
-                file.EmfDescriptionBuffer.Contents.ByteLength = file.EmfHeader.nDescription.Value;
+                baseString.Remove(0, (int)(file.EmfHeader.offDescription.Value - headerSize)); // Skip to description
+                file.EmfDescriptionBuffer.Contents.ByteLength = (int)file.EmfHeader.nDescription.Value;
                 file.EmfDescriptionBuffer.Initialize(baseString);
             }
 
             if (file.EmfHeaderExtension1.cbPixelFormat.Value != 0 || file.EmfHeaderExtension1.offPixelFormat.Value != 0)
             {
-                baseString.Remove(0, file.EmfHeaderExtension1.offPixelFormat.Value); // Skip to Value
-                file.EmfPixelFormatBuffer.Contents.ByteLength = file.EmfHeaderExtension1.cbPixelFormat.Value;
+                baseString.Remove(0, (int)file.EmfHeaderExtension1.offPixelFormat.Value); // Skip to Value
+                file.EmfPixelFormatBuffer.Contents.ByteLength = (int)file.EmfHeaderExtension1.cbPixelFormat.Value;
                 file.EmfPixelFormatBuffer.Initialize(baseString);
             }
 

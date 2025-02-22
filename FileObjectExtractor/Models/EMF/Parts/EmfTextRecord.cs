@@ -9,12 +9,12 @@
 
         public EmfField Reference = new(8);
         public EmfField Unknown = new(4);
-        public EmfField Chars = new(4, typeof(uint));
-        public EmfField offString = new(4, typeof(uint));
-        public EmfField Options = new(4, typeof(uint));
+        public EmfField<uint> Chars = new(4);
+        public EmfField<uint> offString = new(4);
+        public EmfField<uint> Options = new(4);
         public EmfField Rectangle = new(16);
-        public EmfField offDx = new(4, typeof(uint));
-        public EmfField OutputString = new(typeof(string));
+        public EmfField<uint> offDx = new(4);
+        public EmfField<string> OutputString = new();
         public EmfField OutputDx = new();
 
         public EmfTextRecord()

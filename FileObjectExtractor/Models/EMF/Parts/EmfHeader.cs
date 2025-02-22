@@ -10,8 +10,8 @@
         public EmfField Records = new(4);
         public EmfField Handles = new(2);
         public EmfField Reserved = new(2);
-        public EmfField nDescription = new(4, typeof(uint));
-        public EmfField offDescription = new(4, typeof(uint));
+        public EmfField<uint> nDescription = new(4);
+        public EmfField<uint> offDescription = new(4);
         public EmfField nPalEntries = new(4);
         public EmfField Device = new(8);
         public EmfField Millimeters = new(8);

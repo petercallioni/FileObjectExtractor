@@ -2,7 +2,7 @@
 {
     public class EmfPixelFormatBuffer : EmfFilePart
     {
-        public EmfField Contents = new(typeof(string)); // Variable Length
+        public EmfField<string> Contents = new(); // Variable Length
 
         public EmfPixelFormatBuffer()
         {
