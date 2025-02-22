@@ -1,30 +1,33 @@
-﻿using System.Text;
-
-namespace FileObjectExtractor.Models.EMF.EmfPart.Tests
+﻿namespace FileObjectExtractor.Models.EMF.EmfPart.Tests
 {
     [TestClass()]
     public class EmfFieldTests
     {
+        private byte[] testData = {
+            0x54,
+            0x00,
+            0x00,
+            0x00,
+            0x12,
+            0x34,
+        };
+
         [TestMethod()]
         public void InitializeIntTest()
         {
             EmfField<int> field = new();
             field.ByteLength = 4;
-            field.Initialize(new StringBuilder("540000001234"));
-        }
-
-        [TestMethod()]
-        public void InitializeFloatTest()
-        {
-            EmfField field = new EmfField();
-            Assert.Fail();
+            field.Initialize(new Queue<byte>(testData));
+            Assert.AreEqual(84, field.Value);
         }
 
         [TestMethod()]
         public void InitializeStringTest()
         {
-            EmfField field = new EmfField();
-            Assert.Fail();
+            EmfField<string> field = new();
+            field.ByteLength = 2;
+            field.Initialize(new Queue<byte>(testData));
+            Assert.AreEqual("T", field.Value);
         }
     }
 }

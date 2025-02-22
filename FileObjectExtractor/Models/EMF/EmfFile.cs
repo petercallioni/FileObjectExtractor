@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using FileObjectExtractor.Models.EMF.EmfPart;
+using System.Collections.Generic;
 using System.Text;
 
-namespace FileObjectExtractor.Models.EMF.EmfPart
+namespace FileObjectExtractor.Models.EMF
 {
     public class EmfFile
     {

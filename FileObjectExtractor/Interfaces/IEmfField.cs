@@ -1,9 +1,9 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
 
 namespace FileObjectExtractor.Interfaces
 {
     public interface IEmfField
     {
-        void Initialize(StringBuilder input);
+        void Initialize(Queue<byte> data);
     }
 }

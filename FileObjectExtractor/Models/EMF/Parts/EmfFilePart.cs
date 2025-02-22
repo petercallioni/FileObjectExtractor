@@ -1,6 +1,5 @@
 ﻿using FileObjectExtractor.Interfaces;
 using System.Collections.Generic;
-using System.Text;
 
 namespace FileObjectExtractor.Models.EMF.EmfPart
 {
@@ -8,11 +7,11 @@ namespace FileObjectExtractor.Models.EMF.EmfPart
     {
         protected List<IEmfField> Fields = new List<IEmfField>();
 
-        public void Initialize(StringBuilder input)
+        public void Initialize(Queue<byte> data)
         {
             foreach (IEmfField field in Fields)
             {
-                field.Initialize(input);
+                field.Initialize(data);
             }
         }
     }

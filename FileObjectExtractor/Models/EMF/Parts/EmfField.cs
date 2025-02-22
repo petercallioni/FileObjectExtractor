@@ -2,14 +2,14 @@
 using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models.Converters;
 using System;
-using System.Text;
+using System.Collections.Generic;
 
 namespace FileObjectExtractor.Models.EMF.EmfPart
 {
     public class EmfField : IEmfField
     {
         public int ByteLength { get; set; } = -1;
-        public string RawValue { get; set; } = string.Empty;
+        public byte[] RawValue { get; set; } = [];
         public object Value { get; set; }
 
         // Constructor with byteLength parameter
@@ -22,14 +22,14 @@ namespace FileObjectExtractor.Models.EMF.EmfPart
         // Parameterless constructor
         public EmfField() : this(-1) { }
 
-        public virtual void Initialize(StringBuilder input)
+        public virtual void Initialize(Queue<byte> data)
         {
             if (ByteLength == -1)
             {
                 throw new InvalidOperationException("Byte length of field not set");
             }
 
-            RawValue = input.Shift(0, ByteLength * 2);
+            RawValue = data.DequeueMultiple(ByteLength);
 
             Value = RawValue;
         }
@@ -48,18 +48,19 @@ namespace FileObjectExtractor.Models.EMF.EmfPart
         // Parameterless constructor
         public EmfField() : this(-1) { }
 
-        public override void Initialize(StringBuilder input)
+        public override void Initialize(Queue<byte> data)
         {
             if (ByteLength == -1)
             {
                 throw new InvalidOperationException("Byte length of field not set");
             }
 
-            RawValue = input.Shift(0, ByteLength * 2);
+            RawValue = data.DequeueMultiple(ByteLength);
 
             Value = typeof(T) switch
             {
                 Type t when t == typeof(string) => (T)(object)HexConverter.HexToString(RawValue),
+                Type t when t == typeof(int) => (T)(object)HexConverter.LittleEndianHexToInt(RawValue),
                 Type t when t == typeof(uint) => (T)(object)HexConverter.LittleEndianHexToUInt(RawValue),
                 Type t when t == typeof(float) => (T)(object)HexConverter.LittleEndianHexToFloat(RawValue),
                 _ => (T)(object)RawValue,

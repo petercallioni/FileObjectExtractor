@@ -16,33 +16,24 @@ namespace FileObjectExtractor.Models.Converters
             return bytes;
         }
 
-        public static int LittleEndianHexToInt(string hexString)
+        public static int LittleEndianHexToInt(byte[] data)
         {
-            byte[] bytes = HexStringToByteArray(hexString);
-            return BitConverter.ToInt32(bytes, 0);
+            return BitConverter.ToInt32(data, 0);
         }
 
-        public static uint LittleEndianHexToUInt(string hexString)
+        public static uint LittleEndianHexToUInt(byte[] data)
         {
-            byte[] bytes = HexStringToByteArray(hexString);
-            return BitConverter.ToUInt32(bytes, 0);
+            return BitConverter.ToUInt32(data, 0);
         }
 
-        public static float LittleEndianHexToFloat(string hexString)
+        public static float LittleEndianHexToFloat(byte[] data)
         {
-            byte[] bytes = HexStringToByteArray(hexString);
-            return BitConverter.ToSingle(bytes, 0);
+            return BitConverter.ToSingle(data, 0);
         }
 
-        public static string HexToString(string hexString)
+        public static string HexToString(byte[] data)
         {
-            if (hexString.Length % 4 != 0)
-            {
-                throw new ArgumentException("Invalid hex string length.");
-            }
-
-            byte[] bytes = HexStringToByteArray(hexString, false);
-            return Encoding.Unicode.GetString(bytes);
+            return Encoding.Unicode.GetString(data);
         }
     }
 }
