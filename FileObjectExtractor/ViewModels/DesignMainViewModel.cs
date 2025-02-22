@@ -7,7 +7,7 @@ namespace FileObjectExtractor.ViewModels
         public DesignMainViewModel() : base(null!)
         {
             // Add mock data here
-            DroppedFile = MainWindowViewModel.DefaultText;
+            DroppedFile = null;
             FilePassword = "Password";
 
             for (int i = 0; i < 3; i++)

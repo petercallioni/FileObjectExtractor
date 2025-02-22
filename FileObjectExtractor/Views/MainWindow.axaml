@@ -18,6 +18,7 @@
 
 	<Window.Resources>
 		<conv:ByteSizeConverter x:Key="ByteSizeConverter"/>
+		<conv:FileStringConverter x:Key="FileStringConverter"/>
 	</Window.Resources>
 
 	<Window.Styles>
@@ -77,7 +78,7 @@
 							 IsReadOnly="True"
 							 Margin="40"
 							 Classes="drop"
-							 Text="{Binding DroppedFile, Mode=TwoWay}"
+							 Text="{Binding DroppedFile, Mode=OneWay, Converter={StaticResource FileStringConverter}}"
 							 TextBlock.TextAlignment="Center">
 					</TextBox>
 				</Border>

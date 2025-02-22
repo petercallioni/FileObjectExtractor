@@ -1,6 +1,7 @@
 ﻿using FileObjectExtractor.Extensions;
 using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models.EMF;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -12,7 +13,7 @@ namespace FileObjectExtractor.Models
 {
     public abstract class ParseOfficeXml : IParseOffice
     {
-        public abstract List<ExtractedFile> GetExtractedFiles(string filePath);
+        public abstract List<ExtractedFile> GetExtractedFiles(Uri filePath);
 
         protected List<ExtractedFile> CombineLists(Dictionary<string, string> iconRids, Dictionary<string, string> fileRids, List<ZipArchiveEntry> archiveFiles)
         {

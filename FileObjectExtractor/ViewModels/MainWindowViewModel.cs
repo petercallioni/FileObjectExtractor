@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,9 +10,8 @@ namespace FileObjectExtractor.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        protected static string DefaultText = "Drop\n+\nHere";
         private ObservableCollection<ExtractedFileVM> extractedFiles;
-        private string droppedFile;
+        private Uri? droppedFile;
         private string filePassword;
         private string filter;
 
@@ -23,7 +23,7 @@ namespace FileObjectExtractor.ViewModels
         public ObservableCollection<ExtractedFileVM> ExtractedFiles { get => extractedFiles; set => extractedFiles = value; }
 
         private FileController fileController;
-        public string DroppedFile
+        public Uri? DroppedFile
         {
             get => droppedFile; set
             {
@@ -71,7 +71,7 @@ namespace FileObjectExtractor.ViewModels
             extractedFiles = new ObservableCollection<ExtractedFileVM>();
             filePassword = string.Empty;
             filter = string.Empty;
-            droppedFile = DefaultText;
+            droppedFile = null;
             ProcessCommand = new RelayCommand(ProcessSelectedItems);
             SelectAllCommand = new RelayCommand(SelectAll);
             SelectNoneCommand = new RelayCommand(SelectNone);
@@ -81,24 +81,27 @@ namespace FileObjectExtractor.ViewModels
 
         private void ProcessSelectedItems()
         {
-            ExtractedFiles.Clear();
-
-            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(DroppedFile);
-
-            List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(DroppedFile)
-                .OrderBy(x => x.FileName)
-                .ToList();
-
-            foreach (ExtractedFile file in embeddedFiles)
+            if (DroppedFile != null && DroppedFile.IsAbsoluteUri)
             {
-                ExtractedFileVM extractedFileVM = new ExtractedFileVM(file, SaveFile);
-                ExtractedFiles.Add(extractedFileVM);
-            }
+                ExtractedFiles.Clear();
 
-            ApplyFilter();
+                IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(DroppedFile);
+
+                List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(DroppedFile)
+                    .OrderBy(x => x.FileName)
+                    .ToList();
+
+                foreach (ExtractedFile file in embeddedFiles)
+                {
+                    ExtractedFileVM extractedFileVM = new ExtractedFileVM(file, SaveFile);
+                    ExtractedFiles.Add(extractedFileVM);
+                }
+
+                ApplyFilter();
+            }
         }
 
-        public void SelectFile(string filePath)
+        public void SelectFile(Uri filePath)
         {
             DroppedFile = filePath;
             ProcessSelectedItems();
@@ -142,7 +145,7 @@ namespace FileObjectExtractor.ViewModels
 
             if (file != null)
             {
-                DroppedFile = file.Path.ToString();
+                DroppedFile = file.Path;
                 ProcessSelectedItems();
             }
         }

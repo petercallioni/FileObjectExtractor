@@ -6,9 +6,9 @@ namespace FileObjectExtractor.Models
 {
     public static class OfficeParserPicker
     {
-        public static IParseOffice GetOfficeParser(string fileName)
+        public static IParseOffice GetOfficeParser(Uri fileName)
         {
-            FileInfo file = new FileInfo(fileName);
+            FileInfo file = new FileInfo(fileName.AbsolutePath);
 
             switch (file.Extension.ToUpper())
             {

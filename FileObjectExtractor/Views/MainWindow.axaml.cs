@@ -36,7 +36,7 @@ namespace FileObjectExtractor.Views
                 {
                     foreach (IStorageItem file in files)
                     {
-                        ViewModel.SelectFile(file.Path.ToString());
+                        ViewModel.SelectFile(file.Path);
                     }
                 }
             }
