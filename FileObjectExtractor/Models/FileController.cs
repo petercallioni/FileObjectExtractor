@@ -21,13 +21,51 @@ namespace FileObjectExtractor.Models
 
         public async Task<IStorageFile?> OpenFileAsync()
         {
-            System.Collections.Generic.IReadOnlyList<IStorageFile> files = await window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+            IReadOnlyList<IStorageFile> files = await window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
             {
                 Title = "Open File",
                 AllowMultiple = false
             });
 
             return files.FirstOrDefault();
+        }
+
+        public async Task<bool> SaveMultipleFiles(List<ExtractedFile> files)
+        {
+            FolderPickerOpenOptions folderPickerOptions = new FolderPickerOpenOptions
+            {
+                Title = "Select Folder to Save Files"
+            };
+            IReadOnlyList<IStorageFolder> selectedFolder = await window.StorageProvider.OpenFolderPickerAsync(folderPickerOptions);
+            string? selectedFolderPath = selectedFolder.FirstOrDefault()?.Path.AbsolutePath;
+
+            if (selectedFolderPath != null)
+            {
+                foreach (ExtractedFile file in files)
+                {
+                    string filePath = Path.Combine(selectedFolderPath, file.FileName);
+                    filePath = GetUniqueFilePath(filePath);
+                    await File.WriteAllBytesAsync(filePath, file.EmbeddedFile);
+                }
+            }
+
+            return true;
+        }
+
+        private string GetUniqueFilePath(string filePath)
+        {
+            int counter = 1;
+            string directory = Path.GetDirectoryName(filePath)!;
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            string extension = Path.GetExtension(filePath);
+
+            while (File.Exists(filePath))
+            {
+                filePath = Path.Combine(directory, $"{fileName} ({counter}){extension}");
+                counter++;
+            }
+
+            return filePath;
         }
 
         public async Task<bool> SaveFileAsync(ExtractedFile extractedFile)

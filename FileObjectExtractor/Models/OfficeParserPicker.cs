@@ -13,10 +13,21 @@ namespace FileObjectExtractor.Models
             switch (file.Extension.ToUpper())
             {
                 case (".DOCX"):
+                case (".DOCM"):
+                case (".DOTM"):
+                case (".DOTX"):
                     return new ParseOfficeXmlWord();
                 case (".XLSX"):
+                case (".XLXM"):
+                case (".XLTM"):
+                case (".XLTX"):
+                case (".XLW"):
                     return new ParseOfficeXmlExcel();
                 case (".PPTX"):
+                case (".POTX"):
+                case (".PPTM"):
+                case (".PPSM"):
+                case (".PPSX"):
                     return new ParseOfficeXmlPowerpoint();
             }
 

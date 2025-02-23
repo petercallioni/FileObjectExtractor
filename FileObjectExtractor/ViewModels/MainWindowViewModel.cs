@@ -76,6 +76,7 @@ namespace FileObjectExtractor.ViewModels
             SelectAllCommand = new RelayCommand(SelectAll);
             SelectNoneCommand = new RelayCommand(SelectNone);
             SelectFileCommand = new RelayCommand(SelectFile);
+            SaveSelectedCommand = new RelayCommand(SaveSelectedFiles);
             this.fileController = fileController;
         }
 
@@ -153,6 +154,15 @@ namespace FileObjectExtractor.ViewModels
         private async void SaveFile(ExtractedFileVM extractedFileVM)
         {
             bool saveSuccess = await fileController.SaveFileAsync(extractedFileVM.ExtractedFile);
+        }
+
+        private async void SaveSelectedFiles()
+        {
+            bool saveSuccess = await fileController.SaveMultipleFiles(
+                    ExtractedFiles
+                    .Where(x => x.IsSelected)
+                    .Select(x => x.ExtractedFile
+                ).ToList());
         }
     }
 }
