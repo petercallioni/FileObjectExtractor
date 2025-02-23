@@ -12,7 +12,6 @@ namespace FileObjectExtractor.ViewModels
     {
         private ObservableCollection<ExtractedFileVM> extractedFiles;
         private Uri? droppedFile;
-        private string filePassword;
         private string filter;
 
         public IRelayCommand ProcessCommand { get; init; }
@@ -37,20 +36,6 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public string FilePassword
-        {
-            get => filePassword; set
-            {
-                if (filePassword != value)
-                {
-                    {
-                        filePassword = value;
-                        OnPropertyChanged();
-                    }
-                }
-            }
-        }
-
         public string Filter
         {
             get => filter; set
@@ -69,7 +54,6 @@ namespace FileObjectExtractor.ViewModels
         public MainWindowViewModel(FileController fileController)
         {
             extractedFiles = new ObservableCollection<ExtractedFileVM>();
-            filePassword = string.Empty;
             filter = string.Empty;
             droppedFile = null;
             ProcessCommand = new RelayCommand(ProcessSelectedItems);

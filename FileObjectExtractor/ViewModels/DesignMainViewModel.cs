@@ -8,7 +8,6 @@ namespace FileObjectExtractor.ViewModels
         {
             // Add mock data here
             DroppedFile = null;
-            FilePassword = "Password";
 
             for (int i = 0; i < 3; i++)
             {
