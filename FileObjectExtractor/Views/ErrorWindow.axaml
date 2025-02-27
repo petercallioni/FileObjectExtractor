@@ -7,6 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200"
 		Width="500"
 		Height="200"
+		SystemDecorations="BorderOnly"
         x:Class="FileObjectExtractor.Views.ErrorWindow"
 		x:DataType="vm:ErrorWindowViewModel"
         Title="Error">
@@ -16,12 +17,16 @@
 	</Design.DataContext>
 
 
-	<DockPanel LastChildFill="True">
+	<DockPanel LastChildFill="True"
+			   PointerMoved="InputElement_OnPointerMoved"
+			   PointerPressed="InputElement_OnPointerPressed"
+			   PointerReleased="InputElement_OnPointerReleased">
 		<DockPanel LastChildFill="True" DockPanel.Dock="Bottom">
 			<Button
 				Command="{Binding DismissCommand}"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Center"
+				Background="LightGray"
 				Padding="4"
 				Margin="10,10,30,10">
 				Dismiss
@@ -42,7 +47,7 @@
 				<DockPanel>
 					<Button Margin="0,20,0,0"
 							ToolTip.Tip="Show More"
-							Background="Beige"
+							Background="LightGray"
 							VerticalAlignment="Top"
 							Command="{Binding ToggleShowMoreCommand}">
 						<Svg Width="20"
@@ -53,6 +58,7 @@
 					<TextBox
 						Margin="10,10,10,10"
 						Padding="10"
+						IsReadOnly="True"
 						FontSize="17"
 						TextWrapping="Wrap"
 						Text="{Binding DisplayText}"

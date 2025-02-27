@@ -24,7 +24,7 @@ namespace FileObjectExtractor.Services
                 ErrorWindow errorWindow = new ErrorWindow(window);
                 ErrorWindowViewModel errorWindowViewModel = new ErrorWindowViewModel(ex, new WindowService(errorWindow));
                 errorWindow.DataContext = errorWindowViewModel;
-                errorWindow.ShowDialog(window); // Use the window reference here
+                errorWindow.ShowDialog(window);
             });
         }
 
