@@ -1,25 +1,28 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models;
+using FileObjectExtractor.Models.Office;
+using FileObjectExtractor.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FileObjectExtractor.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
-        private ObservableCollection<ExtractedFileVM> extractedFiles;
+        private ObservableCollection<ExtractedFileViewModel> extractedFiles;
         private Uri? droppedFile;
         private string filter;
+        private IWindowService windowService;
 
         public IRelayCommand ProcessCommand { get; init; }
         public IRelayCommand SelectAllCommand { get; init; }
         public IRelayCommand SelectNoneCommand { get; init; }
         public IRelayCommand SaveSelectedCommand { get; init; }
         public IRelayCommand SelectFileCommand { get; init; }
-        public ObservableCollection<ExtractedFileVM> ExtractedFiles { get => extractedFiles; set => extractedFiles = value; }
+        public ObservableCollection<ExtractedFileViewModel> ExtractedFiles { get => extractedFiles; set => extractedFiles = value; }
 
         private FileController fileController;
         public Uri? DroppedFile
@@ -51,9 +54,9 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public MainWindowViewModel(FileController fileController)
+        public MainWindowViewModel(FileController fileController, IWindowService windowService)
         {
-            extractedFiles = new ObservableCollection<ExtractedFileVM>();
+            extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
             droppedFile = null;
             ProcessCommand = new RelayCommand(ProcessSelectedItems);
@@ -62,23 +65,24 @@ namespace FileObjectExtractor.ViewModels
             SelectFileCommand = new RelayCommand(SelectFile);
             SaveSelectedCommand = new RelayCommand(SaveSelectedFiles);
             this.fileController = fileController;
+            this.windowService = windowService;
         }
 
         private void ProcessSelectedItems()
         {
             if (DroppedFile != null && DroppedFile.IsAbsoluteUri)
             {
-                ExtractedFiles.Clear();
-
                 IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(DroppedFile);
 
                 List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(DroppedFile)
                     .OrderBy(x => x.FileName)
                     .ToList();
 
+                ExtractedFiles.Clear();
+
                 foreach (ExtractedFile file in embeddedFiles)
                 {
-                    ExtractedFileVM extractedFileVM = new ExtractedFileVM(file, SaveFile);
+                    ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile);
                     ExtractedFiles.Add(extractedFileVM);
                 }
 
@@ -88,13 +92,22 @@ namespace FileObjectExtractor.ViewModels
 
         public void SelectFile(Uri filePath)
         {
-            DroppedFile = filePath;
-            ProcessSelectedItems();
+            Uri? previousFile = DroppedFile;
+            ExceptionSafe(() =>
+            {
+                DroppedFile = filePath;
+                ProcessSelectedItems();
+            },
+            () =>
+            {
+                DroppedFile = previousFile;
+            });
+
         }
 
         public void SelectAll()
         {
-            foreach (ExtractedFileVM item in ExtractedFiles)
+            foreach (ExtractedFileViewModel item in ExtractedFiles)
             {
                 item.IsSelected = true;
             }
@@ -102,7 +115,7 @@ namespace FileObjectExtractor.ViewModels
 
         public void SelectNone()
         {
-            foreach (ExtractedFileVM item in ExtractedFiles)
+            foreach (ExtractedFileViewModel item in ExtractedFiles)
             {
                 item.IsSelected = false;
             }
@@ -110,43 +123,93 @@ namespace FileObjectExtractor.ViewModels
 
         private void ApplyFilter()
         {
-            foreach (ExtractedFileVM item in ExtractedFiles)
+            ExceptionSafe(() =>
             {
-                if (filter.Length > 0)
+                foreach (ExtractedFileViewModel item in ExtractedFiles)
                 {
-                    item.IsSelected = item.ExtractedFile.FileName.Contains(filter, System.StringComparison.OrdinalIgnoreCase);
+                    if (filter.Length > 0)
+                    {
+                        item.IsSelected = item.ExtractedFile.FileName.Contains(filter, System.StringComparison.OrdinalIgnoreCase);
+                    }
+                    else
+                    {
+                        item.IsSelected = false;
+                    }
                 }
-                else
-                {
-                    item.IsSelected = false;
-                }
-
-            }
+            });
         }
 
         private async void SelectFile()
         {
-            Avalonia.Platform.Storage.IStorageFile? file = await fileController.OpenFileAsync();
+            Uri? previousFile = DroppedFile;
 
-            if (file != null)
-            {
-                DroppedFile = file.Path;
-                ProcessSelectedItems();
-            }
+            await ExceptionSafeAsync(
+                async () =>
+                {
+                    Avalonia.Platform.Storage.IStorageFile? file = await fileController.OpenFileAsync();
+
+                    if (file != null)
+                    {
+                        DroppedFile = file.Path;
+                        ProcessSelectedItems();
+                    }
+                },
+                () =>
+                {
+                    DroppedFile = previousFile;
+                });
         }
 
-        private async void SaveFile(ExtractedFileVM extractedFileVM)
+        private async void SaveFile(ExtractedFileViewModel extractedFileVM)
         {
-            bool saveSuccess = await fileController.SaveFileAsync(extractedFileVM.ExtractedFile);
+            await ExceptionSafeAsync(async () =>
+            {
+                bool saveSuccess = await fileController.SaveFileAsync(extractedFileVM.ExtractedFile);
+            });
+
         }
 
         private async void SaveSelectedFiles()
         {
-            bool saveSuccess = await fileController.SaveMultipleFiles(
+            await ExceptionSafeAsync(async () =>
+            {
+                bool saveSuccess = await fileController.SaveMultipleFiles(
                     ExtractedFiles
                     .Where(x => x.IsSelected)
                     .Select(x => x.ExtractedFile
                 ).ToList());
+            });
+
+        }
+
+        private void ExceptionSafe(Action action, Action? rollback = null)
+        {
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, rollback);
+            }
+        }
+
+        private async Task ExceptionSafeAsync(Func<Task> actionAsync, Action? rollback = null)
+        {
+            try
+            {
+                await actionAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, rollback);
+            }
+        }
+
+        private void HandleException(Exception ex, Action? rollback)
+        {
+            rollback?.Invoke();
+            windowService.ShowErrorWindow(ex);
         }
     }
 }

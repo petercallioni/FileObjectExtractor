@@ -1,6 +1,6 @@
-﻿using Avalonia.Controls;
-using Avalonia.Platform.Storage;
+﻿using Avalonia.Platform.Storage;
 using FileObjectExtractor.Extensions;
+using FileObjectExtractor.Services;
 using OpenMcdf;
 using System;
 using System.Collections.Generic;
@@ -13,31 +13,20 @@ namespace FileObjectExtractor.Models
 {
     public class FileController
     {
-        private Window window;
-        public FileController(Window window)
+        private IWindowService window;
+        public FileController(IWindowService window)
         {
             this.window = window;
         }
 
         public async Task<IStorageFile?> OpenFileAsync()
         {
-            IReadOnlyList<IStorageFile> files = await window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
-            {
-                Title = "Open File",
-                AllowMultiple = false
-            });
-
-            return files.FirstOrDefault();
+            return await window.OpenFileAsync("Select a file");
         }
 
         public async Task<bool> SaveMultipleFiles(List<ExtractedFile> files)
         {
-            FolderPickerOpenOptions folderPickerOptions = new FolderPickerOpenOptions
-            {
-                Title = "Select Folder to Save Files"
-            };
-            IReadOnlyList<IStorageFolder> selectedFolder = await window.StorageProvider.OpenFolderPickerAsync(folderPickerOptions);
-            string? selectedFolderPath = selectedFolder.FirstOrDefault()?.Path.AbsolutePath;
+            string? selectedFolderPath = await window.SelectFolderAsync("Select a folder");
 
             if (selectedFolderPath != null)
             {
@@ -70,10 +59,7 @@ namespace FileObjectExtractor.Models
 
         public async Task<bool> SaveFileAsync(ExtractedFile extractedFile)
         {
-            FilePickerSaveOptions saveOptions = new FilePickerSaveOptions();
-            saveOptions.Title = "Save File";
-            saveOptions.SuggestedFileName = extractedFile.FileName;
-            IStorageFile? file = await window.StorageProvider.SaveFilePickerAsync(saveOptions);
+            IStorageFile? file = await window.SaveFileAsync("Save File", extractedFile.FileName);
 
             byte[] dataToSave = extractedFile.IsBinary ? ExtractEmbeddedData(extractedFile.EmbeddedFile) : extractedFile.EmbeddedFile;
 

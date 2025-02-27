@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileObjectExtractor.Models.Office;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;

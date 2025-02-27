@@ -2,10 +2,10 @@
 {
     internal static class TestResources
     {
-        internal static string RESOURCES_DIRECTORY = Path.GetFullPath("./Resources/");
-        internal static string DOCX = Path.Combine(RESOURCES_DIRECTORY, "TestDocx.docx");
-        internal static string EXCEL = Path.Combine(RESOURCES_DIRECTORY, "TestExcel.xlsx");
-        internal static string POWERPOINT = Path.Combine(RESOURCES_DIRECTORY, "TestPowerpoint.pptx");
+        internal static Uri RESOURCES_DIRECTORY = new Uri(Path.GetFullPath("./Resources/"));
+        internal static Uri DOCX = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "TestDocx.docx"));
+        internal static Uri EXCEL = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "TestExcel.xlsx"));
+        internal static Uri POWERPOINT = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsolutePath, "TestPowerpoint.pptx"));
 
         internal static class EMBEDDED_FILES
         {

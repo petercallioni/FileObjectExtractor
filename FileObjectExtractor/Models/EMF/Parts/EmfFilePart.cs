@@ -1,5 +1,4 @@
-﻿using FileObjectExtractor.Interfaces;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FileObjectExtractor.Models.EMF.EmfPart
 {

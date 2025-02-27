@@ -1,5 +1,4 @@
 ﻿using FileObjectExtractor.Extensions;
-using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models.EMF;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace FileObjectExtractor.Models
+namespace FileObjectExtractor.Models.Office
 {
     public abstract class ParseOfficeXml : IParseOffice
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace FileObjectExtractor.Interfaces
+namespace FileObjectExtractor.Models.Office
 {
     public interface IParseOffice
     {

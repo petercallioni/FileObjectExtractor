@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using FileObjectExtractor.Models;
+using FileObjectExtractor.Services;
 using FileObjectExtractor.ViewModels;
 using FileObjectExtractor.Views;
 
@@ -24,8 +25,9 @@ namespace FileObjectExtractor
                 BindingPlugins.DataValidators.RemoveAt(0);
 
                 MainWindow window = new MainWindow();
-                FileController fileController = new FileController(window);
-                MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(fileController);
+                WindowService windowService = new WindowService(window);
+                FileController fileController = new FileController(windowService);
+                MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(fileController, windowService);
                 window.DataContext = mainWindowViewModel;
 
                 desktop.MainWindow = window;

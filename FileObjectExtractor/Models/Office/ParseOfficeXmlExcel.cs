@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Xml;
 
-namespace FileObjectExtractor.Models
+namespace FileObjectExtractor.Models.Office
 {
     public class ParseOfficeXmlExcel : ParseOfficeXml
     {

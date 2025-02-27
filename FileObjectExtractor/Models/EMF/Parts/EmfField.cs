@@ -1,5 +1,4 @@
 ﻿using FileObjectExtractor.Extensions;
-using FileObjectExtractor.Interfaces;
 using FileObjectExtractor.Models.Converters;
 using System;
 using System.Collections.Generic;

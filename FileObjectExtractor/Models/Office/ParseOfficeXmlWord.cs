@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Xml;
 
-namespace FileObjectExtractor.Models
+namespace FileObjectExtractor.Models.Office
 {
     public class ParseOfficeXmlWord : ParseOfficeXml
     {
@@ -71,7 +71,7 @@ namespace FileObjectExtractor.Models
                         XmlAttribute? fileRIdAttribute = oOleObject.Attributes["r:id"];
                         XmlAttribute? iconRIdAttribute = vImageData.Attributes["r:id"];
 
-                        if ((fileRIdAttribute != null && fileRIdAttribute.Value.Length > 0) && (iconRIdAttribute != null && iconRIdAttribute.Value.Length > 0))
+                        if (fileRIdAttribute != null && fileRIdAttribute.Value.Length > 0 && iconRIdAttribute != null && iconRIdAttribute.Value.Length > 0)
                         {
                             rIds.Add(iconRIdAttribute.Value, fileRIdAttribute.Value);
                         }

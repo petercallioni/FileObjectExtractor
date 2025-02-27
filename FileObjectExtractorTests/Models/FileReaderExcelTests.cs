@@ -1,4 +1,4 @@
-﻿using FileObjectExtractor.Interfaces;
+﻿using FileObjectExtractor.Models.Office;
 using FileObjectExtractorTests;
 
 namespace FileObjectExtractor.Models.Tests

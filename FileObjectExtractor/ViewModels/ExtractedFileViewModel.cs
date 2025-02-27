@@ -4,7 +4,7 @@ using System;
 
 namespace FileObjectExtractor.ViewModels
 {
-    public class ExtractedFileVM : ViewModelBase
+    public class ExtractedFileViewModel : ViewModelBase
     {
         private ExtractedFile extractedFile;
         private bool isSelected;
@@ -24,7 +24,7 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public ExtractedFileVM(ExtractedFile extractedFile, Action<ExtractedFileVM> saveFileOperation)
+        public ExtractedFileViewModel(ExtractedFile extractedFile, Action<ExtractedFileViewModel> saveFileOperation)
         {
             this.extractedFile = extractedFile;
             saveFileCommand = new RelayCommand(() => saveFileOperation(this));
