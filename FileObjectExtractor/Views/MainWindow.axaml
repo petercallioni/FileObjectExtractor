@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:conv="using:FileObjectExtractor.Models.Converters"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
         x:Class="FileObjectExtractor.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -19,6 +19,7 @@
 	<Window.Resources>
 		<conv:ByteSizeConverter x:Key="ByteSizeConverter"/>
 		<conv:FileStringConverter x:Key="FileStringConverter"/>
+		<conv:FileNameShortener x:Key="FileNameShortener"/>
 	</Window.Resources>
 
 	<Window.Styles>
@@ -102,7 +103,7 @@
 							<DataTemplate>
 								<DockPanel>
 									<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
-									<TextBlock VerticalAlignment="Center" Text="{Binding ExtractedFile.FileName}"/>
+									<TextBlock VerticalAlignment="Center" Text="{Binding ExtractedFile.FileName, Converter={StaticResource FileNameShortener}}"/>
 									<Button Background="Transparent" Padding="3" HorizontalAlignment="Right" Command="{Binding SaveFileCommand}">
 										<Button.Content>
 											<StackPanel Orientation="Horizontal">

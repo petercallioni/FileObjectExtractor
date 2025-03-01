@@ -107,6 +107,18 @@ namespace FileObjectExtractor.Models.Tests
 
             Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
         }
+        [TestMethod()]
+        public void ParseWordEmbeddedLoremIpsumTest()
+        {
+            string embeddedPdfSha256 = "5A893007C92BC9BDB868D7FC073C280478636F9DDFCC2260828270E08A2D5EEC";
+            FileController fileController = new FileController(null!);
+            byte[] extractedFile = files
+                .Where(x => x.FileName.StartsWith("Lorem ipsum dolor sit amet,"))
+                .Select(x => x.EmbeddedFile)
+                .First();
+
+            Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
+        }
 
         private string GetHashSHA256(byte[] data)
         {
