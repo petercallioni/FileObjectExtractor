@@ -10,7 +10,7 @@
 		SystemDecorations="BorderOnly"
         x:Class="FileObjectExtractor.Views.ErrorWindow"
 		x:DataType="vm:ErrorWindowViewModel"
-        Title="Error">
+        Title="{Binding Title}">
 
 	<Design.DataContext>
 		<vm:DesignErrorWindowViewModel/>
@@ -37,8 +37,8 @@
 				Foreground="White"
 				Padding="30,4,4,4"
 				FontSize="20"
-				FontWeight="Bold">
-				Error
+				FontWeight="Bold"
+				Text="{Binding Title}">
 			</TextBlock>
 		</Panel>
 		<DockPanel DockPanel.Dock="Top">

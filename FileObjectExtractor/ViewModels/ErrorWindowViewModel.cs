@@ -10,6 +10,7 @@ namespace FileObjectExtractor.ViewModels
         private readonly IWindowService windowService;
         private string displayText;
         private bool toggle = true;
+        private string title;
 
         public Exception Exception { get => exception; set => exception = value; }
         public IRelayCommand DismissCommand { get; init; }
@@ -23,12 +24,15 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public string Title { get => title; set => title = value; }
+
         public ErrorWindowViewModel(Exception exception, IWindowService windowService)
         {
             this.exception = exception;
             this.windowService = windowService;
-            displayText = exception.Message;
 
+            this.title = GetWindowTitle(exception);
+            displayText = exception.Message;
             DismissCommand = new RelayCommand(Dismiss);
             ToggleShowMoreCommand = new RelayCommand(ToggleShowMore);
         }
@@ -42,6 +46,24 @@ namespace FileObjectExtractor.ViewModels
         private void Dismiss()
         {
             windowService.CloseWindow();
+        }
+
+        private string GetWindowTitle(Exception ex)
+        {
+            return ex switch
+            {
+                ArgumentException => "Invalid Argument",
+                NotImplementedException => "Not Implemented",
+                InvalidOperationException => "Invalid Operation",
+                NotSupportedException => "Not Supported",
+                NullReferenceException => "Null Reference",
+                IndexOutOfRangeException => "Index Out of Range",
+                FormatException => "Invalid Format",
+                OverflowException => "Overflow",
+                DivideByZeroException => "Divide By Zero",
+                TimeoutException => "Timeout",
+                _ => "Error",
+            };
         }
     }
 }
