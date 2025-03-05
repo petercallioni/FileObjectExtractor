@@ -13,6 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Include="Models\Converters\ShowWarningsConverter.cs" />
 	  <None Include="Models\Office\ParseOfficeXmlPowerpoint.cs" />
 	</ItemGroup>
 
@@ -33,5 +34,9 @@
 	  <Compile Update="Views\ErrorWindow.axaml.cs">
 	    <DependentUpon>ErrorWindow.axaml</DependentUpon>
 	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Exceptions\" />
 	</ItemGroup>
 </Project>

@@ -6,9 +6,6 @@ namespace FileObjectExtractor.Views;
 
 public partial class ErrorWindow : Window
 {
-
-    private Point initialMousePosition;
-
     // To eliminate an IDE warning about not having a default constructor
     public ErrorWindow()
     {

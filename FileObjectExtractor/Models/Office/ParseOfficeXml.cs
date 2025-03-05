@@ -1,4 +1,5 @@
-﻿using FileObjectExtractor.Extensions;
+﻿using FileObjectExtractor.Constants;
+using FileObjectExtractor.Extensions;
 using FileObjectExtractor.Models.EMF;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,17 @@ using System.Xml;
 
 namespace FileObjectExtractor.Models.Office
 {
-    public abstract class ParseOfficeXml : IParseOffice
+    public abstract class ParseOfficeXml : ParseOffice
     {
-        public abstract List<ExtractedFile> GetExtractedFiles(Uri filePath);
+        protected void ThrowIfPassworded(byte[] bytes)
+        {
+            if (bytes.Take(8).SequenceEqual(new byte[] { 0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1 })) // OLECF file signature, instead of expected PK header
+            {
+                throw new NotSupportedException("The file is password protected; please remove the password and try again.");
+            }
+        }
 
-        protected List<ExtractedFile> CombineLists(Dictionary<string, string> iconRids, Dictionary<string, string> fileRids, List<ZipArchiveEntry> archiveFiles)
+        protected List<ExtractedFile> CombineLists(Dictionary<string, OleObject> iconRids, Dictionary<string, string> fileRids, List<ZipArchiveEntry> archiveFiles)
         {
             List<ExtractedFile> files = new List<ExtractedFile>();
 
@@ -23,17 +30,24 @@ namespace FileObjectExtractor.Models.Office
             foreach (string key in iconRids.Keys)
             {
                 string iconPath = fileRids[key];
-                string filePath = fileRids[iconRids[key]];
+                string filePath = fileRids[iconRids[key].Rid];
+                bool hasIcon = iconRids[key].HasIcon;
 
                 ZipArchiveEntry iconEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(iconPath)));
                 ZipArchiveEntry fileEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(filePath)));
 
                 EmfFile emfFile = parser.Parse(iconEntry.GetBytes());
-
-                files.Add(new ExtractedFile(fileEntry)
+                ExtractedFile extractedFile = new ExtractedFile(fileEntry)
                 {
-                    FileName = emfFile.GetTextContent()
-                });
+                    FileName = emfFile.GetTextContent(),
+                };
+
+                if (!hasIcon)
+                {
+                    extractedFile.FileNameWarnings.Add(StringConstants.WARNINGS.NO_EXPLICIT_NAME);
+                }
+
+                files.Add(extractedFile);
             }
 
             return files;

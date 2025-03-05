@@ -1,28 +1,25 @@
 ﻿using Avalonia.Data.Converters;
-using FileObjectExtractor.Constants;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace FileObjectExtractor.Models.Converters
 {
-    public class FileNameShortener : IValueConverter
+    public class ShowWarningsConverter : IValueConverter
     {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            string? fileName = value as string;
+            List<string>? warnings = value as List<string>;
 
-            if (fileName != null)
+            if (warnings != null)
             {
-                if (fileName.Length > IntContstants.MAX_FILE_NAME_CHARS)
+                if (warnings.Count > 0)
                 {
-                    return fileName.Substring(0, IntContstants.MAX_FILE_NAME_CHARS) + "...";
-                }
-                else
-                {
-                    return fileName;
+                    return true;
                 }
             }
-            return value;
+
+            return false;
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

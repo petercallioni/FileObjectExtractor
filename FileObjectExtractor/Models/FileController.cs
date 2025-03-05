@@ -32,7 +32,7 @@ namespace FileObjectExtractor.Models
             {
                 foreach (ExtractedFile file in files)
                 {
-                    string filePath = Path.Combine(selectedFolderPath, file.FileName);
+                    string filePath = Path.Combine(selectedFolderPath, file.SafeFileName);
                     filePath = GetUniqueFilePath(filePath);
                     await File.WriteAllBytesAsync(filePath, file.EmbeddedFile);
                 }
@@ -59,7 +59,7 @@ namespace FileObjectExtractor.Models
 
         public async Task<bool> SaveFileAsync(ExtractedFile extractedFile)
         {
-            IStorageFile? file = await window.SaveFileAsync("Save File", extractedFile.FileName);
+            IStorageFile? file = await window.SaveFileAsync("Save File", extractedFile.SafeFileName);
 
             byte[] dataToSave = extractedFile.IsBinary ? ExtractEmbeddedData(extractedFile.EmbeddedFile) : extractedFile.EmbeddedFile;
 

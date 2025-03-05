@@ -18,8 +18,11 @@ namespace FileObjectExtractor.Models.Office
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
             List<ExtractedFile> files = new List<ExtractedFile>();
 
-            using (FileStream file = File.OpenRead(filePath.AbsolutePath))
-            using (ZipArchive zip = new ZipArchive(file, ZipArchiveMode.Read))
+            byte[] inputFile = File.ReadAllBytes(filePath.AbsolutePath);
+            ThrowIfPassworded(inputFile);
+
+            using (MemoryStream byteStream = new MemoryStream(inputFile))
+            using (ZipArchive zip = new ZipArchive(byteStream, ZipArchiveMode.Read))
             {
                 List<ZipArchiveEntry> sheetEntries = new List<ZipArchiveEntry>();
                 Dictionary<string, ZipArchiveEntry> relsEntries = new Dictionary<string, ZipArchiveEntry>();
@@ -47,7 +50,7 @@ namespace FileObjectExtractor.Models.Office
                     string relsFileName = sheetEntry.Name + ".rels";
                     if (relsEntries.ContainsKey(relsFileName))
                     {
-                        Dictionary<string, string> rIdsIconsAndFiles = ParseSheetFile(sheetEntry);
+                        Dictionary<string, OleObject> rIdsIconsAndFiles = ParseSheetFile(sheetEntry);
                         Dictionary<string, string> rIdsAndFiles = ParseRelsFile(relsEntries[relsFileName]);
                         files.AddRange(CombineLists(rIdsIconsAndFiles, rIdsAndFiles, embeddedFiles));
                     }
@@ -57,9 +60,9 @@ namespace FileObjectExtractor.Models.Office
             return files;
         }
 
-        private Dictionary<string, string> ParseSheetFile(ZipArchiveEntry archiveEntry)
+        private Dictionary<string, OleObject> ParseSheetFile(ZipArchiveEntry archiveEntry)
         {
-            Dictionary<string, string> rIds = new Dictionary<string, string>();
+            Dictionary<string, OleObject> rIds = new Dictionary<string, OleObject>();
 
             using (Stream stream = archiveEntry.Open())
             {
@@ -71,7 +74,10 @@ namespace FileObjectExtractor.Models.Office
                 foreach (XmlNode oleObject in oleObjects)
                 {
                     XmlAttribute? iconRIdAttribute = oleObject?.Attributes?["r:id"];
+                    XmlAttribute? dvAspectIcon = oleObject?.ParentNode?.Attributes?["dvAspect"];
                     XmlAttribute? fileRIdAttribute = oleObject?.ParentNode?.Attributes?["r:id"];
+
+                    bool hasIcon = dvAspectIcon?.Value == "DVASPECT_ICON";
 
                     if (oleObject?.ParentNode?.LocalName == "oleObject")
                     {
@@ -82,7 +88,7 @@ namespace FileObjectExtractor.Models.Office
 
                             if (!string.IsNullOrEmpty(fileRIdValue) && !string.IsNullOrEmpty(iconRIdValue))
                             {
-                                rIds.Add(iconRIdValue, fileRIdValue);
+                                rIds.Add(iconRIdValue, new OleObject(fileRIdValue, hasIcon));
                             }
                         }
                     }

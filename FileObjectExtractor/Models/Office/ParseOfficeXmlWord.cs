@@ -18,10 +18,13 @@ namespace FileObjectExtractor.Models.Office
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
             List<ExtractedFile> files = new List<ExtractedFile>();
             Dictionary<string, string> rIdsAndFiles = new Dictionary<string, string>();
-            Dictionary<string, string> rIdsIconsAndFiles = new Dictionary<string, string>();
+            Dictionary<string, OleObject> rIdsIconsAndFiles = new Dictionary<string, OleObject>();
 
-            using (FileStream file = File.OpenRead(filePath.AbsolutePath))
-            using (ZipArchive zip = new ZipArchive(file, ZipArchiveMode.Read))
+            byte[] inputFile = File.ReadAllBytes(filePath.AbsolutePath);
+            ThrowIfPassworded(inputFile);
+
+            using (MemoryStream byteStream = new MemoryStream(inputFile))
+            using (ZipArchive zip = new ZipArchive(byteStream, ZipArchiveMode.Read))
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
@@ -45,9 +48,9 @@ namespace FileObjectExtractor.Models.Office
             return files;
         }
 
-        private Dictionary<string, string> ParseDocumentFile(ZipArchiveEntry archiveEntry)
+        private Dictionary<string, OleObject> ParseDocumentFile(ZipArchiveEntry archiveEntry)
         {
-            Dictionary<string, string> rIds = new Dictionary<string, string>();
+            Dictionary<string, OleObject> rIds = new Dictionary<string, OleObject>();
 
             using (Stream stream = archiveEntry.Open())
             {
@@ -70,10 +73,13 @@ namespace FileObjectExtractor.Models.Office
                     {
                         XmlAttribute? fileRIdAttribute = oOleObject.Attributes["r:id"];
                         XmlAttribute? iconRIdAttribute = vImageData.Attributes["r:id"];
+                        XmlAttribute? drawAspect = oOleObject.Attributes["DrawAspect"];
+
+                        bool hasIcon = drawAspect?.Value == "Icon";
 
                         if (fileRIdAttribute != null && fileRIdAttribute.Value.Length > 0 && iconRIdAttribute != null && iconRIdAttribute.Value.Length > 0)
                         {
-                            rIds.Add(iconRIdAttribute.Value, fileRIdAttribute.Value);
+                            rIds.Add(iconRIdAttribute.Value, new OleObject(fileRIdAttribute.Value, hasIcon));
                         }
                     }
                 }

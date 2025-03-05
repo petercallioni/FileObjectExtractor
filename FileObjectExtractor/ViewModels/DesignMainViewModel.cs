@@ -9,7 +9,7 @@ namespace FileObjectExtractor.ViewModels
             // Add mock data here
             DroppedFile = null;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 1; i < 7; i++)
             {
                 ExtractedFile extractedFile = new ExtractedFile(new byte[1000 * i]);
                 ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(extractedFile, null!);
@@ -17,6 +17,8 @@ namespace FileObjectExtractor.ViewModels
 
                 if (i == 3)
                 {
+                    extractedFileVM.ExtractedFile.FileNameWarnings.Add("Sample Warning 1");
+                    extractedFileVM.ExtractedFile.FileNameWarnings.Add("Sample Warning 2");
                     extractedFileVM.ExtractedFile.FileName = $"This is a very long filename that is over 50 characters long.docx";
                 }
                 else

@@ -26,7 +26,7 @@ namespace FileObjectExtractor.Models.Converters
                 }
             }
 
-            return Constants.StringConstants.DropDefaultText;
+            return Constants.StringConstants.DEFAULT_DROP_TEXT;
         }
 
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

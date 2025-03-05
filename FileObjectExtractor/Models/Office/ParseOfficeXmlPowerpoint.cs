@@ -19,8 +19,11 @@ namespace FileObjectExtractor.Models
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
             List<ExtractedFile> files = new List<ExtractedFile>();
 
-            using (FileStream file = File.OpenRead(filePath.AbsolutePath))
-            using (ZipArchive zip = new ZipArchive(file, ZipArchiveMode.Read))
+            byte[] inputFile = File.ReadAllBytes(filePath.AbsolutePath);
+            ThrowIfPassworded(inputFile);
+
+            using (MemoryStream byteStream = new MemoryStream(inputFile))
+            using (ZipArchive zip = new ZipArchive(byteStream, ZipArchiveMode.Read))
             {
                 List<ZipArchiveEntry> sheetEntries = new List<ZipArchiveEntry>();
                 Dictionary<string, ZipArchiveEntry> relsEntries = new Dictionary<string, ZipArchiveEntry>();
@@ -48,7 +51,7 @@ namespace FileObjectExtractor.Models
                     string relsFileName = sheetEntry.Name + ".rels";
                     if (relsEntries.ContainsKey(relsFileName))
                     {
-                        Dictionary<string, string> rIdsIconsAndFiles = ParseSheetFile(sheetEntry);
+                        Dictionary<string, OleObject> rIdsIconsAndFiles = ParseSheetFile(sheetEntry);
                         Dictionary<string, string> rIdsAndFiles = ParseRelsFile(relsEntries[relsFileName]);
                         files.AddRange(CombineLists(rIdsIconsAndFiles, rIdsAndFiles, embeddedFiles));
                     }
@@ -58,9 +61,9 @@ namespace FileObjectExtractor.Models
             return files;
         }
 
-        private Dictionary<string, string> ParseSheetFile(ZipArchiveEntry archiveEntry)
+        private Dictionary<string, OleObject> ParseSheetFile(ZipArchiveEntry archiveEntry)
         {
-            Dictionary<string, string> rIds = new Dictionary<string, string>();
+            Dictionary<string, OleObject> rIds = new Dictionary<string, OleObject>();
 
             using (Stream stream = archiveEntry.Open())
             {
@@ -82,10 +85,13 @@ namespace FileObjectExtractor.Models
                     {
                         XmlAttribute? fileRIdAttribute = oleObject.Attributes["r:id"];
                         XmlAttribute? iconRIdAttribute = blip.Attributes["r:embed"];
+                        XmlAttribute? showAsIcon = oleObject.Attributes["showAsIcon"];
+
+                        bool hasIcon = showAsIcon?.Value == "1";
 
                         if ((fileRIdAttribute != null && fileRIdAttribute.Value.Length > 0) && (iconRIdAttribute != null && iconRIdAttribute.Value.Length > 0))
                         {
-                            rIds.Add(iconRIdAttribute.Value, fileRIdAttribute.Value);
+                            rIds.Add(iconRIdAttribute.Value, new OleObject(fileRIdAttribute.Value, hasIcon));
                         }
                     }
                 }

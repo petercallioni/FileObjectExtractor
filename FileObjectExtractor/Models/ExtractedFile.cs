@@ -1,41 +1,82 @@
-﻿using FileObjectExtractor.Extensions;
+﻿using FileObjectExtractor.Constants;
+using FileObjectExtractor.Extensions;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 
 namespace FileObjectExtractor.Models
 {
     public class ExtractedFile
     {
-        //private readonly byte[] iconFile;
         private readonly byte[] embeddedFile;
         private string fileName;
         private bool isBinary;
+        private string safeFileName;
+        private List<string> fileNameWarnings;
 
-        public string FileName { get => fileName; set => fileName = value; }
+        public string FileName
+        {
+            get => fileName; set
+            {
+                fileName = value;
+                SetSafeFileName();
+            }
+        }
+
         public byte[] EmbeddedFile => embeddedFile;
-        //public byte[] IconFile => iconFile;
 
         public bool IsBinary { get => isBinary; set => isBinary = value; }
+        public string SafeFileName { get => safeFileName; }
+        public List<string> FileNameWarnings { get => fileNameWarnings; set => fileNameWarnings = value; }
 
         public ExtractedFile(byte[] embeddedFile)
         {
-            //this.iconFile = iconFile;
             this.embeddedFile = embeddedFile;
             this.isBinary = false;
+            fileNameWarnings = new List<string>();
             fileName = string.Empty;
+            safeFileName = string.Empty;
         }
 
         public ExtractedFile(ZipArchiveEntry archivedFileEntry)
         {
-            //iconFile = ExtractToMemory(iconFileEntry);
             embeddedFile = archivedFileEntry.GetBytes();
             isBinary = archivedFileEntry.Name.EndsWith(".bin", System.StringComparison.OrdinalIgnoreCase);
+            fileNameWarnings = new List<string>();
             fileName = string.Empty;
+            safeFileName = string.Empty;
         }
 
-        public void SaveEmbeddedFile(string path)
+        private void SetSafeFileName()
         {
-            File.WriteAllBytes(path, EmbeddedFile);
+            StringBuilder safeFileNameBuilder = new StringBuilder(fileName);
+            FileInfo fileInfo = new FileInfo(fileName);
+
+            if (safeFileNameBuilder.Length > IntContstants.MAX_FILE_NAME_CHARS)
+            {
+                safeFileNameBuilder.Remove(IntContstants.MAX_FILE_NAME_CHARS, safeFileNameBuilder.Length - IntContstants.MAX_FILE_NAME_CHARS);
+                safeFileNameBuilder.Append("...");
+                fileNameWarnings.Add(StringConstants.WARNINGS.LONG_FILENAME);
+            }
+
+            if (fileInfo.Extension.Equals(""))
+            {
+                fileNameWarnings.Add(StringConstants.WARNINGS.NO_EXTENSION);
+            }
+
+            if (StripInvalidCharacters(safeFileNameBuilder))
+            {
+                fileNameWarnings.Add(StringConstants.WARNINGS.INVALID_CHARACTERS);
+            }
+
+            safeFileName = safeFileNameBuilder.ToString();
+        }
+
+        private bool StripInvalidCharacters(StringBuilder stringBuilder)
+        {
+            FilenameSanitiser filenameSanitiser = new FilenameSanitiser();
+            return filenameSanitiser.SanitiseFilename(stringBuilder);
         }
     }
 }

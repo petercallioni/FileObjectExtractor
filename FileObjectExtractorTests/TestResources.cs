@@ -4,6 +4,7 @@
     {
         internal static Uri RESOURCES_DIRECTORY = new Uri(Path.GetFullPath("./Resources/"));
         internal static Uri DOCX = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "TestDocx.docx"));
+        internal static Uri DOCX_ENCRYPTED = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "TestDocxEncrypted.docx"));
         internal static Uri EXCEL = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "TestExcel.xlsx"));
         internal static Uri POWERPOINT = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsolutePath, "TestPowerpoint.pptx"));
 

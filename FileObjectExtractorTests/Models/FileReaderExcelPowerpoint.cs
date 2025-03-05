@@ -1,4 +1,5 @@
-﻿using FileObjectExtractor.Models.Office;
+﻿using FileObjectExtractor.Constants;
+using FileObjectExtractor.Models.Office;
 using FileObjectExtractorTests;
 
 namespace FileObjectExtractor.Models.Tests
@@ -95,6 +96,24 @@ namespace FileObjectExtractor.Models.Tests
             Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
         }
 
+        [DataTestMethod]
+        [DataRow("Microsoft Word Document", true)]
+        [DataRow("Adobe Acrobat Document", true)]
+        [DataRow("EmbeddedMp3.mp3", true)]
+        [DataRow("EmbeddedPng.png", true)]
+        [DataRow("TEST_INSERT", false)]
+        [DataRow("BMP File", true)]
+        [DataRow("Lorem ipsum dolor sit amet,", false)]
+        public void TestHasIcons(string fileName, bool expected)
+        {
+
+            bool result = files
+                .Where(x => x.FileName.StartsWith(fileName))
+                .Select(x => !x.FileNameWarnings.Contains(StringConstants.WARNINGS.NO_EXPLICIT_NAME))
+                .First();
+
+            Assert.AreEqual(expected, result);
+        }
         private string GetHashSHA256(byte[] data)
         {
             using (System.Security.Cryptography.SHA256 sha256 = System.Security.Cryptography.SHA256.Create())
