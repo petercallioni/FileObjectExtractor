@@ -9,6 +9,11 @@ namespace FileObjectExtractor.Models
 {
     public class ParseOfficeXmlPowerpoint : ParseOfficeXml
     {
+        public ParseOfficeXmlPowerpoint()
+        {
+            OfficeType = OfficeType.POWERPOINT;
+        }
+
         /// <summary>
         /// Opens up the file and gets the initial list of objects.
         /// </summary>

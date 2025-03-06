@@ -22,17 +22,41 @@
 		<conv:FileNameShortener x:Key="FileNameShortener"/>
 		<conv:DisplayWarningsConverter x:Key="DisplayWarningsConverter"/>
 		<conv:ShowWarningsConverter x:Key="ShowWarningsConverter"/>
+		<conv:OfficeToColourConverter x:Key="OfficeToColourConverter"/>
+
+		<ControlTheme x:Key="DropArea" TargetType="TextBox">
+			<Setter	Property="Foreground" Value="Gray"/>
+			<Setter Property="FontSize" Value="22"/>
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="CornerRadius" Value="20" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="TextWrapping" Value="Wrap" />
+			<Setter Property="IsReadOnly" Value="True" />
+			<Setter Property="Margin" Value="40" />
+			<Setter Property="Padding" Value="0,40,0,40" />
+			<Setter Property="BorderThickness" Value="3" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border
+						Background="Transparent"
+						BorderBrush="{Binding InputFile.OfficeType, Mode=OneWay, Converter={StaticResource OfficeToColourConverter}}"
+						BorderThickness="{TemplateBinding BorderThickness}"
+						CornerRadius="{TemplateBinding CornerRadius}">
+						<TextPresenter x:Name="PART_TextPresenter"
+									   Text="{TemplateBinding Text}"
+									   Margin="{TemplateBinding Margin}"/>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</ControlTheme>
 	</Window.Resources>
 
 	<Window.Styles>
 		<Style Selector="TextBlock.h1">
 			<Setter	Property="Foreground" Value="Black"/>
 			<Setter Property="FontSize" Value="16"/>
-		</Style>
-
-		<Style Selector="TextBox.drop">
-			<Setter	Property="Foreground" Value="Gray"/>
-			<Setter Property="FontSize" Value="22"/>
 		</Style>
 
 		<Style Selector="Button.selectFile">
@@ -57,7 +81,6 @@
 	<DockPanel LastChildFill="True">
 		<Panel Margin="10" Width="400">
 			<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
-
 				<StackPanel DockPanel.Dock="Top" Margin="5,5,0,5" Orientation="Horizontal">
 					<TextBlock Classes="h1" VerticalAlignment="Center" Margin="0,0,5,0">Select File:</TextBlock>
 					<Button Classes="selectFile" Command="{Binding SelectFileCommand}">
@@ -68,17 +91,10 @@
 				</StackPanel>
 
 				<Border VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2" CornerRadius="10" DragDrop.AllowDrop="True" Background="Transparent">
-					<TextBox BorderBrush="Transparent"
-							 HorizontalAlignment="Stretch"
-							 VerticalAlignment="Center"
-							 HorizontalContentAlignment="Center"
-							 VerticalContentAlignment="Center"
-							 TextWrapping="Wrap"
-							 IsReadOnly="True"
-							 Margin="40"
-							 Classes="drop"
-							 Text="{Binding DroppedFile, Mode=OneWay, Converter={StaticResource FileStringConverter}}"
-							 TextBlock.TextAlignment="Center">
+					<TextBox
+						Theme="{StaticResource DropArea}"
+						Text="{Binding InputFile.FileURI, Mode=OneWay, Converter={StaticResource FileStringConverter}}"
+						TextBlock.TextAlignment="Center">
 					</TextBox>
 				</Border>
 			</DockPanel>

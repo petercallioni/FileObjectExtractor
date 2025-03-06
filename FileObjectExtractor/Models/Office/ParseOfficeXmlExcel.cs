@@ -8,6 +8,11 @@ namespace FileObjectExtractor.Models.Office
 {
     public class ParseOfficeXmlExcel : ParseOfficeXml
     {
+        public ParseOfficeXmlExcel()
+        {
+            OfficeType = OfficeType.EXCEL;
+        }
+
         /// <summary>
         /// Opens up the file and gets the initial list of objects.
         /// </summary>

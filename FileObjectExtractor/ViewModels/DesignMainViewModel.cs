@@ -7,7 +7,7 @@ namespace FileObjectExtractor.ViewModels
         public DesignMainViewModel() : base(null!, null!)
         {
             // Add mock data here
-            DroppedFile = null;
+            InputFile = (new InputFileViewModel(new System.Uri("file:///Sample.docx"), OfficeType.WORD));
 
             for (int i = 1; i < 7; i++)
             {

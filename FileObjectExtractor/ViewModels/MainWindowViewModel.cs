@@ -12,12 +12,10 @@ namespace FileObjectExtractor.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
+        private InputFileViewModel inputFile;
         private ObservableCollection<ExtractedFileViewModel> extractedFiles;
-        private Uri? droppedFile;
         private string filter;
         private IWindowService windowService;
-
-        public IRelayCommand ProcessCommand { get; init; }
         public IRelayCommand SelectAllCommand { get; init; }
         public IRelayCommand SelectNoneCommand { get; init; }
         public IRelayCommand SaveSelectedCommand { get; init; }
@@ -25,19 +23,6 @@ namespace FileObjectExtractor.ViewModels
         public ObservableCollection<ExtractedFileViewModel> ExtractedFiles { get => extractedFiles; set => extractedFiles = value; }
 
         private FileController fileController;
-        public Uri? DroppedFile
-        {
-            get => droppedFile; set
-            {
-                if (droppedFile != value)
-                {
-                    {
-                        droppedFile = value;
-                        OnPropertyChanged();
-                    }
-                }
-            }
-        }
 
         public string Filter
         {
@@ -54,12 +39,20 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public InputFileViewModel InputFile
+        {
+            get => inputFile; set
+            {
+                inputFile = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindowViewModel(FileController fileController, IWindowService windowService)
         {
+            inputFile = new InputFileViewModel();
             extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
-            droppedFile = null;
-            ProcessCommand = new RelayCommand(ProcessSelectedItems);
             SelectAllCommand = new RelayCommand(SelectAll);
             SelectNoneCommand = new RelayCommand(SelectNone);
             SelectFileCommand = new RelayCommand(SelectFile);
@@ -68,13 +61,14 @@ namespace FileObjectExtractor.ViewModels
             this.windowService = windowService;
         }
 
-        private void ProcessSelectedItems()
+        private void ProcessInputFile(InputFileViewModel inputFile)
         {
-            if (DroppedFile != null && DroppedFile.IsAbsoluteUri)
+            if (inputFile.FileURI != null && inputFile.FileURI.IsAbsoluteUri)
             {
-                IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(DroppedFile);
+                IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(inputFile.FileURI);
+                inputFile.OfficeType = parseOffice.OfficeType;
 
-                List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(DroppedFile)
+                List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI)
                     .OrderBy(x => x.FileName)
                     .ToList();
 
@@ -92,17 +86,13 @@ namespace FileObjectExtractor.ViewModels
 
         public void SelectFile(Uri filePath)
         {
-            Uri? previousFile = DroppedFile;
+            InputFileViewModel newFile = new InputFileViewModel(filePath);
+
             ExceptionSafe(() =>
             {
-                DroppedFile = filePath;
-                ProcessSelectedItems();
-            },
-            () =>
-            {
-                DroppedFile = previousFile;
+                ProcessInputFile(newFile);
+                InputFile = newFile;
             });
-
         }
 
         public void SelectAll()
@@ -141,8 +131,6 @@ namespace FileObjectExtractor.ViewModels
 
         private async void SelectFile()
         {
-            Uri? previousFile = DroppedFile;
-
             await ExceptionSafeAsync(
                 async () =>
                 {
@@ -150,13 +138,10 @@ namespace FileObjectExtractor.ViewModels
 
                     if (file != null)
                     {
-                        DroppedFile = file.Path;
-                        ProcessSelectedItems();
+                        InputFileViewModel newFilefile = new InputFileViewModel(file.Path);
+                        ProcessInputFile(newFilefile);
+                        InputFile = newFilefile;
                     }
-                },
-                () =>
-                {
-                    DroppedFile = previousFile;
                 });
         }
 
