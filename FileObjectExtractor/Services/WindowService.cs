@@ -28,6 +28,28 @@ namespace FileObjectExtractor.Services
             });
         }
 
+        public void ShowAboutWindow()
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                AboutWindow aboutWindow = new AboutWindow(window);
+                AboutViewModel aboutViewModel = new AboutViewModel(new WindowService(aboutWindow));
+                aboutWindow.DataContext = aboutViewModel;
+                aboutWindow.ShowDialog(window);
+            });
+        }
+
+        public void ShowLicenseWindow()
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                LicenseWindow LicenseWindow = new LicenseWindow(window);
+                LicenseViewModel LicenseViewModel = new LicenseViewModel(new WindowService(LicenseWindow));
+                LicenseWindow.DataContext = LicenseViewModel;
+                LicenseWindow.ShowDialog(window);
+            });
+        }
+
         public async Task<IStorageFile?> OpenFileAsync(string title)
         {
             IReadOnlyList<IStorageFile> files = await window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions

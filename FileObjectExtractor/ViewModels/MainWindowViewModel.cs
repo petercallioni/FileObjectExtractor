@@ -10,12 +10,13 @@ using System.Threading.Tasks;
 
 namespace FileObjectExtractor.ViewModels
 {
-    public partial class MainWindowViewModel : ViewModelBase
+    public partial class MainWindowViewModel : ClosableViewModel
     {
         private InputFileViewModel inputFile;
+        private MainMenuViewModel mainMenu;
+
         private ObservableCollection<ExtractedFileViewModel> extractedFiles;
         private string filter;
-        private IWindowService windowService;
         public IRelayCommand SelectAllCommand { get; init; }
         public IRelayCommand SelectNoneCommand { get; init; }
         public IRelayCommand SaveSelectedCommand { get; init; }
@@ -48,8 +49,18 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public MainWindowViewModel(FileController fileController, IWindowService windowService)
+        public MainMenuViewModel MainMenu
         {
+            get => mainMenu; set
+            {
+                mainMenu = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public MainWindowViewModel(FileController fileController, IWindowService windowService) : base(windowService)
+        {
+            mainMenu = new MainMenuViewModel(windowService);
             inputFile = new InputFileViewModel();
             extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
@@ -58,7 +69,6 @@ namespace FileObjectExtractor.ViewModels
             SelectFileCommand = new RelayCommand(SelectFile);
             SaveSelectedCommand = new RelayCommand(SaveSelectedFiles);
             this.fileController = fileController;
-            this.windowService = windowService;
         }
 
         private void ProcessInputFile(InputFileViewModel inputFile)

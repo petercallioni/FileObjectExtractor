@@ -4,10 +4,9 @@ using System;
 
 namespace FileObjectExtractor.ViewModels
 {
-    public class ErrorWindowViewModel : ViewModelBase
+    public class ErrorWindowViewModel : ClosableViewModel
     {
         private Exception exception;
-        private readonly IWindowService windowService;
         private string displayText;
         private bool toggle = true;
         private string title;
@@ -26,14 +25,14 @@ namespace FileObjectExtractor.ViewModels
 
         public string Title { get => title; set => title = value; }
 
-        public ErrorWindowViewModel(Exception exception, IWindowService windowService)
+        public ErrorWindowViewModel(Exception exception, IWindowService windowService) : base(windowService)
         {
             this.exception = exception;
             this.windowService = windowService;
 
             this.title = GetWindowTitle(exception);
             displayText = exception.Message;
-            DismissCommand = new RelayCommand(Dismiss);
+            DismissCommand = new RelayCommand(Close);
             ToggleShowMoreCommand = new RelayCommand(ToggleShowMore);
         }
 
@@ -41,11 +40,6 @@ namespace FileObjectExtractor.ViewModels
         {
             toggle = !toggle;
             DisplayText = (toggle ? exception.Message : $"{exception.Message} {exception?.StackTrace?.Trim()}") ?? "Unavaliable";
-        }
-
-        private void Dismiss()
-        {
-            windowService.CloseWindow();
         }
 
         private string GetWindowTitle(Exception ex)

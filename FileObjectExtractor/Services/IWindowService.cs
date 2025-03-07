@@ -10,6 +10,8 @@ namespace FileObjectExtractor.Services
         Task<IStorageFile?> OpenFileAsync(string title);
         Task<IStorageFile?> SaveFileAsync(string title, string suggestedFileName);
         Task<string?> SelectFolderAsync(string title);
+        void ShowAboutWindow();
         void ShowErrorWindow(Exception ex);
+        void ShowLicenseWindow();
     }
 }

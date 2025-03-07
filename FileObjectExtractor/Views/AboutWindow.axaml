@@ -1,0 +1,86 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:FileObjectExtractor.ViewModels"
+		xmlns:design="using:FileObjectExtractor.ViewModels.Design"
+		xmlns:conv="using:FileObjectExtractor.Converters"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="400"
+		Width="300"
+		Height="400"
+		SystemDecorations="BorderOnly"
+        x:Class="FileObjectExtractor.Views.AboutWindow"
+		x:DataType="vm:AboutViewModel"
+		CanResize="False"
+        Title="About">
+
+	<Design.DataContext>
+		<design:DesignAboutViewModel/>
+	</Design.DataContext>
+
+	<Border
+		BorderBrush="Gray"
+		BorderThickness="1"
+		Margin="5">
+		<DockPanel LastChildFill="True"
+			   PointerMoved="InputElement_OnPointerMoved"
+			   PointerPressed="InputElement_OnPointerPressed"
+			   PointerReleased="InputElement_OnPointerReleased"
+				   Background="Transparent">
+			<TextBlock
+				Margin="0,20,0,10"
+				DockPanel.Dock="Top"
+				HorizontalAlignment="Center"
+				FontSize="0.1">
+				<TextBlock.Inlines>
+					<Run FontSize="22" FontWeight="Bold" Text="F"/>
+					<Run FontSize="18" Text="ile "/>
+					<Run FontSize="22" FontWeight="Bold" Text="O"/>
+					<Run FontSize="18" Text="bject E"/>
+					<Run FontSize="22" FontWeight="Bold" Text="X"/>
+					<Run FontSize="18" Text="tractor"/>
+				</TextBlock.Inlines>
+			</TextBlock>
+			<Svg
+		DockPanel.Dock="Top"
+		Path="/Assets/fox.svg" Width="150"
+		Margin="10"/>
+			<Border
+				DockPanel.Dock="Top"
+				Margin="20,0,20,0"
+				BorderBrush="Gray"
+				BorderThickness="1"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch">
+				<StackPanel Orientation="Vertical">
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Margin="10">
+						<TextBlock FontSize="0.1">
+							<TextBlock.Inlines>
+								<Run FontSize="16" Text="Version: "/>
+								<Run FontSize="16" Text="{Binding VersionNumber}" />
+								<Run FontSize="16" Text=" (" />
+								<Run FontSize="16" Text="{Binding BuildDate}" />
+								<Run FontSize="16" Text=")" />
+							</TextBlock.Inlines>
+						</TextBlock>
+					</StackPanel>
+					<Separator/>
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"  Margin="10">
+						<TextBlock FontSize="0.1">
+							<TextBlock.Inlines>
+								<Run FontSize="16" Text="Author: "/>
+								<Run FontSize="16" Text="{Binding Author}" />
+							</TextBlock.Inlines>
+						</TextBlock>
+					</StackPanel>
+				</StackPanel>
+			</Border>
+			<Button DockPanel.Dock="Bottom"
+				HorizontalAlignment="Center"
+					Background="LightGray"
+					Command="{Binding CloseCommand}"
+					Content="Dismiss">
+			</Button>
+		</DockPanel>
+	</Border>
+</Window>

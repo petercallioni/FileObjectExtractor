@@ -1,4 +1,5 @@
-﻿using FileObjectExtractor.Models;
+﻿using Avalonia.Media;
+using FileObjectExtractor.Models;
 using System;
 
 namespace FileObjectExtractor.ViewModels
@@ -22,6 +23,24 @@ namespace FileObjectExtractor.ViewModels
             {
                 officeType = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public SolidColorBrush OfficeColour
+        {
+            get
+            {
+                switch (officeType)
+                {
+                    case OfficeType.WORD:
+                        return SolidColorBrush.Parse("#108EF4");
+                    case OfficeType.EXCEL:
+                        return SolidColorBrush.Parse("#3DC33A");
+                    case OfficeType.POWERPOINT:
+                        return SolidColorBrush.Parse("#D98B23");
+                    default:
+                        return SolidColorBrush.Parse("#282828");
+                }
             }
         }
 

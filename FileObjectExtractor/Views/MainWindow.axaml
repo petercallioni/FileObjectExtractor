@@ -1,18 +1,19 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:vm="using:FileObjectExtractor.ViewModels"
+		xmlns:design="using:FileObjectExtractor.ViewModels.Design"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:conv="using:FileObjectExtractor.Converters" mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="450"
         x:Class="FileObjectExtractor.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/fox.png"
-        Title="FileObjectExtractor">
+        Title="File Object Extractor">
 
 	<Design.DataContext>
 		<!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-		<vm:DesignMainViewModel/>
+		<design:DesignMainViewModel/>
 	</Design.DataContext>
 
 	<Window.Resources>
@@ -21,13 +22,11 @@
 		<conv:FileNameShortener x:Key="FileNameShortener"/>
 		<conv:DisplayWarningsConverter x:Key="DisplayWarningsConverter"/>
 		<conv:ShowWarningsConverter x:Key="ShowWarningsConverter"/>
-		<conv:OfficeToColourConverter x:Key="OfficeToColourConverter"/>
 
 		<ControlTheme x:Key="DropArea" TargetType="TextBox">
-			<Setter	Property="Foreground" Value="Gray"/>
+			<Setter Property="Foreground" Value="Gray"/>
 			<Setter Property="FontSize" Value="22"/>
 			<Setter Property="HorizontalAlignment" Value="Stretch" />
-			<Setter Property="CornerRadius" Value="20" />
 			<Setter Property="VerticalAlignment" Value="Center" />
 			<Setter Property="HorizontalContentAlignment" Value="Center" />
 			<Setter Property="VerticalContentAlignment" Value="Center" />
@@ -35,18 +34,25 @@
 			<Setter Property="IsReadOnly" Value="True" />
 			<Setter Property="Margin" Value="40" />
 			<Setter Property="Padding" Value="0,40,0,40" />
-			<Setter Property="BorderThickness" Value="3" />
 			<Setter Property="Template">
 				<ControlTemplate>
-					<Border
-						Background="Transparent"
-						BorderBrush="{Binding InputFile.OfficeType, Mode=OneWay, Converter={StaticResource OfficeToColourConverter}}"
-						BorderThickness="{TemplateBinding BorderThickness}"
-						CornerRadius="{TemplateBinding CornerRadius}">
-						<TextPresenter x:Name="PART_TextPresenter"
-									   Text="{TemplateBinding Text}"
-									   Margin="{TemplateBinding Margin}"/>
-					</Border>
+					<Grid>
+						<!-- Rectangle acting as a dotted border -->
+						<Rectangle
+						  Stroke="{Binding InputFile.OfficeColour, Mode=OneWay}"
+						  StrokeThickness="3"
+						  RadiusX="20"
+						  RadiusY="20"
+						  StrokeDashArray="5,1">
+						</Rectangle>
+						<!-- Text presenter for content -->
+						<TextPresenter
+						  x:Name="PART_TextPresenter"
+						  Text="{TemplateBinding Text}"
+						  Margin="{TemplateBinding Margin}"
+						  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+						  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+					</Grid>
 				</ControlTemplate>
 			</Setter>
 		</ControlTheme>
@@ -78,6 +84,23 @@
 	</Window.Styles>
 
 	<DockPanel LastChildFill="True">
+		<Menu DockPanel.Dock="Top"
+			  BorderBrush="LightGray"
+			  BorderThickness="0,0,0,1">
+			<MenuItem Header="_File">
+				<MenuItem Header="_Exit" Command="{Binding MainMenu.ExitCommand}" />
+			</MenuItem>
+			<MenuItem Header="_Select">
+				<MenuItem Header="_Open" Command="{Binding SelectFileCommand}" />
+				<Separator/>
+				<MenuItem Header="_All" Command="{Binding SelectAllCommand}" />
+				<MenuItem Header="_None" Command="{Binding SelectNoneCommand}" />
+			</MenuItem>
+			<MenuItem Header="_Help">
+				<MenuItem Header="_About" Command="{Binding MainMenu.AboutCommand}" />
+				<MenuItem Header="_Licenses" Command="{Binding MainMenu.LicenseCommand}" />
+			</MenuItem>
+		</Menu>
 		<Panel Margin="10" Width="400">
 			<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
 				<StackPanel DockPanel.Dock="Top" Margin="5,5,0,5" Orientation="Horizontal">
@@ -89,7 +112,7 @@
 					</Button>
 				</StackPanel>
 
-				<Border VerticalAlignment="Stretch" BorderBrush="Black" BorderThickness="2" CornerRadius="10" DragDrop.AllowDrop="True" Background="Transparent">
+				<Border VerticalAlignment="Stretch" BorderBrush="{Binding InputFile.OfficeColour, Mode=OneWay}" BorderThickness="2" CornerRadius="10" DragDrop.AllowDrop="True" Background="Transparent">
 					<TextBox
 						Theme="{StaticResource DropArea}"
 						Text="{Binding InputFile.FileURI, Mode=OneWay, Converter={StaticResource FileStringConverter}}"

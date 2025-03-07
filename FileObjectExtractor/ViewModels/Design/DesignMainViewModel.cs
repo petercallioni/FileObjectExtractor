@@ -1,13 +1,13 @@
 ﻿using FileObjectExtractor.Models;
 
-namespace FileObjectExtractor.ViewModels
+namespace FileObjectExtractor.ViewModels.Design
 {
     public class DesignMainViewModel : MainWindowViewModel
     {
         public DesignMainViewModel() : base(null!, null!)
         {
             // Add mock data here
-            InputFile = (new InputFileViewModel(new System.Uri("file:///Sample.docx"), OfficeType.WORD));
+            InputFile = new InputFileViewModel(new System.Uri("file:///Sample.docx"), OfficeType.WORD);
 
             for (int i = 1; i < 7; i++)
             {
