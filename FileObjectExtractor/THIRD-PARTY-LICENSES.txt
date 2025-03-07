@@ -1,0 +1,141 @@
+===============================================================================
+                          THIRD‑PARTY‑LICENSES.txt
+===============================================================================
+
+This file contains notices and full license texts for third‑party components
+used in this project. Each component’s name, version, project URL, and description
+are listed along with the complete text for its license.
+
+===============================================================================
+PART 1: Packages Licensed Under the MIT License
+===============================================================================
+
+The following packages are distributed under the MIT License:
+
+● Package: Avalonia  
+  Version: 11.2.3  
+  Project URL: https://avaloniaui.net/?utm_source=nuget&utm_medium=referral&utm_content=project_homepage_link  
+  Description: Avalonia is a cross‑platform UI framework for .NET providing a flexible styling system and supporting a wide range of operating systems such as Windows, Linux, macOS and—with experimental support for Android, iOS, and WebAssembly.
+
+● Package: Avalonia.Desktop  
+  Version: 11.2.3  
+  (Project URL and Description as above.)
+
+● Package: Avalonia.Diagnostics  
+  Version: 11.2.3  
+  (Project URL and Description as above.)
+
+● Package: Avalonia.Fonts.Inter  
+  Version: 11.2.3  
+  (Project URL and Description as above.)
+
+● Package: Avalonia.Svg.Skia  
+  Version: 11.2.0.2  
+  Project URL: https://github.com/wieslawsoltes/Svg.Skia  
+  Description: An SVG image control for Avalonia.
+
+● Package: Avalonia.Themes.Fluent  
+  Version: 11.2.3  
+  (Project URL and Description as above.)
+
+● Package: CommunityToolkit.Mvvm  
+  Version: 8.4.0  
+  Project URL: https://github.com/CommunityToolkit/dotnet  
+  Description: A .NET MVVM library with helpers such as ObservableObject, RelayCommand, and more.
+
+● Package: DocumentFormat.OpenXml  
+  Version: 3.2.0  
+  Project URL: https://github.com/dotnet/Open-XML-SDK  
+  Description: Tools and APIs for working with Office Word, Excel, and PowerPoint documents.
+
+
+------------------------------------------------------------------------------
+                            THE MIT LICENSE
+------------------------------------------------------------------------------
+
+The MIT License (MIT)
+
+Copyright (c) 2024 Wiesław Šoltés (Avalonia.Svg.Skia)
+Copyright (c) 2024 The Avalonia Team (Avalonia)
+Copyright (c) 2024 Microsoft
+
+Permission is hereby granted, free of charge, to any person obtaining a copy 
+of this software and associated documentation files (the "Software"), to deal 
+in the Software without restriction, including without limitation the rights 
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+copies of the Software, and to permit persons to whom the Software is 
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in 
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+THE SOFTWARE.
+
+===============================================================================
+PART 2: Packages Licensed Under the Mozilla Public License Version 2.0 (MPL-2.0)
+===============================================================================
+
+The following package is distributed under the MPL 2.0:
+
+● Package: OpenMcdf  
+  Version: 2.4.1  
+  Project URL: https://github.com/ironfede/openmcdf  
+  Description: OpenMcdf is a 100% .NET/C# component for manipulating Microsoft Compound Document File Format (OLE structured storage).
+
+------------------------------------------------------------------------------
+                   MOZILLA PUBLIC LICENSE VERSION 2.0
+------------------------------------------------------------------------------
+
+The contents of this section are reproduced below in full, as required by the MPL 2.0:
+
+Mozilla Public License Version 2.0
+==================================
+
+1. Definitions
+--------------
+1.1. "Contributor" means each individual or legal entity that creates, or contributes to the creation of, the Covered Software.
+1.2. "Contributor Version" means the combination of the Contributions of others used by a Contributor and that particular Contributor’s Contribution.
+1.3. "Covered Software" means the Source Code Form of the work, including any Modifications or additions to a previous form of the work.
+1.4. "Incompatible With Secondary Licenses" means that the Covered Software cannot be distributed under any license other than this License without the consent of each Contributor.
+1.5. "License" means this Mozilla Public License, version 2.0.
+1.6. "Licensable" means having the right to grant, to the maximum extent possible, whether at the time of the initial grant or subsequently, any and all of the rights conveyed by this License.
+1.7. "Modifications" means any changes to the Covered Software, including additions to, deletions from, or rearrangements of, the contents of the file, that create a new work of authorship.
+1.8. "Source Code" means the preferred form of the Covered Software for making modifications to it.
+1.9. "You" (or "Your") means the licensee.
+
+2. License Grant
+----------------
+2.1. Each Contributor hereby grants You a world-wide, royalty-free, non-exclusive license, under the Contributor's rights in the Covered Software, to use, reproduce, modify, display, perform, sublicense, and distribute the Covered Software, with or without Modifications, and in Source or Object form, provided that You comply with the terms of this License.
+2.2. This License does not grant any rights in the trademarks, service marks, or logos of any Contributor except as may be necessary to comply with the Notice requirements in Section 3.4.
+
+3. Responsibilities
+-------------------
+3.1. If You distribute copies or Modifications of the Covered Software, You must make the Source Code available under the terms of this License.
+3.2. You must include a copy of this License in every file, documentation, or associated distribution that contains or is based on the Covered Software.
+3.3. If You modify the Covered Software, You must mark your modifications clearly.
+3.4. You must retain, in the Source Code for any part of the Covered Software that You distribute, all copyright, patent, trademark, and attribution notices from the Source Code of the Covered Software.
+
+4. Disclaimer of Warranty
+-------------------------
+THE COVERED SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. EACH CONTRIBUTOR EXPLICITLY DISCLAIMS ANY LIABILITY FOR DAMAGES RESULTING FROM THE SOFTWARE OR ITS USE.
+
+5. Limitation of Liability
+--------------------------
+IN NO EVENT SHALL ANY CONTRIBUTOR BE LIABLE FOR ANY DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OF OR INABILITY TO USE THE COVERED SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA, LOSS OF PROFIT, OR SYSTEM FAILURE), EVEN IF SUCH CONTRIBUTOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+6. Miscellaneous
+----------------
+6.1. This License represents the complete agreement concerning the subject matter hereof.
+6.2. If any provision of this License is held to be unenforceable, such provision shall be reformed only to the extent necessary to make it enforceable.
+6.3. This License is governed by the laws of the jurisdiction in which the Contributor resides.
+6.4. NOTICE: This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Covered Software and reproducing the content of the NOTICE file.
+
+===============================================================================
+END OF THIRD‑PARTY LICENSES
+===============================================================================

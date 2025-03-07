@@ -45,4 +45,10 @@
 	<ItemGroup>
 	  <Folder Include="Exceptions\" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="THIRD-PARTY-LICENSES.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 </Project>
