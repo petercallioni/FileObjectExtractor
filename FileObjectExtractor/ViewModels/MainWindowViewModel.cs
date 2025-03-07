@@ -79,7 +79,7 @@ namespace FileObjectExtractor.ViewModels
                 inputFile.OfficeType = parseOffice.OfficeType;
 
                 List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI)
-                    .OrderBy(x => x.FileName)
+                    // .OrderBy(x => x.FileName)
                     .ToList();
 
                 ExtractedFiles.Clear();

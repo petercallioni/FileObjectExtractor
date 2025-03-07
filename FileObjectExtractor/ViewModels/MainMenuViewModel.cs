@@ -8,7 +8,6 @@ namespace FileObjectExtractor.ViewModels
         private IWindowService windowService;
         public IRelayCommand ExitCommand => new RelayCommand(Exit);
         public IRelayCommand AboutCommand => new RelayCommand(About);
-        public IRelayCommand LicenseCommand => new RelayCommand(License);
 
         public MainMenuViewModel(IWindowService windowService)
         {
@@ -23,11 +22,6 @@ namespace FileObjectExtractor.ViewModels
         private void About()
         {
             windowService.ShowAboutWindow();
-        }
-
-        private void License()
-        {
-            windowService.ShowLicenseWindow();
         }
     }
 }

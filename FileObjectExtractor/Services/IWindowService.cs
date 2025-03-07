@@ -12,6 +12,5 @@ namespace FileObjectExtractor.Services
         Task<string?> SelectFolderAsync(string title);
         void ShowAboutWindow();
         void ShowErrorWindow(Exception ex);
-        void ShowLicenseWindow();
     }
 }

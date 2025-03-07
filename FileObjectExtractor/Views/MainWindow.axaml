@@ -98,7 +98,6 @@
 			</MenuItem>
 			<MenuItem Header="_Help">
 				<MenuItem Header="_About" Command="{Binding MainMenu.AboutCommand}" />
-				<MenuItem Header="_Licenses" Command="{Binding MainMenu.LicenseCommand}" />
 			</MenuItem>
 		</Menu>
 		<Panel Margin="10" Width="400">

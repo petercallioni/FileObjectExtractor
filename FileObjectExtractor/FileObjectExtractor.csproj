@@ -34,9 +34,6 @@
 	  <Compile Update="Views\AboutWindow.axaml.cs">
 	    <DependentUpon>AboutWindow.axaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Views\LicenseWindow.axaml.cs">
-	    <DependentUpon>LicenseWindow.axaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="Views\ErrorWindow.axaml.cs">
 	    <DependentUpon>ErrorWindow.axaml</DependentUpon>
 	  </Compile>
