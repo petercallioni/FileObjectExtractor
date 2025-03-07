@@ -3,7 +3,7 @@ using System;
 using System.Globalization;
 using System.IO;
 
-namespace FileObjectExtractor.Models.Converters
+namespace FileObjectExtractor.Converters
 {
     public class FileStringConverter : IValueConverter
     {

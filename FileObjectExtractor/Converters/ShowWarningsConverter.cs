@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace FileObjectExtractor.Models.Converters
+namespace FileObjectExtractor.Converters
 {
     public class ShowWarningsConverter : IValueConverter
     {

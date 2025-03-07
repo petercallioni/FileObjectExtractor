@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace FileObjectExtractor.Models.Converters
+namespace FileObjectExtractor.Converters
 {
     public class DisplayWarningsConverter : IValueConverter
     {

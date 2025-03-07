@@ -1,13 +1,14 @@
 using Avalonia.Data.Converters;
 using Avalonia.Media;
+using FileObjectExtractor.Models;
 using System;
 using System.Globalization;
 
-namespace FileObjectExtractor.Models.Converters
+namespace FileObjectExtractor.Converters
 {
     public class OfficeToColourConverter : IValueConverter
     {
-        public Object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             OfficeType officeType = (OfficeType)(value ?? OfficeType.UNKNOWN);
 

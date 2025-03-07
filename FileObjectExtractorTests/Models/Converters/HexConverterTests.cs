@@ -1,4 +1,6 @@
-﻿namespace FileObjectExtractor.Models.Converters.Tests
+﻿using FileObjectExtractor.Converters;
+
+namespace FileObjectExtractor.Models.Converters.Tests
 {
     [TestClass()]
     public class HexConverterTests

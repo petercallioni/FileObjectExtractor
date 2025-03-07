@@ -3,7 +3,7 @@ using FileObjectExtractor.Constants;
 using System;
 using System.Globalization;
 
-namespace FileObjectExtractor.Models.Converters
+namespace FileObjectExtractor.Converters
 {
     public class FileNameShortener : IValueConverter
     {
