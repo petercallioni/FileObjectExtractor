@@ -77,6 +77,13 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public bool SelectedFilesContainWarnings
+        {
+            get => ExtractedFiles
+                .Where(x => x.IsSelected)
+                .Any(x => x.ExtractedFile.FileNameWarnings.Count > 0);
+        }
+
         public MainWindowViewModel(FileController fileController, IWindowService windowService) : base(windowService)
         {
             mainMenu = new MainMenuViewModel(windowService);
@@ -108,6 +115,16 @@ namespace FileObjectExtractor.ViewModels
                 foreach (ExtractedFile file in embeddedFiles)
                 {
                     ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile);
+
+                    // Update the UI when the IsSelected property changes
+                    extractedFileVM.PropertyChanged += (sender, e) =>
+                    {
+                        if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
+                        {
+                            OnPropertyChanged(nameof(SelectedFilesContainWarnings));
+                        }
+                    };
+
                     ExtractedFiles.Add(extractedFileVM);
                 }
 

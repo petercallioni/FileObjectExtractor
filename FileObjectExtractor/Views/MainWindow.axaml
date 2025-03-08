@@ -4,7 +4,7 @@
 		xmlns:design="using:FileObjectExtractor.ViewModels.Design"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:conv="using:FileObjectExtractor.Converters" mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="450"
+		xmlns:conv="using:FileObjectExtractor.Converters" mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
 		xmlns:custom="using:FileObjectExtractor.Components"
         x:Class="FileObjectExtractor.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -82,7 +82,7 @@
 		</Style>
 
 		<Style Selector="Button">
-			<Setter Property="Background" Value="LightGray"/>
+			<Setter Property="Background" Value="Transparent"/>
 		</Style>
 
 		<Style Selector="Rectangle.VerticalSeperator">
@@ -100,7 +100,7 @@
 		</Style>
 
 		<Style Selector="Button.SortButton">
-			<Setter Property="Background" Value="LightGray"/>
+			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="Padding" Value="2"/>
 			<Setter Property="FontSize" Value="8"/>
 			<Setter	Property="Margin" Value="1,0,5,0"/>
@@ -129,6 +129,7 @@
 			</MenuItem>
 			<MenuItem Header="_Select">
 				<MenuItem Header="_Open" Command="{Binding SelectFileCommand}" />
+				<MenuItem Header="_Export Selected" Command="{Binding SaveSelectedCommand}"/>
 				<Separator/>
 				<MenuItem Header="_All" Command="{Binding SelectAllCommand}" />
 				<MenuItem Header="_None" Command="{Binding SelectNoneCommand}" />
@@ -182,7 +183,7 @@
 					<Rectangle Classes ="VerticalSeperator"/>
 
 					<StackPanel Orientation="Vertical" VerticalAlignment="Center">
-						<TextBlock Text="Sort By" Classes="ControlExplanation"/>
+						<TextBlock Text="Sort" Classes="ControlExplanation"/>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Document Order" VerticalAlignment="Center"/>
 							<StackPanel Orientation="Vertical" VerticalAlignment="Center">
@@ -194,7 +195,7 @@
 										Command="{Binding SelectSortCommand}"
 										CommandParameter="{x:Static vm:SortOrder.DOCUMENT}"/>
 								<Button
-									Classes.SortButton="{Binding !SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT_DESC}}"
+									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT_DESC}}"
 									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT_DESC}}"
 										Content="▼"
 										ToolTip.Tip="Descending"
@@ -204,13 +205,13 @@
 							<TextBlock Text="Alphabetically" VerticalAlignment="Center"/>
 							<StackPanel Orientation="Vertical" VerticalAlignment="Center">
 								<Button
-									Classes.SortButton="{Binding !SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL}}"
+									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL}}"
 									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL}}"
 										Content="▲" ToolTip.Tip="Ascending"
 										Command="{Binding SelectSortCommand}"
 										CommandParameter="{x:Static vm:SortOrder.ALPHABETICAL}"/>
 								<Button
-									Classes.SortButton="{Binding !SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL_DESC}}"
+									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL_DESC}}"
 									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL_DESC}}"
 									Content="▼"
 									ToolTip.Tip="Descending"
@@ -224,47 +225,60 @@
 
 					<TextBox Width="200" Watermark="Filter" VerticalContentAlignment="Center"
 							 Text="{Binding Filter, Mode=TwoWay}"/>
-					<Button Height="40" Margin="10,0,0,0" Command="{Binding SaveSelectedCommand}">
+					<Button Height="40" Margin="10,0,0,0"
+							ToolTip.Tip="Save all selected file names with names as shown."
+							Command="{Binding SaveSelectedCommand}">
 						<Button.Content>
 							<StackPanel Orientation="Horizontal">
-								<TextBlock VerticalAlignment="Center">Save Selected</TextBlock>
+								<TextBlock VerticalAlignment="Center">Export Selected</TextBlock>
 								<Svg Margin="10,0,0,0" Stretch="UniformToFill" Path="/Assets/save-icon.svg"/>
 							</StackPanel>
 						</Button.Content>
 					</Button>
+
+					<Panel>
+						<Svg Width="40"
+							Path="/Assets/warning.svg"
+							 ToolTip.Tip="One or more items have warnings. They may save with unexpected file names."
+							 IsVisible="{Binding SelectedFilesContainWarnings}"/>
+					</Panel>
+
 				</StackPanel>
 				<Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="10" Background="LightGray" Margin="0,10,10,10" Padding="10,10,10,10" DockPanel.Dock="Bottom">
-					<ListBox ItemsSource="{Binding ExtractedFiles}" SelectionMode="Multiple">
-						<ListBox.ItemTemplate>
-							<DataTemplate>
-								<DockPanel>
-									<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
-									<StackPanel Orientation="Horizontal">
-										<Border
-											Background="Transparent"
-											Margin="0,0,5,0"
-											CornerRadius="10"
-											Padding="2"
-											IsVisible="{Binding ExtractedFile.FileNameWarnings, Converter={StaticResource ShowWarningsConverter}}" ToolTip.Tip="{Binding ExtractedFile.FileNameWarnings, Converter={StaticResource DisplayWarningsConverter}}">
-											<Svg Width="30" Path="/Assets/warning.svg" />
-										</Border>
-										<TextBlock VerticalAlignment="Center" Text="{Binding ExtractedFile.SafeFileName}"/>
-									</StackPanel>
-									<Button Background="Transparent" Padding="3" HorizontalAlignment="Right" Command="{Binding SaveFileCommand}">
-										<Button.Content>
-											<StackPanel Orientation="Horizontal">
-												<TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Text="{Binding ExtractedFile.EmbeddedFile, Converter={StaticResource ByteSizeConverter}}"/>
-												<Svg Stretch="UniformToFill" Path="/Assets/save-icon.svg"/>
-											</StackPanel>
-										</Button.Content>
-									</Button>
-								</DockPanel>
-							</DataTemplate>
-						</ListBox.ItemTemplate>
-					</ListBox>
+					<Panel>
+						<ListBox ItemsSource="{Binding ExtractedFiles}" SelectionMode="Multiple">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<DockPanel>
+										<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+										<StackPanel Orientation="Horizontal">
+											<Border
+												Background="Transparent"
+												Margin="0,0,5,0"
+												CornerRadius="10"
+												Padding="2"
+												IsVisible="{Binding ExtractedFile.FileNameWarnings, Converter={StaticResource ShowWarningsConverter}}" ToolTip.Tip="{Binding ExtractedFile.FileNameWarnings, Converter={StaticResource DisplayWarningsConverter}}">
+												<Svg Width="30" Path="/Assets/warning.svg" />
+											</Border>
+											<TextBlock VerticalAlignment="Center" Text="{Binding ExtractedFile.SafeFileName}"/>
+										</StackPanel>
+										<Button Background="Transparent" Padding="3" HorizontalAlignment="Right"
+												ToolTip.Tip="Save file, choosing the file name"
+												Command="{Binding SaveFileCommand}">
+											<Button.Content>
+												<StackPanel Orientation="Horizontal">
+													<TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Text="{Binding ExtractedFile.EmbeddedFile, Converter={StaticResource ByteSizeConverter}}"/>
+													<Svg Stretch="UniformToFill" Path="/Assets/save-icon.svg"/>
+												</StackPanel>
+											</Button.Content>
+										</Button>
+									</DockPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</Panel>
 				</Border>
 			</DockPanel>
-
 		</DockPanel>
 	</DockPanel>
 </Window>

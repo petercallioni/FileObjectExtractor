@@ -25,8 +25,8 @@
    inkscape:deskcolor="#d1d1d1"
    showgrid="true"
    inkscape:zoom="0.59326172"
-   inkscape:cx="1024"
-   inkscape:cy="1024"
+   inkscape:cx="1024.8428"
+   inkscape:cy="981.86008"
    inkscape:window-width="2560"
    inkscape:window-height="1417"
    inkscape:window-x="1912"
@@ -68,62 +68,77 @@
    class="fil0"
    d="m 163.20144,374.87335 h 1715.83286 38.9972 v 38.99719 233.97722 38.99717 H 1879.0343 163.20144 124.20425 V 647.84776 413.87054 374.87335 Z M 572.66157,491.86208 H 1781.5462 v 77.99436 H 572.66157 Z m -311.96841,0 h 233.97722 v 77.99436 H 260.69316 Z"
    id="path1"
-   style="stroke-width:1.21863" />
+   style="stroke-width:1.21863;fill:#000000;fill-opacity:1" />
   
   
   <polygon
    class="fil1"
    points="657.714,287.998 1649.72,287.998 1649.72,351.999 657.714,351.999 "
    id="polygon3"
-   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)" />
+   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)"
+   style="fill:#000000;fill-opacity:1" />
   <polygon
    class="fil1"
    points="401.714,287.998 593.715,287.998 593.715,351.999 401.714,351.999 "
    id="polygon4"
-   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)" />
+   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)"
+   style="fill:#000000;fill-opacity:1" />
   <polygon
    class="fil1"
    points="657.714,735.993 1649.72,735.993 1649.72,799.994 657.714,799.994 "
    id="polygon5"
-   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)" />
+   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)"
+   style="fill:#000000;fill-opacity:1" />
   <polygon
    class="fil1"
    points="401.714,735.993 593.715,735.993 593.715,799.994 401.714,799.994 "
    id="polygon6"
-   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)" />
+   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)"
+   style="fill:#000000;fill-opacity:1" />
   <polygon
    class="fil1"
    points="657.714,959.99 1649.72,959.99 1649.72,1023.99 657.714,1023.99 "
    id="polygon7"
-   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)" />
+   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)"
+   style="fill:#000000;fill-opacity:1" />
   <polygon
    class="fil1"
    points="401.714,959.99 593.715,959.99 593.715,1023.99 401.714,1023.99 "
    id="polygon8"
-   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)" />
+   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)"
+   style="fill:#000000;fill-opacity:1" />
   <polygon
    class="fil1"
    points="657.714,1183.99 1649.72,1183.99 1649.72,1247.99 657.714,1247.99 "
    id="polygon9"
-   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)" />
+   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)"
+   style="fill:#000000;fill-opacity:1" />
   <polygon
    class="fil1"
    points="401.714,1183.99 593.715,1183.99 593.715,1247.99 401.714,1247.99 "
    id="polygon10"
-   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)" />
+   transform="matrix(1.2186314,0,0,1.2186314,-226.75939,-132.07486)"
+   style="fill:#000000;fill-opacity:1" />
  <rect
-   style="fill:#424242;fill-opacity:1;stroke-width:1.03696"
+   style="fill:#000000;fill-opacity:1;stroke-width:1.03696"
    id="rect12"
    width="145.07478"
    height="742.85278"
-   x="1487.8054"
-   y="1178.7274" /><rect
-   style="clip-rule:evenodd;fill:#424242;fill-opacity:1;fill-rule:evenodd;stroke-width:1.03696;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
+   x="1386.6697"
+   y="1109.6179" /><rect
+   style="clip-rule:evenodd;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:1.03696;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
    id="rect12-9"
    width="742.85327"
    height="145.07527"
-   x="1186.8041"
-   y="1492.5997" /></g>
+   x="1089.9828"
+   y="1405.8047" /><rect
+   style="fill:#ffffff;fill-opacity:0;stroke:#000000;stroke-width:95.4482;stroke-dasharray:none;stroke-opacity:1"
+   id="rect1"
+   width="1880.5353"
+   height="1863.9536"
+   x="86.533974"
+   y="86.474686"
+   ry="114.1196" /></g>
  <rect
    class="fil2"
    width="2048"
