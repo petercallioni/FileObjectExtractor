@@ -21,7 +21,17 @@ namespace FileObjectExtractor.ViewModels
         public IRelayCommand SelectNoneCommand { get; init; }
         public IRelayCommand SaveSelectedCommand { get; init; }
         public IRelayCommand SelectFileCommand { get; init; }
-        public ObservableCollection<ExtractedFileViewModel> ExtractedFiles { get => extractedFiles; set => extractedFiles = value; }
+        public IRelayCommand SelectSortCommand { get; init; }
+
+        private SortOrder sortOrder;
+        public ObservableCollection<ExtractedFileViewModel> ExtractedFiles
+        {
+            get => extractedFiles; set
+            {
+                extractedFiles = value;
+                OnPropertyChanged();
+            }
+        }
 
         private FileController fileController;
 
@@ -58,17 +68,30 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public SortOrder SortOrder
+        {
+            get => sortOrder; set
+            {
+                sortOrder = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindowViewModel(FileController fileController, IWindowService windowService) : base(windowService)
         {
             mainMenu = new MainMenuViewModel(windowService);
+
+            sortOrder = SortOrder.DOCUMENT;
             inputFile = new InputFileViewModel();
             extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
+            this.fileController = fileController;
+
             SelectAllCommand = new RelayCommand(SelectAll);
             SelectNoneCommand = new RelayCommand(SelectNone);
             SelectFileCommand = new RelayCommand(SelectFile);
             SaveSelectedCommand = new RelayCommand(SaveSelectedFiles);
-            this.fileController = fileController;
+            SelectSortCommand = new RelayCommand<SortOrder>(SelectSort);
         }
 
         private void ProcessInputFile(InputFileViewModel inputFile)
@@ -78,9 +101,7 @@ namespace FileObjectExtractor.ViewModels
                 IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(inputFile.FileURI);
                 inputFile.OfficeType = parseOffice.OfficeType;
 
-                List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI)
-                    // .OrderBy(x => x.FileName)
-                    .ToList();
+                List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI).ToList();
 
                 ExtractedFiles.Clear();
 
@@ -91,6 +112,7 @@ namespace FileObjectExtractor.ViewModels
                 }
 
                 ApplyFilter();
+                SortExtractedFiles(ExtractedFiles);
             }
         }
 
@@ -205,6 +227,27 @@ namespace FileObjectExtractor.ViewModels
         {
             rollback?.Invoke();
             windowService.ShowErrorWindow(ex);
+        }
+
+        private void SelectSort(SortOrder sort)
+        {
+            SortOrder = sort;
+
+            SortExtractedFiles(ExtractedFiles);
+        }
+
+        private void SortExtractedFiles(ObservableCollection<ExtractedFileViewModel> files)
+        {
+            ObservableCollection<ExtractedFileViewModel> sortedFiles = sortOrder switch
+            {
+                SortOrder.DOCUMENT => new ObservableCollection<ExtractedFileViewModel>(files.OrderBy(x => x.ExtractedFile.DocumentOrder)),
+                SortOrder.DOCUMENT_DESC => new ObservableCollection<ExtractedFileViewModel>(files.OrderByDescending(x => x.ExtractedFile.DocumentOrder)),
+                SortOrder.ALPHABETICAL => new ObservableCollection<ExtractedFileViewModel>(files.OrderBy(x => x.ExtractedFile.FileName)),
+                SortOrder.ALPHABETICAL_DESC => new ObservableCollection<ExtractedFileViewModel>(files.OrderByDescending(x => x.ExtractedFile.FileName)),
+                _ => files,
+            };
+
+            ExtractedFiles = sortedFiles;
         }
     }
 }

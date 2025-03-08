@@ -14,6 +14,7 @@ namespace FileObjectExtractor.Models
         private bool isBinary;
         private string safeFileName;
         private List<string> fileNameWarnings;
+        private int documentOrder;
 
         public string FileName
         {
@@ -29,6 +30,7 @@ namespace FileObjectExtractor.Models
         public bool IsBinary { get => isBinary; set => isBinary = value; }
         public string SafeFileName { get => safeFileName; }
         public List<string> FileNameWarnings { get => fileNameWarnings; set => fileNameWarnings = value; }
+        public int DocumentOrder { get => documentOrder; set => documentOrder = value; }
 
         public ExtractedFile(byte[] embeddedFile)
         {

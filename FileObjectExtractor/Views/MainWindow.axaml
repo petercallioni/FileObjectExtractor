@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:conv="using:FileObjectExtractor.Converters" mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="450"
+		xmlns:custom="using:FileObjectExtractor.Components"
         x:Class="FileObjectExtractor.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/fox.png"
@@ -22,6 +23,8 @@
 		<conv:FileNameShortener x:Key="FileNameShortener"/>
 		<conv:DisplayWarningsConverter x:Key="DisplayWarningsConverter"/>
 		<conv:ShowWarningsConverter x:Key="ShowWarningsConverter"/>
+		<conv:EnumToBoolConverter x:Key="EnumToBoolConverter"/>
+		<conv:EnumToBoolConverter x:Key="EnumToBoolConverterNegated" Negate="True"/>
 
 		<ControlTheme x:Key="DropArea" TargetType="TextBox">
 			<Setter Property="Foreground" Value="Gray"/>
@@ -59,18 +62,18 @@
 	</Window.Resources>
 
 	<Window.Styles>
-		<Style Selector="TextBlock.h1">
+		<Style Selector="TextBlock.H1">
 			<Setter	Property="Foreground" Value="Black"/>
 			<Setter Property="FontSize" Value="16"/>
 		</Style>
 
-		<Style Selector="Button.selectFile">
+		<Style Selector="Button.SelectFile">
 			<Setter Property="Width" Value="40"/>
 			<Setter Property="Height" Value="40"/>
 			<Setter Property="Padding" Value="3"/>
 		</Style>
 
-		<Style Selector="Button.toggle">
+		<Style Selector="Button.Toggle">
 			<Setter Property="Width" Value="30"/>
 			<Setter Property="Height" Value="30"/>
 
@@ -80,6 +83,40 @@
 
 		<Style Selector="Button">
 			<Setter Property="Background" Value="LightGray"/>
+		</Style>
+
+		<Style Selector="Rectangle.VerticalSeperator">
+			<Setter	Property="Width" Value="1" />
+			<Setter	Property="VerticalAlignment" Value="Stretch" />
+			<Setter	Property="Fill" Value="LightGray"/>
+			<Setter	Property="Margin" Value="10,0,10,0"/>
+		</Style>
+
+		<Style Selector="TextBlock.ControlExplanation">
+			<Setter Property="FontSize" Value="10"/>
+			<Setter	Property="Margin" Value="0,0,0,4"/>
+			<Setter	Property="Padding" Value="0"/>
+			<Setter	Property="HorizontalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="Button.SortButton">
+			<Setter Property="Background" Value="LightGray"/>
+			<Setter Property="Padding" Value="2"/>
+			<Setter Property="FontSize" Value="8"/>
+			<Setter	Property="Margin" Value="1,0,5,0"/>
+		</Style>
+
+		<Style Selector="Button.SortButtonSelected">
+			<Setter Property="Background" Value="Black"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Padding" Value="2"/>
+			<Setter Property="FontSize" Value="8"/>
+			<Setter	Property="Margin" Value="1,0,5,0"/>
+		</Style>
+
+		<Style Selector="Button.SortButtonSelected:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="DarkGray"/>
+			<Setter Property="Foreground" Value="White"/>
 		</Style>
 	</Window.Styles>
 
@@ -103,8 +140,8 @@
 		<Panel Margin="10" Width="400">
 			<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
 				<StackPanel DockPanel.Dock="Top" Margin="5,5,0,5" Orientation="Horizontal">
-					<TextBlock Classes="h1" VerticalAlignment="Center" Margin="0,0,5,0">Select File:</TextBlock>
-					<Button Classes="selectFile" Command="{Binding SelectFileCommand}">
+					<TextBlock Classes="H1" VerticalAlignment="Center" Margin="0,0,5,0">Select File:</TextBlock>
+					<Button Classes="SelectFile" Command="{Binding SelectFileCommand}">
 						<Button.Content>
 							<Svg Stretch="UniformToFill" Path="/Assets/select-file-icon.svg"/>
 						</Button.Content>
@@ -123,9 +160,69 @@
 		<DockPanel DockPanel.Dock="Right" LastChildFill="True">
 			<DockPanel LastChildFill="True">
 				<StackPanel DockPanel.Dock="Top" Margin="0,10,0,0" Orientation="Horizontal">
-					<Button Classes="toggle" Command="{Binding SelectNoneCommand}">-</Button>
-					<Button Classes="toggle" Command="{Binding SelectAllCommand}">+</Button>
-					<TextBox Margin="10,0,0,0" Width="200" Watermark="Filter" VerticalContentAlignment="Center"
+					<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+						<TextBlock Text="Select" Classes="ControlExplanation"/>
+						<StackPanel Orientation="Horizontal">
+							<Button Classes="Toggle"
+									Command="{Binding SelectNoneCommand}"
+									Padding="0"
+									ToolTip.Tip="Select None">
+								<Svg Stretch="Uniform" Path="/Assets/select-none.svg" />
+							</Button>
+
+							<Button Classes="Toggle"
+									Command="{Binding SelectAllCommand}"
+									Padding="0"
+									ToolTip.Tip="Select All">
+								<Svg Stretch="Uniform" Path="/Assets/select-all.svg" />
+							</Button>
+						</StackPanel>
+					</StackPanel>
+
+					<Rectangle Classes ="VerticalSeperator"/>
+
+					<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+						<TextBlock Text="Sort By" Classes="ControlExplanation"/>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Document Order" VerticalAlignment="Center"/>
+							<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+								<Button
+									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT}}"
+									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT}}"
+										Content="▲"
+										ToolTip.Tip="Ascending"
+										Command="{Binding SelectSortCommand}"
+										CommandParameter="{x:Static vm:SortOrder.DOCUMENT}"/>
+								<Button
+									Classes.SortButton="{Binding !SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT_DESC}}"
+									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT_DESC}}"
+										Content="▼"
+										ToolTip.Tip="Descending"
+										Command="{Binding SelectSortCommand}"
+										CommandParameter="{x:Static vm:SortOrder.DOCUMENT_DESC}"/>
+							</StackPanel>
+							<TextBlock Text="Alphabetically" VerticalAlignment="Center"/>
+							<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+								<Button
+									Classes.SortButton="{Binding !SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL}}"
+									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL}}"
+										Content="▲" ToolTip.Tip="Ascending"
+										Command="{Binding SelectSortCommand}"
+										CommandParameter="{x:Static vm:SortOrder.ALPHABETICAL}"/>
+								<Button
+									Classes.SortButton="{Binding !SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL_DESC}}"
+									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL_DESC}}"
+									Content="▼"
+									ToolTip.Tip="Descending"
+									Command="{Binding SelectSortCommand}"
+									CommandParameter="{x:Static vm:SortOrder.ALPHABETICAL_DESC}"/>
+							</StackPanel>
+						</StackPanel>
+					</StackPanel>
+
+					<Rectangle Classes ="VerticalSeperator"/>
+
+					<TextBox Width="200" Watermark="Filter" VerticalContentAlignment="Center"
 							 Text="{Binding Filter, Mode=TwoWay}"/>
 					<Button Height="40" Margin="10,0,0,0" Command="{Binding SaveSelectedCommand}">
 						<Button.Content>

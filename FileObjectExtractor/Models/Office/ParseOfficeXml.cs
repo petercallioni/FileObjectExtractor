@@ -23,6 +23,7 @@ namespace FileObjectExtractor.Models.Office
 
         protected List<ExtractedFile> CombineLists(Dictionary<string, OleObject> iconRids, Dictionary<string, string> fileRids, List<ZipArchiveEntry> archiveFiles)
         {
+            int documentOrderCounter = 0;
             List<ExtractedFile> files = new List<ExtractedFile>();
 
             EmfParser parser = new EmfParser();
@@ -40,6 +41,7 @@ namespace FileObjectExtractor.Models.Office
                 ExtractedFile extractedFile = new ExtractedFile(fileEntry)
                 {
                     FileName = emfFile.GetTextContent(),
+                    DocumentOrder = documentOrderCounter++
                 };
 
                 if (!hasIcon)
