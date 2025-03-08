@@ -218,6 +218,22 @@
 									Command="{Binding SelectSortCommand}"
 									CommandParameter="{x:Static vm:SortOrder.ALPHABETICAL_DESC}"/>
 							</StackPanel>
+							<TextBlock Text="Size" VerticalAlignment="Center"/>
+							<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+								<Button
+									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.SIZE}}"
+									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.SIZE}}"
+										Content="▲" ToolTip.Tip="Ascending"
+										Command="{Binding SelectSortCommand}"
+										CommandParameter="{x:Static vm:SortOrder.SIZE}"/>
+								<Button
+									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.SIZE_DESC}}"
+									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.SIZE_DESC}}"
+									Content="▼"
+									ToolTip.Tip="Descending"
+									Command="{Binding SelectSortCommand}"
+									CommandParameter="{x:Static vm:SortOrder.SIZE_DESC}"/>
+							</StackPanel>
 						</StackPanel>
 					</StackPanel>
 

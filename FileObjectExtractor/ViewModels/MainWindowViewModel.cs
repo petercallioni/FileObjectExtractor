@@ -261,6 +261,8 @@ namespace FileObjectExtractor.ViewModels
                 SortOrder.DOCUMENT_DESC => new ObservableCollection<ExtractedFileViewModel>(files.OrderByDescending(x => x.ExtractedFile.DocumentOrder)),
                 SortOrder.ALPHABETICAL => new ObservableCollection<ExtractedFileViewModel>(files.OrderBy(x => x.ExtractedFile.FileName)),
                 SortOrder.ALPHABETICAL_DESC => new ObservableCollection<ExtractedFileViewModel>(files.OrderByDescending(x => x.ExtractedFile.FileName)),
+                SortOrder.SIZE => new ObservableCollection<ExtractedFileViewModel>(files.OrderBy(x => x.ExtractedFile.EmbeddedFile.Length)),
+                SortOrder.SIZE_DESC => new ObservableCollection<ExtractedFileViewModel>(files.OrderByDescending(x => x.ExtractedFile.EmbeddedFile.Length)),
                 _ => files,
             };
 

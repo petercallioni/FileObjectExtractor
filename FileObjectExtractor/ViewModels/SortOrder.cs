@@ -6,5 +6,7 @@
         DOCUMENT_DESC,
         ALPHABETICAL,
         ALPHABETICAL_DESC,
+        SIZE,
+        SIZE_DESC,
     }
 }
