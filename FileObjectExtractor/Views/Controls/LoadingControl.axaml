@@ -9,7 +9,7 @@
 	<UserControl.Styles>
 		<Style Selector="Svg.Spin">
 			<Style.Animations>
-				<Animation Duration="0:0:5"
+				<Animation Duration="0:0:3"
 						   IterationCount="INFINITE"
 						   Easing="CubicEaseInOut">
 					<KeyFrame Cue="0%">
