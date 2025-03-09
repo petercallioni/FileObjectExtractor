@@ -8,6 +8,11 @@ namespace FileObjectExtractor.ViewModels.Design
         {
             // Add mock data here
             InputFile = new InputFileViewModel(new System.Uri("file:///Sample.docx"), OfficeType.WORD);
+
+            ProgressIndicator.ShowProgress = true;
+            ProgressIndicator.Progress = 60;
+            ProgressIndicator.Message = "Current File.docx";
+
             SortOrder = SortOrder.DOCUMENT;
 
             for (int i = 1; i < 7; i++)

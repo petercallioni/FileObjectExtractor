@@ -14,6 +14,8 @@ namespace FileObjectExtractor.ViewModels
     {
         private InputFileViewModel inputFile;
         private MainMenuViewModel mainMenu;
+        private ProgressIndicatorViewModel progressIndicator;
+        private ProgressService progressService;
 
         private ObservableCollection<ExtractedFileViewModel> extractedFiles;
         private string filter;
@@ -77,16 +79,32 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public bool HasSelectedItems
+        {
+            get => ExtractedFiles
+                .Any(x => x.IsSelected);
+        }
+
         public bool SelectedFilesContainWarnings
         {
             get => ExtractedFiles
                 .Where(x => x.IsSelected)
                 .Any(x => x.ExtractedFile.FileNameWarnings.Count > 0);
         }
+        public ProgressIndicatorViewModel ProgressIndicator
+        {
+            get => progressIndicator; set
+            {
+                progressIndicator = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainWindowViewModel(FileController fileController, IWindowService windowService) : base(windowService)
         {
             mainMenu = new MainMenuViewModel(windowService);
+            progressIndicator = new ProgressIndicatorViewModel();
+            progressService = new ProgressService(ProgressIndicator);
 
             sortOrder = SortOrder.DOCUMENT;
             inputFile = new InputFileViewModel();
@@ -121,6 +139,7 @@ namespace FileObjectExtractor.ViewModels
                     {
                         if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
                         {
+                            OnPropertyChanged(nameof(HasSelectedItems));
                             OnPropertyChanged(nameof(SelectedFilesContainWarnings));
                         }
                     };
@@ -198,20 +217,20 @@ namespace FileObjectExtractor.ViewModels
         {
             await ExceptionSafeAsync(async () =>
             {
-                bool saveSuccess = await fileController.SaveFileAsync(extractedFileVM.ExtractedFile);
+                bool saveSuccess = await fileController.SaveFileAsync(extractedFileVM.ExtractedFile, progressService);
             });
-
         }
 
         private async void SaveSelectedFiles()
         {
+
             await ExceptionSafeAsync(async () =>
             {
                 bool saveSuccess = await fileController.SaveMultipleFiles(
                     ExtractedFiles
                     .Where(x => x.IsSelected)
                     .Select(x => x.ExtractedFile
-                ).ToList());
+                ).ToList(), progressService);
             });
 
         }

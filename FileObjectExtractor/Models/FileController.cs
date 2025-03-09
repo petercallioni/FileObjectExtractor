@@ -14,6 +14,7 @@ namespace FileObjectExtractor.Models
     public class FileController
     {
         private IWindowService window;
+
         public FileController(IWindowService window)
         {
             this.window = window;
@@ -24,21 +25,62 @@ namespace FileObjectExtractor.Models
             return await window.OpenFileAsync("Select a file");
         }
 
-        public async Task<bool> SaveMultipleFiles(List<ExtractedFile> files)
+        public async Task<bool> SaveMultipleFiles(List<ExtractedFile> files, IProgressService? progressService = null)
         {
             string? selectedFolderPath = await window.SelectFolderAsync("Select a folder");
+            int counter = 0;
 
             if (selectedFolderPath != null)
             {
+                progressService?.ShowProgress();
+                progressService?.SetProgress(0);
+                progressService?.SetMaximum(files.Count);
+
                 foreach (ExtractedFile file in files)
                 {
-                    string filePath = Path.Combine(selectedFolderPath, file.SafeFileName);
-                    filePath = GetUniqueFilePath(filePath);
-                    await File.WriteAllBytesAsync(filePath, file.EmbeddedFile);
+                    progressService?.SetMessage($"Writing {file.SafeFileName}");
+
+                    await Task.Run(() =>
+                    {
+                        string filePath = Path.Combine(selectedFolderPath, file.SafeFileName);
+                        filePath = GetUniqueFilePath(filePath);
+                        byte[] dataToSave = file.IsBinary ? ExtractEmbeddedData(file.EmbeddedFile) : file.EmbeddedFile;
+                        File.WriteAllBytes(filePath, dataToSave);
+                    });
+
+                    progressService?.SetProgress(++counter);
                 }
+
+                progressService?.SetMessage($"Finished");
             }
 
             return true;
+        }
+
+        public async Task<bool> SaveFileAsync(ExtractedFile extractedFile, IProgressService? progressService = null)
+        {
+            IStorageFile? file = await window.SaveFileAsync("Save File", extractedFile.SafeFileName);
+
+            if (file != null)
+            {
+                progressService?.ShowProgress();
+                progressService?.SetProgress(0);
+                progressService?.SetMaximum(1);
+                progressService?.SetMessage($"Writing {extractedFile.SafeFileName}");
+
+                await Task.Run(() =>
+                {
+                    byte[] dataToSave = extractedFile.IsBinary ? ExtractEmbeddedData(extractedFile.EmbeddedFile) : extractedFile.EmbeddedFile;
+                    File.WriteAllBytes(file.Path.AbsolutePath, dataToSave);
+                });
+
+                progressService?.SetProgress(1);
+                progressService?.SetMessage($"Done {extractedFile.SafeFileName}");
+
+                return true;
+            }
+
+            return false;
         }
 
         private string GetUniqueFilePath(string filePath)
@@ -55,21 +97,6 @@ namespace FileObjectExtractor.Models
             }
 
             return filePath;
-        }
-
-        public async Task<bool> SaveFileAsync(ExtractedFile extractedFile)
-        {
-            IStorageFile? file = await window.SaveFileAsync("Save File", extractedFile.SafeFileName);
-
-            byte[] dataToSave = extractedFile.IsBinary ? ExtractEmbeddedData(extractedFile.EmbeddedFile) : extractedFile.EmbeddedFile;
-
-            if (file != null)
-            {
-                File.WriteAllBytes(file.Path.AbsolutePath, dataToSave);
-                return true;
-            }
-
-            return false;
         }
 
         public byte[] ExtractEmbeddedData(byte[] inputBin)
