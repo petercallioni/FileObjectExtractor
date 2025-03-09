@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:conv="using:FileObjectExtractor.Converters" mc:Ignorable="d" d:DesignWidth="1300" d:DesignHeight="450"
 		xmlns:custom="using:FileObjectExtractor.Components"
+		xmlns:uc="using:FileObjectExtractor.Views.Controls"
         x:Class="FileObjectExtractor.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/fox.png"
@@ -292,7 +293,10 @@
 
 				<Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="10" Background="LightGray" Margin="0,10,10,10" Padding="10,10,10,10" DockPanel.Dock="Bottom">
 					<Panel>
-						<ListBox ItemsSource="{Binding ExtractedFiles}" SelectionMode="Multiple">
+						<Panel IsVisible="{Binding IsLoadingFile}">
+							<uc:LoadingControl Width="200"/>
+						</Panel>
+						<ListBox ItemsSource="{Binding ExtractedFiles}" SelectionMode="Multiple" IsVisible="{Binding !IsLoadingFile}">
 							<ListBox.ItemTemplate>
 								<DataTemplate>
 									<DockPanel>
