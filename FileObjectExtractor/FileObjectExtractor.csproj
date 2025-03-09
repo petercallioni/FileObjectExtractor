@@ -34,6 +34,9 @@
 	  <Compile Update="Views\AboutWindow.axaml.cs">
 	    <DependentUpon>AboutWindow.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Controls\LoadingControl.axaml.cs">
+	    <DependentUpon>LoadingControl.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\ErrorWindow.axaml.cs">
 	    <DependentUpon>ErrorWindow.axaml</DependentUpon>
 	  </Compile>

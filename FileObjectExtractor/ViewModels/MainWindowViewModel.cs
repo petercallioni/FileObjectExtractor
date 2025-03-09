@@ -19,6 +19,7 @@ namespace FileObjectExtractor.ViewModels
 
         private ObservableCollection<ExtractedFileViewModel> extractedFiles;
         private string filter;
+        private bool isLoadingFile;
         public IRelayCommand SelectAllCommand { get; init; }
         public IRelayCommand SelectNoneCommand { get; init; }
         public IRelayCommand SaveSelectedCommand { get; init; }
@@ -100,18 +101,31 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public bool IsLoadingFile
+        {
+            get => isLoadingFile; set
+            {
+                isLoadingFile = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindowViewModel(FileController fileController, IWindowService windowService) : base(windowService)
         {
+            // VMs
             mainMenu = new MainMenuViewModel(windowService);
             progressIndicator = new ProgressIndicatorViewModel();
             progressService = new ProgressService(ProgressIndicator);
 
+            // Initialisers
+            isLoadingFile = false;
             sortOrder = SortOrder.DOCUMENT;
             inputFile = new InputFileViewModel();
             extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
             this.fileController = fileController;
 
+            // Commands
             SelectAllCommand = new RelayCommand(SelectAll);
             SelectNoneCommand = new RelayCommand(SelectNone);
             SelectFileCommand = new RelayCommand(SelectFile);
@@ -119,34 +133,40 @@ namespace FileObjectExtractor.ViewModels
             SelectSortCommand = new RelayCommand<SortOrder>(SelectSort);
         }
 
-        private void ProcessInputFile(InputFileViewModel inputFile)
+        private async void ProcessInputFile(InputFileViewModel inputFile)
         {
             if (inputFile.FileURI != null && inputFile.FileURI.IsAbsoluteUri)
             {
+                IsLoadingFile = true;
+
                 IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(inputFile.FileURI);
                 inputFile.OfficeType = parseOffice.OfficeType;
 
-                List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI).ToList();
-
-                ExtractedFiles.Clear();
-
-                foreach (ExtractedFile file in embeddedFiles)
+                await Task.Run(() =>
                 {
-                    ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile);
+                    List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI).ToList();
 
-                    // Update the UI when the IsSelected property changes
-                    extractedFileVM.PropertyChanged += (sender, e) =>
+                    ExtractedFiles.Clear();
+
+                    foreach (ExtractedFile file in embeddedFiles)
                     {
-                        if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
+                        ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile);
+
+                        // Update the UI when the IsSelected property changes
+                        extractedFileVM.PropertyChanged += (sender, e) =>
                         {
-                            OnPropertyChanged(nameof(HasSelectedItems));
-                            OnPropertyChanged(nameof(SelectedFilesContainWarnings));
-                        }
-                    };
+                            if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
+                            {
+                                OnPropertyChanged(nameof(HasSelectedItems));
+                                OnPropertyChanged(nameof(SelectedFilesContainWarnings));
+                            }
+                        };
 
-                    ExtractedFiles.Add(extractedFileVM);
-                }
+                        ExtractedFiles.Add(extractedFileVM);
+                    }
+                });
 
+                IsLoadingFile = false;
                 ApplyFilter();
                 SortExtractedFiles(ExtractedFiles);
             }
