@@ -299,8 +299,19 @@
 						<ListBox ItemsSource="{Binding ExtractedFiles}" SelectionMode="Multiple" IsVisible="{Binding !IsLoadingFile}">
 							<ListBox.ItemTemplate>
 								<DataTemplate>
-									<DockPanel>
+									<DockPanel LastChildFill="True">
 										<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+										<Button
+											Background="Transparent" Padding="3"
+											IsVisible="{Binding NameChanged}"
+											ToolTip.Tip="{Binding ResetToolTip}"
+											Command="{Binding ResetCommand}">
+											<Button.Content>
+												<StackPanel Orientation="Horizontal">
+													<Svg Stretch="UniformToFill" Path="/Assets/reset.svg"/>
+												</StackPanel>
+											</Button.Content>
+										</Button>
 										<StackPanel Orientation="Horizontal">
 											<Border
 												Background="Transparent"
@@ -310,18 +321,27 @@
 												IsVisible="{Binding ExtractedFile.FileNameWarnings, Converter={StaticResource ShowWarningsConverter}}" ToolTip.Tip="{Binding ExtractedFile.FileNameWarnings, Converter={StaticResource DisplayWarningsConverter}}">
 												<Svg Width="30" Path="/Assets/warning.svg" />
 											</Border>
-											<TextBlock VerticalAlignment="Center" Text="{Binding ExtractedFile.SafeFileName}"/>
 										</StackPanel>
-										<Button Background="Transparent" Padding="3" HorizontalAlignment="Right"
-												ToolTip.Tip="Save file, choosing the file name"
-												Command="{Binding SaveFileCommand}">
+
+										<Button
+											DockPanel.Dock="Right"
+											Background="Transparent" Padding="3" HorizontalAlignment="Right"
+											ToolTip.Tip="Save file, choosing the file name"
+											Command="{Binding SaveFileCommand}"
+											Margin="5,0,0,0"
+											Width="100">
 											<Button.Content>
-												<StackPanel Orientation="Horizontal">
+												<DockPanel>
 													<TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Text="{Binding ExtractedFile.EmbeddedFile, Converter={StaticResource ByteSizeConverter}}"/>
-													<Svg Stretch="UniformToFill" Path="/Assets/save-icon.svg"/>
-												</StackPanel>
+													<Svg HorizontalAlignment="Right" Stretch="UniformToFill" Path="/Assets/save-icon.svg" Width="25"/>
+												</DockPanel>
 											</Button.Content>
 										</Button>
+										<TextBox
+											VerticalAlignment="Center"
+											Margin="5,0,0,0"
+											Text="{Binding FileName, Mode=TwoWay}">
+										</TextBox>
 									</DockPanel>
 								</DataTemplate>
 							</ListBox.ItemTemplate>
