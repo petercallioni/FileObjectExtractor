@@ -130,9 +130,9 @@ namespace FileObjectExtractor.ViewModels
             progressService = new ProgressService(ProgressIndicator);
 
             // Initialisers
+            inputFile = new InputFileViewModel();
             isLoadingFile = false;
             sortOrder = SortOrder.DOCUMENT;
-            inputFile = new InputFileViewModel();
             extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
             trustToOpenFiles = false;
@@ -147,9 +147,10 @@ namespace FileObjectExtractor.ViewModels
             SelectSortCommand = new RelayCommand<SortOrder>(SelectSort);
         }
 
-        private void ProcessInputFile(InputFileViewModel inputFile)
+        private void ProcessInputFile(Uri uri)
         {
-            if (inputFile.FileURI != null && inputFile.FileURI.IsAbsoluteUri)
+            InputFileViewModel? inputFile = null;
+            if (uri != null && uri.IsAbsoluteUri)
             {
                 IsLoadingFile = true;
 
@@ -157,10 +158,10 @@ namespace FileObjectExtractor.ViewModels
                 {
                     backgroundExecutor.Execute(() =>
                     {
-                        IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(inputFile.FileURI);
-                        inputFile.OfficeType = parseOffice.OfficeType;
+                        IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(uri);
 
-                        List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI).ToList();
+                        inputFile = new InputFileViewModel(uri, parseOffice.OfficeType);
+                        List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(uri).ToList();
 
                         ExtractedFiles.Clear();
 
@@ -183,6 +184,7 @@ namespace FileObjectExtractor.ViewModels
 
                         return () =>
                         {
+                            InputFile = inputFile;
                             IsLoadingFile = false;
                             ApplyFilter();
                             SortExtractedFiles(ExtractedFiles);
@@ -198,12 +200,9 @@ namespace FileObjectExtractor.ViewModels
 
         public void SelectFile(Uri filePath)
         {
-            InputFileViewModel newFile = new InputFileViewModel(filePath);
-
             ExceptionSafe(() =>
             {
-                ProcessInputFile(newFile);
-                InputFile = newFile;
+                ProcessInputFile(filePath);
             });
         }
 
@@ -250,9 +249,7 @@ namespace FileObjectExtractor.ViewModels
 
                     if (file != null)
                     {
-                        InputFileViewModel newFilefile = new InputFileViewModel(file.Path);
-                        ProcessInputFile(newFilefile);
-                        InputFile = newFilefile;
+                        ProcessInputFile(file.Path);
                     }
                 });
         }
