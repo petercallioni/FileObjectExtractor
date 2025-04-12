@@ -18,7 +18,7 @@ namespace FileObjectExtractor.ViewModels.Design
             for (int i = 1; i < 7; i++)
             {
                 ExtractedFile extractedFile = new ExtractedFile(new byte[1000 * i]);
-                ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(extractedFile, null!);
+                ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(extractedFile, null!, null!);
                 extractedFileVM.IsSelected = i % 2 != 0;
 
                 if (i == 3)

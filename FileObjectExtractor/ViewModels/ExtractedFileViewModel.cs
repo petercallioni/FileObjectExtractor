@@ -9,6 +9,7 @@ namespace FileObjectExtractor.ViewModels
         private ExtractedFile extractedFile;
         private bool isSelected;
         private readonly IRelayCommand saveFileCommand;
+        private readonly IRelayCommand openFileCommand;
         private readonly string originalSafeFileName;
         public IRelayCommand ResetCommand => new RelayCommand(ResetName);
 
@@ -24,6 +25,7 @@ namespace FileObjectExtractor.ViewModels
         }
 
         public IRelayCommand SaveFileCommand => saveFileCommand;
+        public IRelayCommand OpenFileCommand => openFileCommand;
         public ExtractedFile ExtractedFile { get => extractedFile; set => extractedFile = value; }
         public bool IsSelected
         {
@@ -48,11 +50,12 @@ namespace FileObjectExtractor.ViewModels
             FileName = originalSafeFileName;
         }
 
-        public ExtractedFileViewModel(ExtractedFile extractedFile, Action<ExtractedFileViewModel> saveFileOperation)
+        public ExtractedFileViewModel(ExtractedFile extractedFile, Action<ExtractedFileViewModel> saveFileOperation, Action<ExtractedFileViewModel> openFileOperation)
         {
             this.extractedFile = extractedFile;
             originalSafeFileName = extractedFile.SafeFileName;
             saveFileCommand = new RelayCommand(() => saveFileOperation(this));
+            openFileCommand = new RelayCommand(() => openFileOperation(this));
             IsSelected = false;
 
             resetToolTip = $"Reset file name to {originalSafeFileName}.";

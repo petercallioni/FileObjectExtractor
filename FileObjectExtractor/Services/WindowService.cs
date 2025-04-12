@@ -17,6 +17,17 @@ namespace FileObjectExtractor.Services
             this.window = window;
         }
 
+        public void ShowFileTrustWindow(Action confirmAction)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                FileTrustWindow fileTrustWindow = new FileTrustWindow(window);
+                FileTrustWindowViewModel fileTrustViewModel = new FileTrustWindowViewModel(new WindowService(fileTrustWindow), confirmAction);
+                fileTrustWindow.DataContext = fileTrustViewModel;
+                fileTrustWindow.ShowDialog(window);
+            });
+        }
+
         public void ShowErrorWindow(Exception ex)
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>

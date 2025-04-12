@@ -10,6 +10,7 @@ namespace FileObjectExtractor.Models
         Task<IStorageFile?> AskOpenFileAsync();
         Task<bool> AskSaveFileAsync(ExtractedFile extractedFile, IProgressService? progressService = null);
         Task<bool> AskSaveMultipleFiles(List<ExtractedFile> files, IProgressService? progressService = null);
+        void OpenFile(ExtractedFile extractedFile);
         void SaveFile(string filePath, ExtractedFile file);
     }
 }

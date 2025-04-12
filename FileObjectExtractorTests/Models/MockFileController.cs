@@ -28,6 +28,11 @@ namespace FileObjectExtractorTests.Models
             throw new NotImplementedException();
         }
 
+        public void OpenFile(ExtractedFile extractedFile)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SaveFile(string filePath, ExtractedFile file)
         {
             // Do Nothing

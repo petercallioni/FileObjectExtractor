@@ -4,6 +4,7 @@ using FileObjectExtractor.Services;
 using OpenMcdf;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,30 @@ namespace FileObjectExtractor.Models
             }
 
             return await window.OpenFileAsync("Select a file");
+        }
+
+        public void OpenFile(ExtractedFile extractedFile)
+        {
+            string tempPath = Path.GetTempPath();
+            string tempFile = Path.Combine(tempPath, extractedFile.SafeFileName);
+            byte[] dataToSave = extractedFile.IsBinary ? ExtractEmbeddedData(extractedFile.EmbeddedFile) : extractedFile.EmbeddedFile;
+            File.WriteAllBytes(tempFile, dataToSave);
+
+            Task.Run(() =>
+            {
+                try
+                {
+                    Process subProcess = new Process();
+                    subProcess.StartInfo.UseShellExecute = true;
+                    subProcess.StartInfo.FileName = tempFile;
+                    subProcess.Start();
+                    subProcess.WaitForExit();
+                }
+                finally
+                {
+                    File.Delete(tempFile);
+                }
+            });
         }
 
         public async Task<bool> AskSaveMultipleFiles(List<ExtractedFile> files, IProgressService? progressService = null)

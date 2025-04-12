@@ -17,6 +17,7 @@ namespace FileObjectExtractor.ViewModels
         private ProgressIndicatorViewModel progressIndicator;
         private ProgressService progressService;
         private IBackgroundExecutor backgroundExecutor;
+        private bool trustToOpenFiles;
 
         private ObservableCollection<ExtractedFileViewModel> extractedFiles;
         private string filter;
@@ -111,6 +112,16 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public bool TrustToOpenFiles
+        {
+            get => trustToOpenFiles;
+            set
+            {
+                trustToOpenFiles = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindowViewModel(IFileController fileController, IWindowService windowService, IBackgroundExecutor backgroundExecutor) : base(windowService)
         {
             // VMs
@@ -124,6 +135,7 @@ namespace FileObjectExtractor.ViewModels
             inputFile = new InputFileViewModel();
             extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
+            trustToOpenFiles = false;
             this.fileController = fileController;
             this.backgroundExecutor = backgroundExecutor;
 
@@ -154,7 +166,7 @@ namespace FileObjectExtractor.ViewModels
 
                         foreach (ExtractedFile file in embeddedFiles)
                         {
-                            ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile);
+                            ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile, OpenFile);
 
                             // Update the UI when the IsSelected property changes
                             extractedFileVM.PropertyChanged += (sender, e) =>
@@ -253,6 +265,25 @@ namespace FileObjectExtractor.ViewModels
             });
         }
 
+        private void OpenFile(ExtractedFileViewModel extractedFileVM)
+        {
+            Action openFileAction = () =>
+                ExceptionSafe(() =>
+                {
+                    fileController.OpenFile(extractedFileVM.ExtractedFile);
+                    TrustToOpenFiles = true;
+                });
+
+            if (!TrustToOpenFiles)
+            {
+                OpenFileTrustWindow(openFileAction);
+            }
+            else
+            {
+                openFileAction();
+            }
+        }
+
         private async void SaveSelectedFiles()
         {
 
@@ -318,6 +349,11 @@ namespace FileObjectExtractor.ViewModels
             };
 
             ExtractedFiles = sortedFiles;
+        }
+
+        private void OpenFileTrustWindow(Action confirmAction)
+        {
+            windowService.ShowFileTrustWindow(confirmAction);
         }
     }
 }
