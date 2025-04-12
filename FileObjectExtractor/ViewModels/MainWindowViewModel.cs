@@ -16,6 +16,7 @@ namespace FileObjectExtractor.ViewModels
         private MainMenuViewModel mainMenu;
         private ProgressIndicatorViewModel progressIndicator;
         private ProgressService progressService;
+        private IBackgroundExecutor backgroundExecutor;
 
         private ObservableCollection<ExtractedFileViewModel> extractedFiles;
         private string filter;
@@ -36,7 +37,7 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        private FileController fileController;
+        private IFileController fileController;
 
         public string Filter
         {
@@ -110,7 +111,7 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public MainWindowViewModel(FileController fileController, IWindowService windowService) : base(windowService)
+        public MainWindowViewModel(IFileController fileController, IWindowService windowService, IBackgroundExecutor backgroundExecutor) : base(windowService)
         {
             // VMs
             mainMenu = new MainMenuViewModel(windowService);
@@ -124,6 +125,7 @@ namespace FileObjectExtractor.ViewModels
             extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
             this.fileController = fileController;
+            this.backgroundExecutor = backgroundExecutor;
 
             // Commands
             SelectAllCommand = new RelayCommand(SelectAll);
@@ -133,42 +135,52 @@ namespace FileObjectExtractor.ViewModels
             SelectSortCommand = new RelayCommand<SortOrder>(SelectSort);
         }
 
-        private async void ProcessInputFile(InputFileViewModel inputFile)
+        private void ProcessInputFile(InputFileViewModel inputFile)
         {
             if (inputFile.FileURI != null && inputFile.FileURI.IsAbsoluteUri)
             {
                 IsLoadingFile = true;
 
-                IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(inputFile.FileURI);
-                inputFile.OfficeType = parseOffice.OfficeType;
-
-                await Task.Run(() =>
+                ExceptionSafe(() =>
                 {
-                    List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI).ToList();
-
-                    ExtractedFiles.Clear();
-
-                    foreach (ExtractedFile file in embeddedFiles)
+                    backgroundExecutor.Execute(() =>
                     {
-                        ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile);
+                        IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(inputFile.FileURI);
+                        inputFile.OfficeType = parseOffice.OfficeType;
 
-                        // Update the UI when the IsSelected property changes
-                        extractedFileVM.PropertyChanged += (sender, e) =>
+                        List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(inputFile.FileURI).ToList();
+
+                        ExtractedFiles.Clear();
+
+                        foreach (ExtractedFile file in embeddedFiles)
                         {
-                            if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
+                            ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile);
+
+                            // Update the UI when the IsSelected property changes
+                            extractedFileVM.PropertyChanged += (sender, e) =>
                             {
-                                OnPropertyChanged(nameof(HasSelectedItems));
-                                OnPropertyChanged(nameof(SelectedFilesContainWarnings));
-                            }
+                                if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
+                                {
+                                    OnPropertyChanged(nameof(HasSelectedItems));
+                                    OnPropertyChanged(nameof(SelectedFilesContainWarnings));
+                                }
+                            };
+
+                            ExtractedFiles.Add(extractedFileVM);
+                        }
+
+                        return () =>
+                        {
+                            IsLoadingFile = false;
+                            ApplyFilter();
+                            SortExtractedFiles(ExtractedFiles);
                         };
-
-                        ExtractedFiles.Add(extractedFileVM);
-                    }
+                    });
+                },
+                () =>
+                {
+                    IsLoadingFile = false;
                 });
-
-                IsLoadingFile = false;
-                ApplyFilter();
-                SortExtractedFiles(ExtractedFiles);
             }
         }
 
@@ -222,7 +234,7 @@ namespace FileObjectExtractor.ViewModels
             await ExceptionSafeAsync(
                 async () =>
                 {
-                    Avalonia.Platform.Storage.IStorageFile? file = await fileController.OpenFileAsync();
+                    Avalonia.Platform.Storage.IStorageFile? file = await fileController.AskOpenFileAsync();
 
                     if (file != null)
                     {
@@ -237,7 +249,7 @@ namespace FileObjectExtractor.ViewModels
         {
             await ExceptionSafeAsync(async () =>
             {
-                bool saveSuccess = await fileController.SaveFileAsync(extractedFileVM.ExtractedFile, progressService);
+                bool saveSuccess = await fileController.AskSaveFileAsync(extractedFileVM.ExtractedFile, progressService);
             });
         }
 
@@ -246,7 +258,7 @@ namespace FileObjectExtractor.ViewModels
 
             await ExceptionSafeAsync(async () =>
             {
-                bool saveSuccess = await fileController.SaveMultipleFiles(
+                bool saveSuccess = await fileController.AskSaveMultipleFiles(
                     ExtractedFiles
                     .Where(x => x.IsSelected)
                     .Select(x => x.ExtractedFile

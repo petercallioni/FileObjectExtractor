@@ -11,22 +11,32 @@ using System.Threading.Tasks;
 
 namespace FileObjectExtractor.Models
 {
-    public class FileController
+    public class FileController : IFileController
     {
-        private IWindowService window;
+        private IWindowService? window;
 
-        public FileController(IWindowService window)
+        public FileController(IWindowService? window)
         {
             this.window = window;
         }
 
-        public async Task<IStorageFile?> OpenFileAsync()
+        public async Task<IStorageFile?> AskOpenFileAsync()
         {
+            if (window == null)
+            {
+                throw new InvalidOperationException("Called UI method when not using a UI.");
+            }
+
             return await window.OpenFileAsync("Select a file");
         }
 
-        public async Task<bool> SaveMultipleFiles(List<ExtractedFile> files, IProgressService? progressService = null)
+        public async Task<bool> AskSaveMultipleFiles(List<ExtractedFile> files, IProgressService? progressService = null)
         {
+            if (window == null)
+            {
+                throw new InvalidOperationException("Called UI method when not using a UI.");
+            }
+
             string? selectedFolderPath = await window.SelectFolderAsync("Select a folder");
             int counter = 0;
 
@@ -44,8 +54,8 @@ namespace FileObjectExtractor.Models
                     {
                         string filePath = Path.Combine(selectedFolderPath, file.SafeFileName);
                         filePath = GetUniqueFilePath(filePath);
-                        byte[] dataToSave = file.IsBinary ? ExtractEmbeddedData(file.EmbeddedFile) : file.EmbeddedFile;
-                        File.WriteAllBytes(filePath, dataToSave);
+                        SaveFile(filePath, file);
+
                     });
 
                     progressService?.SetProgress(++counter);
@@ -57,8 +67,13 @@ namespace FileObjectExtractor.Models
             return true;
         }
 
-        public async Task<bool> SaveFileAsync(ExtractedFile extractedFile, IProgressService? progressService = null)
+        public async Task<bool> AskSaveFileAsync(ExtractedFile extractedFile, IProgressService? progressService = null)
         {
+            if (window == null)
+            {
+                throw new InvalidOperationException("Called UI method when not using a UI.");
+            }
+
             IStorageFile? file = await window.SaveFileAsync("Save File", extractedFile.SafeFileName);
 
             if (file != null)
@@ -70,8 +85,7 @@ namespace FileObjectExtractor.Models
 
                 await Task.Run(() =>
                 {
-                    byte[] dataToSave = extractedFile.IsBinary ? ExtractEmbeddedData(extractedFile.EmbeddedFile) : extractedFile.EmbeddedFile;
-                    File.WriteAllBytes(file.Path.AbsolutePath, dataToSave);
+                    SaveFile(file.Path.AbsolutePath, extractedFile);
                 });
 
                 progressService?.SetProgress(1);
@@ -81,6 +95,12 @@ namespace FileObjectExtractor.Models
             }
 
             return false;
+        }
+
+        public void SaveFile(string filePath, ExtractedFile file)
+        {
+            byte[] dataToSave = file.IsBinary ? ExtractEmbeddedData(file.EmbeddedFile) : file.EmbeddedFile;
+            File.WriteAllBytes(filePath, dataToSave);
         }
 
         private string GetUniqueFilePath(string filePath)

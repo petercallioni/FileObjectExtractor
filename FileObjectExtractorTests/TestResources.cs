@@ -17,5 +17,12 @@
             internal static string EMBEDDED_MP3 = Path.Combine("EmbeddedMp3.mp3");
             internal static string EMBEDDED_JSON = Path.Combine("EmbeddedJson.json");
         }
+
+        internal static class EXTRACTION_TEST
+        {
+            internal static Uri EXTRACT_TEST_DIR = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsolutePath, "ExtractTestDir"));
+            internal static string EXTRACT_TEST_DOCX = EMBEDDED_FILES.EMBEDDED_DOCX;
+            internal static string EXTRACT_TEST_NEW_NAME = "NEW_TEST.docx";
+        }
     }
 }

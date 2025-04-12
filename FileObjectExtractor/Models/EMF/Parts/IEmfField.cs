@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FileObjectExtractor.Models.EMF
+namespace FileObjectExtractor.Models.EMF.Parts
 {
     public interface IEmfField
     {

@@ -1,5 +1,6 @@
 ﻿using FileObjectExtractor.Converters;
 using FileObjectExtractor.Extensions;
+using FileObjectExtractor.Models.EMF.Parts;
 using System;
 using System.Collections.Generic;
 
