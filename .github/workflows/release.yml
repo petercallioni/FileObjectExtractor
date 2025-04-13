@@ -33,10 +33,10 @@ jobs:
         run: zip -r FileObjectExtractor.zip ./output
 
       - name: Upload release artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release-zip
-          path: FileObjectExtractor.zip
+          path: ./FileObjectExtractor.zip
 
   release:
     needs: build
