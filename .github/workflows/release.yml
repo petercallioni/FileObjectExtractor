@@ -1,16 +1,23 @@
-name: Create Release with Build Output
+name: Create Release with Multi-OS Build Output
 
 on:
   push:
     tags:
-      - 'v*'  # Trigger on tags like v1.0.0
+      - 'v*'  # Triggers on version tags like v1.0.0
 
 permissions:
   contents: write
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            runtime: win-x64
+          - os: ubuntu-latest
+            runtime: linux-x64
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -27,16 +34,30 @@ jobs:
         run: dotnet build FileObjectExtractor/FileObjectExtractor.csproj --configuration Release
 
       - name: Publish main project
-        run: dotnet publish FileObjectExtractor/FileObjectExtractor.csproj --configuration Release --output ./output
+        run: |
+          dotnet publish FileObjectExtractor/FileObjectExtractor.csproj --configuration Release --runtime ${{ matrix.runtime }} --output ./output
 
-      - name: Create zip file of published output
-        run: zip -r FileObjectExtractor.zip ./output
+      # Zip the contents of the output folder, so the zip doesn’t include the top-level "output" folder.
+      - name: Zip artifacts on Linux
+        if: runner.os == 'Linux'
+        run: |
+          cd output
+          zip -r ../FileObjectExtractor-${{ matrix.runtime }}.zip .
+      
+      - name: Zip artifacts on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path .\output\* -DestinationPath FileObjectExtractor-${{ matrix.runtime }}.zip
+
+      - name: List workspace files (debug)
+        run: ls -la
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-zip
-          path: ./FileObjectExtractor.zip
+          name: release-zip-${{ matrix.runtime }}
+          path: FileObjectExtractor-${{ matrix.runtime }}.zip
 
   release:
     needs: build
@@ -45,17 +66,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download release artifact
+      - name: Download Windows artifact
         uses: actions/download-artifact@v4
         with:
-          name: release-zip
+          name: release-zip-win-x64
+          path: .
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-zip-linux-x64
           path: .
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}  # Using the PAT via environment variable
         with:
           tag_name: ${{ github.ref_name }}
           release_name: Release ${{ github.ref_name }}
@@ -64,10 +91,22 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
+      - name: Upload Windows Release Asset
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: FileObjectExtractor.zip
-          asset_name: FileObjectExtractor.zip
+          asset_path: FileObjectExtractor-win-x64.zip
+          asset_name: FileObjectExtractor-win-x64.zip
+          asset_content_type: application/zip
+
+      - name: Upload Linux Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: FileObjectExtractor-linux-x64.zip
+          asset_name: FileObjectExtractor-linux-x64.zip
           asset_content_type: application/zip
