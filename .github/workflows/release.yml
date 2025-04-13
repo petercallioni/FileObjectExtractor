@@ -5,7 +5,6 @@ on:
     tags:
       - 'v*'  # Trigger on version tags like v1.0.0
 
-# Set only the valid permissions
 permissions:
   contents: write
 
@@ -28,7 +27,7 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      # Build only the main project to avoid the output warning
+      # Build only the main project to avoid conflicts with test projects
       - name: Build main project
         run: dotnet build FileObjectExtractor/FileObjectExtractor.csproj --configuration Release
 
@@ -45,25 +44,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository for the release job
+      # Checkout repository again for the release job
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Create a GitHub release using the provided permissions
+      # Create a GitHub Release using the PAT for sufficient permissions
       - name: Create Release
         id: create_release
-        steps:
-          - name: Create release
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              tag: ${{ github.ref_name }}
-            run: |
-              gh release create "$tag" \
-                  --repo="$GITHUB_REPOSITORY" \
-                  --title="${GITHUB_REPOSITORY#*/} ${tag#v}" \
-                  --generate-notes
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            Automatically generated release for version ${{ github.ref_name }}.
+          draft: false
+          prerelease: false
 
-      # Upload the artifact to the created release
+      # Upload the compiled artifact to the created release
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
