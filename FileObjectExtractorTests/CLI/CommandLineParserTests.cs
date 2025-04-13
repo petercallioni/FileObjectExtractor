@@ -65,7 +65,7 @@ namespace FileObjectExtractor.CLI.Tests
             string versionNumber = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "Unknown";
             string expectedText = ($"{versionNumber} ({buildDate})");
 
-            Regex regex = new Regex(@"\d+\.\d+\.\d+\.\d+ \(\d{4}-\d{2}-\d{2}\)");
+            Regex regex = new Regex(@"\d+\.\d+\.\d+ \(\d{4}-\d{2}-\d{2}\)");
 
             string[] args = input.Split(" ");
             ReturnResult returnResult = GetConsoleOutput(args);

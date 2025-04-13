@@ -6,6 +6,11 @@
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<ApplicationIcon>Assets\fox.ico</ApplicationIcon>
+		<AssemblyVersion>1.0.2</AssemblyVersion>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>fox.png</PackageIcon>
+		<Authors>Peter Callioni</Authors>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -13,6 +18,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Include="Assets\fox.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	  <None Include="Converters\ShowWarningsConverter.cs" />
 	  <None Include="Models\Office\ParseOfficeXmlPowerpoint.cs" />
 	</ItemGroup>
@@ -51,6 +64,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Assets\fox.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	  <None Update="THIRD-PARTY-LICENSES.txt">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
