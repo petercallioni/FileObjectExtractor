@@ -3,12 +3,11 @@ name: Create Release with Build Output
 on:
   push:
     tags:
-      - 'v*' # Trigger on version tags like v1.0.0
+      - 'v*'  # Trigger on version tags like v1.0.0
 
-# Grant necessary permissions to the GITHUB_TOKEN
+# Set only the valid permissions
 permissions:
   contents: write
-  releases: write
 
 jobs:
   build:
@@ -25,19 +24,19 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # Restore dependencies (solution-wide if needed)
+      # Restore dependencies
       - name: Restore dependencies
         run: dotnet restore
 
-      # Build ONLY the main project (exclude tests)
+      # Build only the main project to avoid the output warning
       - name: Build main project
         run: dotnet build FileObjectExtractor/FileObjectExtractor.csproj --configuration Release
 
-      # Publish ONLY the main project to avoid the output warning
+      # Publish only the main project
       - name: Publish main project
         run: dotnet publish FileObjectExtractor/FileObjectExtractor.csproj --configuration Release --output ./output
 
-      # Archive the compiled output
+      # Archive the published output
       - name: Create zip file of published output
         run: zip -r FileObjectExtractor.zip ./output
 
@@ -46,11 +45,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repository (again, for the release step)
+      # Checkout the repository for the release job
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Create a GitHub Release using the provided permissions
+      # Create a GitHub release using the provided permissions
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -64,7 +63,7 @@ jobs:
           draft: false
           prerelease: false
 
-      # Upload the published artifact to the created release
+      # Upload the artifact to the created release
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
