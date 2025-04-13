@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*' # Trigger on version tags like v1.0.0
 
+# Grant necessary permissions to the GITHUB_TOKEN
+permissions:
+  contents: write
+  releases: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,20 +25,20 @@ jobs:
         with:
           dotnet-version: '8.x'
 
-      # Restore dependencies
+      # Restore dependencies (solution-wide if needed)
       - name: Restore dependencies
         run: dotnet restore
 
-      # Build the project
-      - name: Build project
-        run: dotnet build --configuration Release
+      # Build ONLY the main project (exclude tests)
+      - name: Build main project
+        run: dotnet build FileObjectExtractor/FileObjectExtractor.csproj --configuration Release
 
-      # Publish build artifacts
-      - name: Publish build artifacts
-        run: dotnet publish --configuration Release --output ./output
+      # Publish ONLY the main project to avoid the output warning
+      - name: Publish main project
+        run: dotnet publish FileObjectExtractor/FileObjectExtractor.csproj --configuration Release --output ./output
 
-      # Archive compiled output
-      - name: Create zip file
+      # Archive the compiled output
+      - name: Create zip file of published output
         run: zip -r FileObjectExtractor.zip ./output
 
   release:
@@ -41,12 +46,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout repository
+      # Checkout repository (again, for the release step)
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Upload build artifacts to GitHub release
+      # Create a GitHub Release using the provided permissions
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,11 +64,11 @@ jobs:
           draft: false
           prerelease: false
 
-      # Upload artifact to the release
+      # Upload the published artifact to the created release
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./FileObjectExtractor.zip
           asset_name: FileObjectExtractor.zip
           asset_content_type: application/zip
