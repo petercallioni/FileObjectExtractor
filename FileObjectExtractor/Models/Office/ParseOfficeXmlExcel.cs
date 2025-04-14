@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileObjectExtractor.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -23,7 +24,7 @@ namespace FileObjectExtractor.Models.Office
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
             List<ExtractedFile> files = new List<ExtractedFile>();
 
-            byte[] inputFile = File.ReadAllBytes(filePath.AbsolutePath);
+            byte[] inputFile = File.ReadAllBytes(filePath.UnescapedString());
             ThrowIfPassworded(inputFile);
 
             using (MemoryStream byteStream = new MemoryStream(inputFile))

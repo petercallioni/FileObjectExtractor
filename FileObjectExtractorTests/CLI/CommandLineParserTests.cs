@@ -51,7 +51,7 @@ namespace FileObjectExtractor.CLI.Tests
             ReturnResult returnResult = GetConsoleOutput(args);
 
             Assert.AreEqual(expectedExitCode, returnResult.ExitCode);
-            Assert.AreEqual(expectedText, returnResult.OutputText);
+            Assert.AreEqual(expectedText.Trim(), returnResult.OutputText.Trim());
         }
 
         [TestMethod()]

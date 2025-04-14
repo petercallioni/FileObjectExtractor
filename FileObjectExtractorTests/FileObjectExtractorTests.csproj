@@ -25,6 +25,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Resources\Document With Space.docx">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Resources\TestDocx.docx">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

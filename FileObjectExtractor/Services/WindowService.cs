@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using FileObjectExtractor.Extensions;
 using FileObjectExtractor.ViewModels;
 using FileObjectExtractor.Views;
 using System;
@@ -70,7 +71,7 @@ namespace FileObjectExtractor.Services
             });
 
             IEnumerator<IStorageFolder> enumerator = selectedFolders.GetEnumerator();
-            return enumerator.MoveNext() ? enumerator.Current?.Path.AbsolutePath : null;
+            return enumerator.MoveNext() ? enumerator.Current?.Path.UnescapedString() : null;
         }
 
         public async Task<IStorageFile?> SaveFileAsync(string title, string suggestedFileName)

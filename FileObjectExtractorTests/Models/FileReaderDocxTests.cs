@@ -10,8 +10,8 @@ namespace FileObjectExtractor.Models.Tests
         private List<ExtractedFile> files;
         public FileReaderDocxTests()
         {
-            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(TestResources.DOCX);
-            files = parseOffice.GetExtractedFiles(TestResources.DOCX);
+            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(TestResources.DOCX_SPACES);
+            files = parseOffice.GetExtractedFiles(TestResources.DOCX_SPACES);
         }
 
         [TestMethod()]

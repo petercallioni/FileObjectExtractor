@@ -1,4 +1,5 @@
 ﻿using Avalonia.Data.Converters;
+using FileObjectExtractor.Extensions;
 using System;
 using System.Globalization;
 using System.IO;
@@ -13,7 +14,7 @@ namespace FileObjectExtractor.Converters
 
             if (uri != null && uri.IsAbsoluteUri)
             {
-                FileInfo fileInfo = new FileInfo(uri.AbsolutePath);
+                FileInfo fileInfo = new FileInfo(uri.UnescapedString());
 
                 // Is a file, truncate it
                 if (fileInfo.Exists)

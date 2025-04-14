@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileObjectExtractor.Extensions;
+using System;
 using System.IO;
 
 namespace FileObjectExtractor.Models.Office
@@ -7,7 +8,7 @@ namespace FileObjectExtractor.Models.Office
     {
         public static IParseOffice GetOfficeParser(Uri fileName)
         {
-            FileInfo file = new FileInfo(fileName.AbsolutePath);
+            FileInfo file = new FileInfo(fileName.UnescapedString());
 
             switch (file.Extension.ToUpper())
             {

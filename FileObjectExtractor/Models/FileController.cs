@@ -110,7 +110,7 @@ namespace FileObjectExtractor.Models
 
                 await Task.Run(() =>
                 {
-                    SaveFile(file.Path.AbsolutePath, extractedFile);
+                    SaveFile(file.Path.UnescapedString(), extractedFile);
                 });
 
                 progressService?.SetProgress(1);
