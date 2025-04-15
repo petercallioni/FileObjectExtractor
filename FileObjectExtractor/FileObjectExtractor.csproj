@@ -7,7 +7,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<ApplicationIcon>Assets\fox.ico</ApplicationIcon>
-		<AssemblyVersion>1.0.2</AssemblyVersion>
+		<AssemblyVersion>1.0.3</AssemblyVersion>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>fox.png</PackageIcon>
 		<Authors>Peter Callioni</Authors>
@@ -18,16 +18,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Assets\fox.ico" />
+		<Content Include="Assets\fox.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="..\README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Include="Converters\ShowWarningsConverter.cs" />
-	  <None Include="Models\Office\ParseOfficeXmlPowerpoint.cs" />
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="Converters\ShowWarningsConverter.cs" />
+		<None Include="Models\Office\ParseOfficeXmlPowerpoint.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -44,32 +44,32 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\AboutWindow.axaml.cs">
-	    <DependentUpon>AboutWindow.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Views\Controls\LoadingControl.axaml.cs">
-	    <DependentUpon>LoadingControl.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Views\FileTrustWindow.axaml.cs">
-	    <DependentUpon>FileTrustWindow.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Views\ErrorWindow.axaml.cs">
-	    <DependentUpon>ErrorWindow.axaml</DependentUpon>
-	  </Compile>
+		<Compile Update="Views\AboutWindow.axaml.cs">
+			<DependentUpon>AboutWindow.axaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\Controls\LoadingControl.axaml.cs">
+			<DependentUpon>LoadingControl.axaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\FileTrustWindow.axaml.cs">
+			<DependentUpon>FileTrustWindow.axaml</DependentUpon>
+		</Compile>
+		<Compile Update="Views\ErrorWindow.axaml.cs">
+			<DependentUpon>ErrorWindow.axaml</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Components\" />
-	  <Folder Include="Exceptions\" />
+		<Folder Include="Components\" />
+		<Folder Include="Exceptions\" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Assets\fox.png">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Update="THIRD-PARTY-LICENSES.txt">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+		<None Update="Assets\fox.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Update="THIRD-PARTY-LICENSES.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 </Project>
