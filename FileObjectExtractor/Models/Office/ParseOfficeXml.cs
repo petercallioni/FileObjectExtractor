@@ -37,10 +37,11 @@ namespace FileObjectExtractor.Models.Office
                 ZipArchiveEntry iconEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(iconPath)));
                 ZipArchiveEntry fileEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(filePath)));
 
-                EmfFile emfFile = parser.Parse(iconEntry.GetBytes());
+                string fileDisplayFileName = IsEmf(iconEntry.Name) ? parser.Parse(iconEntry.GetBytes()).GetTextContent() : iconEntry.Name;
+
                 ExtractedFile extractedFile = new ExtractedFile(fileEntry)
                 {
-                    FileName = emfFile.GetTextContent(),
+                    FileName = fileDisplayFileName,
                     DocumentOrder = documentOrderCounter++
                 };
 
@@ -53,6 +54,16 @@ namespace FileObjectExtractor.Models.Office
             }
 
             return files;
+        }
+
+        private bool IsEmf(string file)
+        {
+            if (file.EndsWith(".emf", StringComparison.OrdinalIgnoreCase) || file.EndsWith(".wmf", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         protected Dictionary<string, string> ParseRelsFile(ZipArchiveEntry archiveEntry)

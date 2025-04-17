@@ -6,6 +6,7 @@
         internal static Uri DOCX = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "TestDocx.docx"));
         internal static Uri DOCX_SPACES = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "Document With Space.docx"));
         internal static Uri DOCX_ENCRYPTED = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "TestDocxEncrypted.docx"));
+        internal static Uri DOCX_ONLY_IMAGE = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "DocWithImageOnly.docx"));
         internal static Uri EXCEL = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsoluteUri, "TestExcel.xlsx"));
         internal static Uri POWERPOINT = new Uri(Path.Combine(RESOURCES_DIRECTORY.AbsolutePath, "TestPowerpoint.pptx"));
 
@@ -17,6 +18,7 @@
             internal static string EMBEDDED_PNG = Path.Combine("EmbeddedPng.png");
             internal static string EMBEDDED_MP3 = Path.Combine("EmbeddedMp3.mp3");
             internal static string EMBEDDED_JSON = Path.Combine("EmbeddedJson.json");
+            internal static string EMBEDDED_BMP = Path.Combine("EmbeddedPng.bmp");
         }
 
         internal static class EXTRACTION_TEST
