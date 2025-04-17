@@ -278,8 +278,10 @@
 					IsVisible="{Binding ProgressIndicator.ShowProgress}">
 					<ProgressBar
 						HorizontalAlignment="Stretch"
-						Height="20"
+						Height="23"
 						Value="{Binding ProgressIndicator.Progress}"
+						Background="LightGray"
+						Foreground="{Binding InputFile.OfficeColour, Mode=OneWay}"
 						Maximum="{Binding ProgressIndicator.MaxProgress}"/>
 
 					<TextBlock
@@ -298,7 +300,7 @@
 					</TextBlock>
 				</Panel>
 
-				<Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="10" Background="LightGray" Margin="0,10,10,10" Padding="10,10,10,10" DockPanel.Dock="Bottom">
+				<Border BorderBrush="{Binding InputFile.OfficeColour, Mode=OneWay}" BorderThickness="1" CornerRadius="10" Background="{Binding InputFile.OfficeColour, Mode=OneWay}" Margin="0,10,10,10" Padding="10,10,10,10" DockPanel.Dock="Bottom">
 					<Panel>
 						<Panel IsVisible="{Binding IsLoadingFile}">
 							<uc:LoadingControl Width="200"/>
@@ -332,11 +334,14 @@
 
 										<Button
 											DockPanel.Dock="Right"
-											Background="Transparent" Padding="3,0,3,0" HorizontalAlignment="Right"
+											Background="Transparent"
+											Padding="3,3,3,3"
+											HorizontalAlignment="Right"
 											ToolTip.Tip="Save file, choosing the file name"
 											Command="{Binding SaveFileCommand}"
 											Margin="5,0,0,0"
-											Width="100">
+
+											Width="120">
 											<Button.Content>
 												<DockPanel>
 													<TextBlock VerticalAlignment="Center" Margin="0,0,10,0" Text="{Binding ExtractedFile.EmbeddedFile, Converter={StaticResource ByteSizeConverter}}"/>
