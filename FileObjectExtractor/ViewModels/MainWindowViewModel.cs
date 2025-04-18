@@ -147,49 +147,49 @@ namespace FileObjectExtractor.ViewModels
             SelectSortCommand = new RelayCommand<SortOrder>(SelectSort);
         }
 
-        private void ProcessInputFile(Uri uri)
+        private async void ProcessInputFile(Uri uri)
         {
             InputFileViewModel? inputFile = null;
             if (uri != null && uri.IsAbsoluteUri)
             {
                 IsLoadingFile = true;
 
-                ExceptionSafe(() =>
+                await ExceptionSafeAsync(async () =>
                 {
-                    backgroundExecutor.Execute(() =>
-                    {
-                        IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(uri);
+                    await backgroundExecutor.ExecuteAsync(() =>
+                     {
+                         IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(uri);
 
-                        inputFile = new InputFileViewModel(uri, parseOffice.OfficeType);
-                        List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(uri).ToList();
+                         inputFile = new InputFileViewModel(uri, parseOffice.OfficeType);
+                         List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(uri).ToList();
 
-                        ExtractedFiles.Clear();
+                         ExtractedFiles.Clear();
 
-                        foreach (ExtractedFile file in embeddedFiles)
-                        {
-                            ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile, OpenFile);
+                         foreach (ExtractedFile file in embeddedFiles)
+                         {
+                             ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile, OpenFile);
 
-                            // Update the UI when the IsSelected property changes
-                            extractedFileVM.PropertyChanged += (sender, e) =>
-                            {
-                                if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
-                                {
-                                    OnPropertyChanged(nameof(HasSelectedItems));
-                                    OnPropertyChanged(nameof(SelectedFilesContainWarnings));
-                                }
-                            };
+                             // Update the UI when the IsSelected property changes
+                             extractedFileVM.PropertyChanged += (sender, e) =>
+                             {
+                                 if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
+                                 {
+                                     OnPropertyChanged(nameof(HasSelectedItems));
+                                     OnPropertyChanged(nameof(SelectedFilesContainWarnings));
+                                 }
+                             };
 
-                            ExtractedFiles.Add(extractedFileVM);
-                        }
+                             ExtractedFiles.Add(extractedFileVM);
+                         }
 
-                        return () =>
-                        {
-                            InputFile = inputFile;
-                            IsLoadingFile = false;
-                            ApplyFilter();
-                            SortExtractedFiles(ExtractedFiles);
-                        };
-                    });
+                         return () =>
+                         {
+                             InputFile = inputFile;
+                             IsLoadingFile = false;
+                             ApplyFilter();
+                             SortExtractedFiles(ExtractedFiles);
+                         };
+                     });
                 },
                 () =>
                 {

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace FileObjectExtractor
 {
     public interface IBackgroundExecutor
     {
-        void Execute(Action action);
-        void Execute(Func<Action> function);
+        Task ExecuteAsync(Action action);
+        Task ExecuteAsync(Func<Action> function);
     }
 }
