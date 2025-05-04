@@ -150,7 +150,6 @@ namespace FileObjectExtractor.Models
             using (MemoryStream memoryStream = new MemoryStream(inputBin))
             {
                 CompoundFile cf = new CompoundFile(memoryStream);
-                // Iterate through all the streams in the root storage
 
                 // Iterate through all the entries in the root storage
                 cf.RootStorage.VisitEntries(entry =>
@@ -183,7 +182,6 @@ namespace FileObjectExtractor.Models
             }
 
             return contentArray;
-
         }
 
         private byte[] ExtractOle10NativeData(byte[] data)
@@ -198,14 +196,14 @@ namespace FileObjectExtractor.Models
 
             byte[] fileTypeIndicator = bytes.DequeueMultiple(2);
 
-            if (fileTypeIndicator.SequenceEqual(new byte[] { 0x42, 0x4d })) // Indicates file type? Is a bit map
+            if (fileTypeIndicator.SequenceEqual(new byte[] { 0x42, 0x4d })) // Indicates file type; Is a bit map
             {
                 List<byte> bitMapBytes = new List<byte>(fileTypeIndicator);
                 bitMapBytes.AddRange(bytes);
                 TrimEndButOneNull(bitMapBytes);
                 returnBytes = bitMapBytes.ToArray();
             }
-            else if (fileTypeIndicator.SequenceEqual(new byte[] { 0x02, 0x00 })) // Indicates file type? Is normal binary file?
+            else if (fileTypeIndicator.SequenceEqual(new byte[] { 0x02, 0x00 })) // Indicates file type; Is normal binary file
             {
                 // Get the file name, ends with null terminator
                 byte currentByte;
