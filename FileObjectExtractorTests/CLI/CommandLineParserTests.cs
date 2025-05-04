@@ -83,7 +83,7 @@ namespace FileObjectExtractor.CLI.Tests
             string[] args = [input, TestResources.DOCX.AbsolutePath];
             ReturnResult returnResult = GetConsoleOutput(args);
 
-            Assert.AreEqual("0 - EmbeddedTestDocx.docx\r\n1 - EmbeddedTestPDF.pdf\r\n2 - EmbeddedJson.json\r\n3 - EmbeddedPng.png\r\n4 - EmbeddedMp3.mp3\r\n5 - TEST_INSERT\r\n6 - EmbeddedPng.bmp\r\n7 - Lorem ipsum dolor sit amet, consectetur adipiscing...", returnResult.OutputText);
+            Assert.AreEqual("0 - EmbeddedTestDocx.docx\r\n1 - EmbeddedTestPDF.pdf\r\n2 - EmbeddedJson.json\r\n3 - EmbeddedPng.png\r\n4 - EmbeddedMp3.mp3\r\n5 - TEST_INSERT\r\n6 - EmbeddedPng.bmp\r\n7 - Docx Test.docx\r\n8 - Lorem ipsum dolor sit amet, consectetur adipiscing...", returnResult.OutputText);
         }
 
         [TestMethod()]
@@ -116,7 +116,7 @@ namespace FileObjectExtractor.CLI.Tests
             ReturnResult returnResult = GetConsoleOutput(args);
 
             Assert.AreEqual(ExitCode.SUCCESS, returnResult.ExitCode);
-            Assert.AreEqual("Extracting EmbeddedTestDocx.docx\r\nExtracting EmbeddedTestPDF.pdf\r\nExtracting EmbeddedJson.json\r\nExtracting EmbeddedPng.png\r\nExtracting EmbeddedMp3.mp3\r\nExtracting TEST_INSERT\r\nExtracting EmbeddedPng.bmp\r\nExtracting Lorem ipsum dolor sit amet, consectetur adipiscing...", returnResult.OutputText);
+            Assert.AreEqual("Extracting EmbeddedTestDocx.docx\r\nExtracting EmbeddedTestPDF.pdf\r\nExtracting EmbeddedJson.json\r\nExtracting EmbeddedPng.png\r\nExtracting EmbeddedMp3.mp3\r\nExtracting TEST_INSERT\r\nExtracting EmbeddedPng.bmp\r\nExtracting Docx Test.docx\r\nExtracting Lorem ipsum dolor sit amet, consectetur adipiscing...", returnResult.OutputText);
         }
 
         [TestMethod()]

@@ -52,9 +52,12 @@ namespace FileObjectExtractor.Models.EMF
                 int charsToSkip = (int)emfTextRecord.Chars.Value;
 
                 emfTextRecord.OutputString.ByteLength = (int)emfTextRecord.Chars.Value * 2; // Two characters to a byte
-                emfTextRecord.OutputString.Initialize(dataQueue);
 
-                file.EmfTextRecords.Add(emfTextRecord);
+                // It was a valid text record, so add it to the list
+                if (emfTextRecord.OutputString.Initialize(dataQueue))
+                {
+                    file.EmfTextRecords.Add(emfTextRecord);
+                }
             }
 
             return file;
