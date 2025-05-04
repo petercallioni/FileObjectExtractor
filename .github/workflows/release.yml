@@ -35,7 +35,7 @@ jobs:
 
       - name: Publish main project
         run: |
-          dotnet publish FileObjectExtractor/FileObjectExtractor.csproj --configuration Release --runtime ${{ matrix.runtime }} --output ./output
+          dotnet publish FileObjectExtractor/FileObjectExtractor.csproj --configuration Release --runtime ${{ matrix.runtime }} --self-contained true --output ./output
 
       # Zip the contents of the output folder, so the zip doesn’t include the top-level "output" folder.
       - name: Zip artifacts on Linux

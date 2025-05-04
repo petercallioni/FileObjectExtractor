@@ -19,4 +19,4 @@ namespace FileObjectExtractor.Models.Tests
             Assert.IsTrue(files.Select(x => x.FileName).Contains("image1.png"));
         }
     }
-}
+}   

@@ -10,14 +10,20 @@ namespace FileObjectExtractor.Models.Tests
         private List<ExtractedFile> files;
         public FileReaderDocxTests()
         {
-            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(TestResources.DOCX_SPACES);
-            files = parseOffice.GetExtractedFiles(TestResources.DOCX_SPACES);
+            IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(TestResources.DOCX);
+            files = parseOffice.GetExtractedFiles(TestResources.DOCX);
         }
 
         [TestMethod()]
         public void ParseFileNameTest()
         {
             Assert.IsTrue(files.Select(x => x.FileName).Contains("EmbeddedTestDocx.docx"));
+        }
+
+        [TestMethod()]
+        public void ReadsFileWithSpaceT()
+        {
+            Assert.IsTrue(files.Select(x => x.FileName).Contains("Docx Test.docx"));
         }
 
         [TestMethod()]

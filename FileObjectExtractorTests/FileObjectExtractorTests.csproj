@@ -32,7 +32,7 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Resources\TestDocx.docx">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="Resources\TestExcel.xlsx">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

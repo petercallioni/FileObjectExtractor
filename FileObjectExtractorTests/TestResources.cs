@@ -19,6 +19,7 @@
             internal static string EMBEDDED_MP3 = Path.Combine("EmbeddedMp3.mp3");
             internal static string EMBEDDED_JSON = Path.Combine("EmbeddedJson.json");
             internal static string EMBEDDED_BMP = Path.Combine("EmbeddedPng.bmp");
+            internal static string EMBEDDED_DOC_WITH_SPACE = Path.Combine("Docx Test.docx");
         }
 
         internal static class EXTRACTION_TEST

@@ -34,11 +34,11 @@ namespace FileObjectExtractor.Models.Office
             {
                 foreach (ZipArchiveEntry entry in zip.Entries)
                 {
-                    if (entry.FullName.EndsWith("document.xml"))
+                    if (entry.FullName.EndsWith("word/document.xml"))
                     {
                         rIdsIconsAndFiles = ParseDocumentFile(entry);
                     }
-                    else if (entry.FullName.EndsWith("document.xml.rels"))
+                    else if (entry.FullName.EndsWith("word/_rels/document.xml.rels"))
                     {
                         rIdsAndFiles = ParseRelsFile(entry);
                     }
