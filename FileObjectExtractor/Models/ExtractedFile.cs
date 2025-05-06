@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace FileObjectExtractor.Models
 {
@@ -57,9 +58,14 @@ namespace FileObjectExtractor.Models
 
             if (safeFileNameBuilder.Length > IntContstants.MAX_FILE_NAME_CHARS)
             {
-                safeFileNameBuilder.Remove(IntContstants.MAX_FILE_NAME_CHARS, safeFileNameBuilder.Length - IntContstants.MAX_FILE_NAME_CHARS);
-                safeFileNameBuilder.Append("...");
-                fileNameWarnings.Add(StringConstants.WARNINGS.LONG_FILENAME);
+                Regex regex = new Regex(@"\.\w+$"); // Extension
+
+                if (!regex.IsMatch(safeFileNameBuilder.ToString()))
+                {
+                    safeFileNameBuilder.Remove(IntContstants.MAX_FILE_NAME_CHARS, safeFileNameBuilder.Length - IntContstants.MAX_FILE_NAME_CHARS);
+                    safeFileNameBuilder.Append("...");
+                    fileNameWarnings.Add(StringConstants.WARNINGS.LONG_FILENAME);
+                }
             }
 
             if (fileInfo.Extension.Equals(""))
