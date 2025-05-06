@@ -37,7 +37,13 @@ namespace FileObjectExtractor.Models.Office
                 ZipArchiveEntry iconEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(iconPath)));
                 ZipArchiveEntry fileEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(filePath)));
 
-                string fileDisplayFileName = IsEmf(iconEntry.Name) ? parser.Parse(iconEntry.GetBytes()).GetTextContent() : iconEntry.Name;
+                string explicitName = IsEmf(iconEntry.Name)
+                    ? parser.Parse(iconEntry.GetBytes()).GetTextContent()
+                    : iconEntry.Name;
+
+                bool hasExplicitName = !string.IsNullOrEmpty(explicitName);
+
+                string fileDisplayFileName = hasExplicitName ? explicitName : "UNKNOWN";
 
                 ExtractedFile extractedFile = new ExtractedFile(fileEntry)
                 {
@@ -45,10 +51,11 @@ namespace FileObjectExtractor.Models.Office
                     DocumentOrder = documentOrderCounter++
                 };
 
-                if (!hasIcon)
+                if (!hasIcon || !hasExplicitName)
                 {
                     extractedFile.FileNameWarnings.Add(StringConstants.WARNINGS.NO_EXPLICIT_NAME);
                 }
+
 
                 files.Add(extractedFile);
             }

@@ -59,9 +59,8 @@ namespace FileObjectExtractor.CLI
 
         private ExitCode DisplayVersion()
         {
-            string buildDate = System.IO.File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("yyyy-MM-dd");
             string versionNumber = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "Unknown";
-            Console.WriteLine($"{versionNumber} ({buildDate})");
+            Console.WriteLine($"{versionNumber}");
             return ExitCode.SUCCESS;
         }
 

@@ -58,9 +58,6 @@
 							<TextBlock.Inlines>
 								<Run FontSize="16" Text="Version: "/>
 								<Run FontSize="16" Text="{Binding VersionNumber}" />
-								<Run FontSize="16" Text=" (" />
-								<Run FontSize="16" Text="{Binding BuildDate}" />
-								<Run FontSize="16" Text=")" />
 							</TextBlock.Inlines>
 						</TextBlock>
 					</StackPanel>
