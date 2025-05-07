@@ -7,7 +7,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<ApplicationIcon>Assets\fox.ico</ApplicationIcon>
-		<AssemblyVersion>1.0.6</AssemblyVersion>
+		<AssemblyVersion>1.0.7</AssemblyVersion>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>fox.png</PackageIcon>
 		<Authors>Peter Callioni</Authors>

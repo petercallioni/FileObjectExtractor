@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using ExCSS;
 using FileObjectExtractor.Models;
 using FileObjectExtractor.Models.Office;
 using FileObjectExtractor.Services;
@@ -19,7 +20,9 @@ namespace FileObjectExtractor.ViewModels
         private IBackgroundExecutor backgroundExecutor;
         private bool trustToOpenFiles;
 
-        private ObservableCollection<ExtractedFileViewModel> extractedFiles;
+        private List<ExtractedFileViewModel> extractedFiles;
+        private ObservableCollection<ExtractedFileViewModel> filteredExtractedFiles;
+
         private string filter;
         private bool isLoadingFile;
         public IRelayCommand SelectAllCommand { get; init; }
@@ -29,11 +32,19 @@ namespace FileObjectExtractor.ViewModels
         public IRelayCommand SelectSortCommand { get; init; }
 
         private SortOrder sortOrder;
-        public ObservableCollection<ExtractedFileViewModel> ExtractedFiles
+        public List<ExtractedFileViewModel> ExtractedFiles
         {
             get => extractedFiles; set
             {
                 extractedFiles = value;
+            }
+        }
+
+        public ObservableCollection<ExtractedFileViewModel> FilteredExtractedFiles
+        {
+            get => filteredExtractedFiles; set
+            {
+                filteredExtractedFiles = value;
                 OnPropertyChanged();
             }
         }
@@ -133,7 +144,8 @@ namespace FileObjectExtractor.ViewModels
             inputFile = new InputFileViewModel();
             isLoadingFile = false;
             sortOrder = SortOrder.DOCUMENT;
-            extractedFiles = new ObservableCollection<ExtractedFileViewModel>();
+            extractedFiles = new List<ExtractedFileViewModel>();
+            filteredExtractedFiles = new ObservableCollection<ExtractedFileViewModel>();
             filter = string.Empty;
             trustToOpenFiles = false;
             this.fileController = fileController;
@@ -187,7 +199,7 @@ namespace FileObjectExtractor.ViewModels
                              InputFile = inputFile;
                              IsLoadingFile = false;
                              ApplyFilter();
-                             SortExtractedFiles(ExtractedFiles);
+                             SortExtractedFiles(FilteredExtractedFiles);
                          };
                      });
                 },
@@ -210,7 +222,8 @@ namespace FileObjectExtractor.ViewModels
         {
             foreach (ExtractedFileViewModel item in ExtractedFiles)
             {
-                item.IsSelected = true;
+                if (item.IsVisible)
+                    item.IsSelected = true;
             }
         }
 
@@ -218,7 +231,21 @@ namespace FileObjectExtractor.ViewModels
         {
             foreach (ExtractedFileViewModel item in ExtractedFiles)
             {
-                item.IsSelected = false;
+                if (item.IsVisible)
+                    item.IsSelected = false;
+            }
+        }
+
+        private void UpdateFilteredCollection()
+        {
+            // Get items from the base collection that pass the filter
+            List<ExtractedFileViewModel> filtered = extractedFiles.Where(x => x.IsVisible).ToList();
+
+            // Option A: Clear and re-add (straightforward, though can cause a UI refresh)
+            FilteredExtractedFiles.Clear();
+            foreach (ExtractedFileViewModel? item in filtered)
+            {
+                FilteredExtractedFiles.Add(item);
             }
         }
 
@@ -230,13 +257,14 @@ namespace FileObjectExtractor.ViewModels
                 {
                     if (filter.Length > 0)
                     {
-                        item.IsSelected = item.ExtractedFile.FileName.Contains(filter, System.StringComparison.OrdinalIgnoreCase);
+                        item.IsVisible = item.ExtractedFile.FileName.Contains(filter, System.StringComparison.OrdinalIgnoreCase);
                     }
                     else
                     {
-                        item.IsSelected = false;
+                        item.IsVisible = true;
                     }
                 }
+                UpdateFilteredCollection();
             });
         }
 
@@ -329,7 +357,7 @@ namespace FileObjectExtractor.ViewModels
         {
             SortOrder = sort;
 
-            SortExtractedFiles(ExtractedFiles);
+            SortExtractedFiles(FilteredExtractedFiles);
         }
 
         private void SortExtractedFiles(ObservableCollection<ExtractedFileViewModel> files)
@@ -345,7 +373,7 @@ namespace FileObjectExtractor.ViewModels
                 _ => files,
             };
 
-            ExtractedFiles = sortedFiles;
+            FilteredExtractedFiles = sortedFiles;
         }
 
         private void OpenFileTrustWindow(Action confirmAction)

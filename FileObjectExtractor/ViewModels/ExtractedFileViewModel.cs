@@ -8,6 +8,7 @@ namespace FileObjectExtractor.ViewModels
     {
         private ExtractedFile extractedFile;
         private bool isSelected;
+        private bool isVisible;
         private readonly IRelayCommand saveFileCommand;
         private readonly IRelayCommand openFileCommand;
         private readonly string originalSafeFileName;
@@ -42,6 +43,17 @@ namespace FileObjectExtractor.ViewModels
         public bool NameChanged => !string.Equals(originalSafeFileName, extractedFile.SafeFileName, StringComparison.OrdinalIgnoreCase);
 
         public string ResetToolTip { get => resetToolTip; set => resetToolTip = value; }
+        public bool IsVisible
+        {
+            get => isVisible; set
+            {
+                if (value != isVisible)
+                {
+                    isVisible = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         private string resetToolTip;
 
@@ -57,6 +69,7 @@ namespace FileObjectExtractor.ViewModels
             saveFileCommand = new RelayCommand(() => saveFileOperation(this));
             openFileCommand = new RelayCommand(() => openFileOperation(this));
             IsSelected = false;
+            IsVisible = true;
 
             resetToolTip = $"Reset file name to {originalSafeFileName}.";
         }

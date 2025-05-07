@@ -61,11 +61,10 @@ namespace FileObjectExtractor.CLI.Tests
         [DataRow("--version")]
         public void ParseTest_VersionArguments(string input)
         {
-            string buildDate = System.IO.File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location).ToString("yyyy-MM-dd");
             string versionNumber = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "Unknown";
-            string expectedText = ($"{versionNumber} ({buildDate})");
+            string expectedText = ($"{versionNumber}");
 
-            Regex regex = new Regex(@"\d+\.\d+\.\d+ \(\d{4}-\d{2}-\d{2}\)");
+            Regex regex = new Regex(@"\d+\.\d+\.\d+");
 
             string[] args = input.Split(" ");
             ReturnResult returnResult = GetConsoleOutput(args);
@@ -83,7 +82,7 @@ namespace FileObjectExtractor.CLI.Tests
             string[] args = [input, TestResources.DOCX.AbsolutePath];
             ReturnResult returnResult = GetConsoleOutput(args);
 
-            Assert.AreEqual("0 - EmbeddedTestDocx.docx\r\n1 - EmbeddedTestPDF.pdf\r\n2 - EmbeddedJson.json\r\n3 - EmbeddedPng.png\r\n4 - EmbeddedMp3.mp3\r\n5 - TEST_INSERT\r\n6 - EmbeddedPng.bmp\r\n7 - Docx Test.docx\r\n8 - Lorem ipsum dolor sit amet, consectetur adipiscing...", returnResult.OutputText);
+            Assert.AreEqual("0 - EmbeddedTestDocx.docx\r\n1 - EmbeddedTestPDF.pdf\r\n2 - EmbeddedJson.json\r\n3 - EmbeddedPng.png\r\n4 - EmbeddedMp3.mp3\r\n5 - TEST_INSERT.docx\r\n6 - EmbeddedPng.bmp\r\n7 - Docx Test.docx\r\n8 - Lorem ipsum dolor sit amet, consectetur adipiscing...", returnResult.OutputText);
         }
 
         [TestMethod()]
@@ -116,7 +115,7 @@ namespace FileObjectExtractor.CLI.Tests
             ReturnResult returnResult = GetConsoleOutput(args);
 
             Assert.AreEqual(ExitCode.SUCCESS, returnResult.ExitCode);
-            Assert.AreEqual("Extracting EmbeddedTestDocx.docx\r\nExtracting EmbeddedTestPDF.pdf\r\nExtracting EmbeddedJson.json\r\nExtracting EmbeddedPng.png\r\nExtracting EmbeddedMp3.mp3\r\nExtracting TEST_INSERT\r\nExtracting EmbeddedPng.bmp\r\nExtracting Docx Test.docx\r\nExtracting Lorem ipsum dolor sit amet, consectetur adipiscing...", returnResult.OutputText);
+            Assert.AreEqual("Extracting EmbeddedTestDocx.docx\r\nExtracting EmbeddedTestPDF.pdf\r\nExtracting EmbeddedJson.json\r\nExtracting EmbeddedPng.png\r\nExtracting EmbeddedMp3.mp3\r\nExtracting TEST_INSERT.docx\r\nExtracting EmbeddedPng.bmp\r\nExtracting Docx Test.docx\r\nExtracting Lorem ipsum dolor sit amet, consectetur adipiscing...", returnResult.OutputText);
         }
 
         [TestMethod()]

@@ -36,10 +36,10 @@ namespace FileObjectExtractor.Models.Tests
         {
             string embeddedPdfSha256 = "1FD733DF0DC966147734C6C858456A25E3B8D3855DEA0BDBBE6E6767F7E05107";
             FileController fileController = new FileController(null!);
-            byte[] extractedFile = fileController.ExtractEmbeddedData(files
+            byte[] extractedFile = files
                 .Where(x => x.FileName == "EmbeddedTestPDF.pdf")
                 .Select(x => x.EmbeddedFile)
-                .First());
+                .First();
 
             Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
         }
@@ -49,10 +49,10 @@ namespace FileObjectExtractor.Models.Tests
         {
             string embeddedPdfSha256 = "97EA2C1DB6D41CED3A20E914C353A3F95121D9DCE6843AE2F3990CC834991B0C";
             FileController fileController = new FileController(null!);
-            byte[] extractedFile = fileController.ExtractEmbeddedData(files
+            byte[] extractedFile = files
                 .Where(x => x.FileName == "EmbeddedJson.json")
                 .Select(x => x.EmbeddedFile)
-                .First());
+                .First();
 
             Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
         }
@@ -62,10 +62,10 @@ namespace FileObjectExtractor.Models.Tests
         {
             string embeddedPdfSha256 = "4C9C00017F30C5EC004D247D80C2B2825ABA68510A7B8520EC9692B2E8143ECB";
             FileController fileController = new FileController(null!);
-            byte[] extractedFile = fileController.ExtractEmbeddedData(files
+            byte[] extractedFile = files
                 .Where(x => x.FileName == "EmbeddedPng.png")
                 .Select(x => x.EmbeddedFile)
-                .First());
+                .First();
 
             Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
         }
@@ -75,10 +75,10 @@ namespace FileObjectExtractor.Models.Tests
         {
             string embeddedPdfSha256 = "3593C7D216AF0EA386577FC96703E6884010AB590A7897CDFED39530BA15DE0B";
             FileController fileController = new FileController(null!);
-            byte[] extractedFile = fileController.ExtractEmbeddedData(files
+            byte[] extractedFile = files
                 .Where(x => x.FileName == "EmbeddedMp3.mp3")
                 .Select(x => x.EmbeddedFile)
-                .First());
+                .First();
 
             Assert.AreEqual(embeddedPdfSha256, GetHashSHA256(extractedFile));
         }

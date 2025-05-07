@@ -43,13 +43,13 @@
 				<ControlTemplate>
 					<Grid>
 						<!-- Rectangle acting as a dotted border -->
-						<Rectangle
+						<!--<Rectangle
 						  Stroke="{Binding InputFile.OfficeColour, Mode=OneWay}"
 						  StrokeThickness="3"
 						  RadiusX="20"
 						  RadiusY="20"
 						  StrokeDashArray="5,1">
-						</Rectangle>
+						</Rectangle>-->
 						<!-- Text presenter for content -->
 						<TextPresenter
 						  x:Name="PART_TextPresenter"
@@ -265,10 +265,14 @@
 					</Panel>
 
 					<CheckBox
-						Content="Trust Author"
 						Margin="0,0,15,0"
 						HorizontalAlignment="Right"
 						IsChecked="{Binding TrustToOpenFiles, Mode=TwoWay}">
+						<TextBlock>
+							<Run>I Trust The Author</Run>
+							<LineBreak/>
+							<Run>Allow Opening of Files</Run>
+						</TextBlock>
 					</CheckBox>
 				</DockPanel>
 
@@ -305,10 +309,10 @@
 						<Panel IsVisible="{Binding IsLoadingFile}">
 							<uc:LoadingControl Width="200"/>
 						</Panel>
-						<ListBox ItemsSource="{Binding ExtractedFiles}" SelectionMode="Multiple" IsVisible="{Binding !IsLoadingFile}">
+						<ListBox ItemsSource="{Binding FilteredExtractedFiles}" SelectionMode="Multiple" IsVisible="{Binding !IsLoadingFile}">
 							<ListBox.ItemTemplate>
 								<DataTemplate>
-									<DockPanel LastChildFill="True">
+									<DockPanel LastChildFill="True" IsVisible="{Binding IsVisible}">
 										<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
 										<Button
 											Background="Transparent" Padding="3"

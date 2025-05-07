@@ -1,6 +1,7 @@
 ﻿using FileObjectExtractor.Models.EMF.EmfPart;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace FileObjectExtractor.Models.EMF
 {
@@ -33,7 +34,11 @@ namespace FileObjectExtractor.Models.EMF
 
             foreach (EmfTextRecord record in EmfTextRecords)
             {
-                sb.Append(record.OutputString.Value);
+                if (record.OutputString == null || record.OutputString.Value == null)
+                    continue;
+
+                string output = Regex.Replace(record.OutputString.Value, @"\s", " ");
+                sb.Append(output);
             }
 
             return sb.ToString().TrimEnd();

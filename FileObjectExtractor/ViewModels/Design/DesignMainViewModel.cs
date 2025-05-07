@@ -32,7 +32,7 @@ namespace FileObjectExtractor.ViewModels.Design
                     extractedFileVM.ExtractedFile.FileName = $"Embedded File {i}.docx";
                 }
 
-                ExtractedFiles.Add(extractedFileVM);
+                FilteredExtractedFiles.Add(extractedFileVM);
             }
         }
     }

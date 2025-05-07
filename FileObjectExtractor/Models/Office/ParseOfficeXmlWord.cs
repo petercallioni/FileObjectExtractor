@@ -1,5 +1,4 @@
-﻿using FileObjectExtractor.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -26,7 +25,7 @@ namespace FileObjectExtractor.Models.Office
             Dictionary<string, string> rIdsAndFiles = new Dictionary<string, string>();
             Dictionary<string, OleObject> rIdsIconsAndFiles = new Dictionary<string, OleObject>();
 
-            byte[] inputFile = File.ReadAllBytes(filePath.UnescapedString());
+            byte[] inputFile = OpenOfficeFile(filePath);
             ThrowIfPassworded(inputFile);
 
             using (MemoryStream byteStream = new MemoryStream(inputFile))
