@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using FileObjectExtractor.Services;
-using System.Reflection;
 
 namespace FileObjectExtractor.ViewModels
 {
@@ -16,7 +15,7 @@ namespace FileObjectExtractor.ViewModels
         public AboutViewModel(IWindowService windowService) : base(windowService)
         {
             author = "Peter Callioni";
-            versionNumber = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "Unknown";
+            versionNumber = Models.VersionNumber.GetVersion();
         }
     }
 }

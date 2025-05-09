@@ -28,13 +28,13 @@ namespace FileObjectExtractor.Models
             return await window.OpenFileAsync("Select a file");
         }
 
-        public void OpenFile(ExtractedFile extractedFile)
+        public async Task OpenFile(ExtractedFile extractedFile)
         {
             string tempPath = Path.GetTempPath();
             string tempFile = Path.Combine(tempPath, extractedFile.SafeFileName);
             File.WriteAllBytes(tempFile, extractedFile.EmbeddedFile);
 
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 try
                 {

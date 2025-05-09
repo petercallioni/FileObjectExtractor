@@ -15,8 +15,27 @@ namespace FileObjectExtractor.Models.EMF
             EmfFile file = new EmfFile();
             Queue<byte> dataQueue = new Queue<byte>(data);
 
+            // Parse the main headers and update headerSize appropriately.
+            int headerSize = ParseHeaders(file, dataQueue);
+
+            // If a description is present, jump to it and initialize the description buffer.
+            ParseDescription(file, dataQueue, headerSize);
+
+            // Likewise for the pixel format section.
+            ParsePixelFormat(file, dataQueue);
+
+            // Finally, process all text records.
+            ParseTextRecords(file, dataQueue);
+
+            return file;
+        }
+
+        private int ParseHeaders(EmfFile file, Queue<byte> dataQueue)
+        {
             file.EmfFileHeader.Initialize(dataQueue);
             file.EmfHeader.Initialize(dataQueue);
+
+            // Base header size.
             int headerSize = 80;
 
             if (file.EmfFileHeader.Size.Value >= 88)
@@ -31,39 +50,85 @@ namespace FileObjectExtractor.Models.EMF
                 headerSize += 8;
             }
 
-            if (file.EmfHeader.nDescription.Value != 0 || file.EmfHeader.offDescription.Value != 0)
+            return headerSize;
+        }
+
+        private void ParseDescription(EmfFile file, Queue<byte> dataQueue, int headerSize)
+        {
+            if (file.EmfHeader.nDescription.Value != 0 ||
+                file.EmfHeader.offDescription.Value != 0)
             {
-                dataQueue.DequeueMultiple((int)file.EmfHeader.offDescription.Value - headerSize); // Skip to description
+                // Skip bytes until reaching the description based on the header offset.
+                int skipBytes = (int)file.EmfHeader.offDescription.Value - headerSize;
+                dataQueue.DequeueMultiple(skipBytes);
+
+                // Set the length and initialize the description contents.
                 file.EmfDescriptionBuffer.Contents.ByteLength = (int)file.EmfHeader.nDescription.Value;
                 file.EmfDescriptionBuffer.Initialize(dataQueue);
             }
+        }
 
-            if (file.EmfHeaderExtension1.cbPixelFormat.Value != 0 || file.EmfHeaderExtension1.offPixelFormat.Value != 0)
+        private void ParsePixelFormat(EmfFile file, Queue<byte> dataQueue)
+        {
+            if (file.EmfHeaderExtension1.cbPixelFormat.Value != 0 ||
+                file.EmfHeaderExtension1.offPixelFormat.Value != 0)
             {
-                dataQueue.DequeueMultiple((int)file.EmfHeaderExtension1.offPixelFormat.Value); // Skip to Value;
+                // Jump to the pixel format data.
+                dataQueue.DequeueMultiple((int)file.EmfHeaderExtension1.offPixelFormat.Value);
                 file.EmfPixelFormatBuffer.Contents.ByteLength = (int)file.EmfHeaderExtension1.cbPixelFormat.Value;
                 file.EmfPixelFormatBuffer.Initialize(dataQueue);
             }
-
-            while (SkipToTextRecord(dataQueue))
-            {
-                EmfTextRecord emfTextRecord = new EmfTextRecord();
-                emfTextRecord.Initialize(dataQueue); // Only partial initialization
-                int charsToSkip = (int)emfTextRecord.Chars.Value;
-
-                emfTextRecord.OutputString.ByteLength = (int)emfTextRecord.Chars.Value * 2; // Two characters to a byte
-
-                // It was a valid text record, so add it to the list
-                if (emfTextRecord.OutputString.Initialize(dataQueue))
-                {
-                    file.EmfTextRecords.Add(emfTextRecord);
-                }
-            }
-
-            return file;
         }
 
-        public bool SkipToTextRecord(Queue<byte> input)
+        private void ParseTextRecords(EmfFile file, Queue<byte> dataQueue)
+        {
+            while (SkipToTextRecord(dataQueue, out RecordType? recordType))
+            {
+                // Extract the record size (after reading the record type which is already determined).
+                uint recordSize = HexConverter.LittleEndianHexToUInt(dataQueue.DequeueMultiple(4));
+                int recordBufferSize = (int)recordSize - 8; // Account for RecordType and Size fields.
+
+                // The math is easier if shift the whole record to a new buffer.
+                Queue<byte> recordBuffer = new Queue<byte>(dataQueue.DequeueMultiple(recordBufferSize));
+
+                // Create and partially initialize a new text record.
+                EmfTextRecord textRecord = new EmfTextRecord(recordType!.Value, recordSize);
+                textRecord.Initialize(recordBuffer);
+
+                // Determine if there is a Rectangle field based on Options.
+                if (textRecord.Options.Value != 0x00000100)
+                {
+                    textRecord.HasRectangle = true;
+                }
+
+                if (textRecord.HasRectangle)
+                {
+                    textRecord.Rectangle.Initialize(recordBuffer);
+                }
+
+                // Process the offDx field.
+                textRecord.offDx.Initialize(recordBuffer);
+
+                // Process text string if present.
+                if ((int)textRecord.offString.Value > 0)
+                {
+                    int emptyBytes = (int)recordSize - recordBuffer.Count - (int)textRecord.offString.Value;
+                    recordBuffer.DequeueMultiple(emptyBytes); // Skip to the start of the string.
+
+                    textRecord.OutputString.ByteLength = (int)textRecord.Chars.Value * textRecord.CharSizeModifer;
+
+                    // If the string is properly initialized, add the text record.
+                    if (textRecord.OutputString.Initialize(recordBuffer))
+                    {
+                        file.EmfTextRecords.Add(textRecord);
+                    }
+                }
+
+                // The rest of the record buffer is for the OutputDx field which is not needed.
+            }
+        }
+
+        public bool SkipToTextRecord(Queue<byte> input, out RecordType? recordType)
         {
             const int ShiftAmount = 4; // 4 bytes
 
@@ -77,7 +142,7 @@ namespace FileObjectExtractor.Models.EMF
                 }
 
                 int value = HexConverter.LittleEndianHexToInt(buffer.ToArray());
-                RecordType recordType = (RecordType)value;
+                recordType = (RecordType)value;
 
                 if (recordType == RecordType.EMR_EXTTEXTOUTW || recordType == RecordType.EMR_EXTTEXTOUTA)
                 {
@@ -88,6 +153,7 @@ namespace FileObjectExtractor.Models.EMF
                 buffer.Dequeue();
             }
 
+            recordType = null;
             input.Clear();
             return false;
         }

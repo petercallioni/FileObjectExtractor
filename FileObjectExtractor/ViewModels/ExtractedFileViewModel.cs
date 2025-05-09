@@ -12,6 +12,7 @@ namespace FileObjectExtractor.ViewModels
         private readonly IRelayCommand saveFileCommand;
         private readonly IRelayCommand openFileCommand;
         private readonly string originalSafeFileName;
+        private bool isOpen;
         public IRelayCommand ResetCommand => new RelayCommand(ResetName);
 
         public string FileName
@@ -50,6 +51,18 @@ namespace FileObjectExtractor.ViewModels
                 if (value != isVisible)
                 {
                     isVisible = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsOpen
+        {
+            get => isOpen; set
+            {
+                if (value != isOpen)
+                {
+                    isOpen = value;
                     OnPropertyChanged();
                 }
             }

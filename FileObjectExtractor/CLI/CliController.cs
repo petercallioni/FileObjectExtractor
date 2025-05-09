@@ -4,7 +4,6 @@ using FileObjectExtractor.Models.Office;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 
 namespace FileObjectExtractor.CLI
 {
@@ -59,7 +58,7 @@ namespace FileObjectExtractor.CLI
 
         private ExitCode DisplayVersion()
         {
-            string versionNumber = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "Unknown";
+            string versionNumber = VersionNumber.GetVersion();
             Console.WriteLine($"{versionNumber}");
             return ExitCode.SUCCESS;
         }

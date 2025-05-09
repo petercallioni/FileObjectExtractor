@@ -4,7 +4,8 @@
 		xmlns:design="using:FileObjectExtractor.ViewModels.Design"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:conv="using:FileObjectExtractor.Converters" mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="450"
+		xmlns:conv="using:FileObjectExtractor.Converters"
+		mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="450"
 		xmlns:custom="using:FileObjectExtractor.Components"
 		xmlns:uc="using:FileObjectExtractor.Views.Controls"
         x:Class="FileObjectExtractor.Views.MainWindow"
@@ -250,7 +251,7 @@
 							Command="{Binding SaveSelectedCommand}">
 						<Button.Content>
 							<StackPanel Orientation="Horizontal">
-								<TextBlock VerticalAlignment="Center">Export Selected</TextBlock>
+								<TextBlock VerticalAlignment="Center">Save Selected</TextBlock>
 								<Svg Margin="10,0,0,0" Stretch="UniformToFill" Path="/Assets/save-icon.svg"/>
 							</StackPanel>
 						</Button.Content>
@@ -355,6 +356,7 @@
 										</Button>
 										<Button
 											Background="Transparent" Padding="0"
+											IsEnabled="{Binding !IsOpen}"
 											Margin="5,0,0,0"
 											ToolTip.Tip="Open with default application. Exercise caution."
 											Command="{Binding OpenFileCommand}"
