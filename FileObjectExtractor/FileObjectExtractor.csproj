@@ -7,7 +7,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<ApplicationIcon>Assets\fox.ico</ApplicationIcon>
-		<AssemblyVersion>1.0.8</AssemblyVersion>
+		<AssemblyVersion>1.1.0</AssemblyVersion>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageIcon>fox.png</PackageIcon>
 		<Authors>Peter Callioni</Authors>
@@ -29,7 +29,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<AvaloniaResource Remove="Assets\extensions.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Content Include="Assets\fox.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Assets\extensions.json" />
 	</ItemGroup>
 
 	<ItemGroup>

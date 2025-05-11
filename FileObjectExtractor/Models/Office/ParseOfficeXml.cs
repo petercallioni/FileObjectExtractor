@@ -13,6 +13,7 @@ namespace FileObjectExtractor.Models.Office
 {
     public abstract class ParseOfficeXml : ParseOffice
     {
+        private const string EMPTY_NAME = "UNKNOWN";
         protected void ThrowIfPassworded(byte[] bytes)
         {
             if (bytes.Take(8).SequenceEqual(new byte[] { 0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1 })) // OLECF file signature, instead of expected PK header
@@ -21,41 +22,69 @@ namespace FileObjectExtractor.Models.Office
             }
         }
 
-        protected List<ExtractedFile> CombineLists(Dictionary<string, OleObject> iconRids, Dictionary<string, string> fileRids, List<ZipArchiveEntry> archiveFiles)
+        protected List<ExtractedFile> CombineLists(
+    Dictionary<string, OleObject> iconRids,
+    Dictionary<string, string> fileRids,
+    List<ZipArchiveEntry> archiveFiles)
         {
             int documentOrderCounter = 0;
             List<ExtractedFile> files = new List<ExtractedFile>();
-
             EmfParser parser = new EmfParser();
+
+            // Local helper to retrieve the ZipArchiveEntry using the given file path
+            ZipArchiveEntry GetEntry(string path)
+            {
+                // Strip the first element and try to find a match within the archive entries
+                string checkPath = StripFirstElement(path);
+                ZipArchiveEntry? entry = archiveFiles.FirstOrDefault(x => x.FullName.EndsWith(checkPath));
+                if (entry == null)
+                {
+                    throw new InvalidOperationException($"Could not find archive entry ending with '{checkPath}'.");
+                }
+                return entry;
+            }
 
             foreach (string key in iconRids.Keys)
             {
+                // Retrieve the related values from the dictionaries
+                OleObject currentOle = iconRids[key];
                 string iconPath = fileRids[key];
-                string filePath = fileRids[iconRids[key].Rid];
-                bool hasIcon = iconRids[key].HasIcon;
+                string filePath = fileRids[currentOle.Rid];
+                bool hasIcon = currentOle.HasIcon;
 
-                ZipArchiveEntry iconEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(iconPath)));
-                ZipArchiveEntry fileEntry = archiveFiles.First(x => x.FullName.EndsWith(StripFirstElement(filePath)));
+                // Get the corresponding archive entries for the icon & file
+                ZipArchiveEntry iconEntry = GetEntry(iconPath);
+                ZipArchiveEntry fileEntry = GetEntry(filePath);
 
+                // Determine the explicit display name by checking if it is an EMF file
                 string explicitName = IsEmf(iconEntry.Name)
                     ? parser.Parse(iconEntry.GetBytes()).GetTextContent()
                     : iconEntry.Name;
 
-                bool hasExplicitName = !string.IsNullOrEmpty(explicitName);
+                bool hasExplicitName = !string.IsNullOrWhiteSpace(explicitName);
+                string fileDisplayName = hasExplicitName ? explicitName : EMPTY_NAME;
 
-                string fileDisplayFileName = hasExplicitName ? explicitName : "UNKNOWN";
+                // Create the new ExtractedFile instance based on the file entry.
+                ExtractedFile extractedFile = new ExtractedFile(fileEntry);
 
-                ExtractedFile extractedFile = new ExtractedFile(fileEntry)
+                // If no explicit name was provided, try guessing the extension using magic bytes.
+                if (fileDisplayName.Equals(EMPTY_NAME))
                 {
-                    FileName = fileDisplayFileName,
-                    DocumentOrder = documentOrderCounter++
-                };
+                    if (MagicBytes.FileType.GuessFileType(fileEntry.GetBytes(), out string extension))
+                    {
+                        fileDisplayName += extension;
+                        extractedFile.FileNameWarnings.Add(StringConstants.WARNINGS.GUESSED_EXTENSION);
+                    }
+                }
 
+                extractedFile.FileName = fileDisplayName;
+                extractedFile.DocumentOrder = documentOrderCounter++;
+
+                // If the file either has no icon or lacked an explicit name, add a warning.
                 if (!hasIcon || !hasExplicitName)
                 {
                     extractedFile.FileNameWarnings.Add(StringConstants.WARNINGS.NO_EXPLICIT_NAME);
                 }
-
 
                 files.Add(extractedFile);
             }

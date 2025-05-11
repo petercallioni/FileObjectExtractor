@@ -7,7 +7,7 @@ namespace FileObjectExtractor.ViewModels.Design
         public DesignMainViewModel() : base(null!, null!, null!)
         {
             // Add mock data here
-            InputFile = new InputFileViewModel(new System.Uri("file:///Sample.docx"), OfficeType.WORD);
+            InputFile = new InputFileViewModel(new System.Uri("file:///Sample.docx"), OfficeType.EXCEL);
 
             ProgressIndicator.ShowProgress = true;
             ProgressIndicator.Progress = 60;

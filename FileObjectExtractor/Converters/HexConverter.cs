@@ -5,7 +5,7 @@ namespace FileObjectExtractor.Converters
 {
     public static class HexConverter
     {
-        private static byte[] HexStringToByteArray(string hexString, bool littleEndian = true)
+        public static byte[] HexStringToByteArray(string hexString, bool littleEndian = true)
         {
             byte[] bytes = new byte[hexString.Length / 2];
             for (int i = 0; i < bytes.Length; i++)
