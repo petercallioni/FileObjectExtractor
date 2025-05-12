@@ -12,7 +12,7 @@ namespace FileObjectExtractor.ViewModels
         private readonly IRelayCommand saveFileCommand;
         private readonly IRelayCommand openFileCommand;
         private readonly string originalSafeFileName;
-        private bool isOpen;
+        private bool canOpen;
         public IRelayCommand ResetCommand => new RelayCommand(ResetName);
 
         public string FileName
@@ -33,7 +33,7 @@ namespace FileObjectExtractor.ViewModels
         {
             get => isSelected; set
             {
-                if (value != isSelected)
+                if (value != isSelected && !extractedFile.IsLinkedFile)
                 {
                     isSelected = value;
                     OnPropertyChanged();
@@ -56,13 +56,21 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public bool IsOpen
+        public bool CanOpen
         {
-            get => isOpen; set
+            get
             {
-                if (value != isOpen)
+                if (extractedFile.IsLinkedFile)
                 {
-                    isOpen = value;
+                    return false;
+                }
+                return canOpen;
+            }
+            set
+            {
+                if (value != canOpen)
+                {
+                    canOpen = value;
                     OnPropertyChanged();
                 }
             }
@@ -83,6 +91,7 @@ namespace FileObjectExtractor.ViewModels
             openFileCommand = new RelayCommand(() => openFileOperation(this));
             IsSelected = false;
             IsVisible = true;
+            CanOpen = true;
 
             resetToolTip = $"Reset file name to {originalSafeFileName}.";
         }

@@ -19,7 +19,7 @@ namespace FileObjectExtractor.Models
         private string safeFileName;
         private List<string> fileNameWarnings;
         private int documentOrder;
-
+        private bool isLinkedFile;
         public string FileName
         {
             get => fileName; set
@@ -36,6 +36,7 @@ namespace FileObjectExtractor.Models
         public string SafeFileName { get => safeFileName; set => safeFileName = value; }
         public List<string> FileNameWarnings { get => fileNameWarnings; set => fileNameWarnings = value; }
         public int DocumentOrder { get => documentOrder; set => documentOrder = value; }
+        public bool IsLinkedFile { get => isLinkedFile; set => isLinkedFile = value; }
 
         public ExtractedFile(byte[] embeddedFile)
         {
@@ -52,6 +53,11 @@ namespace FileObjectExtractor.Models
             embeddedExtension = Path.GetExtension(archivedFileEntry.Name);
             isBinary = embeddedExtension.Equals(".bin", StringComparison.OrdinalIgnoreCase);
             embeddedFile = isBinary ? ExtractEmbeddedData(archivedFileEntry.GetBytes()) : archivedFileEntry.GetBytes();
+
+            if (embeddedFile.Length == 0)
+            {
+                isLinkedFile = true;
+            }
 
             fileNameWarnings = new List<string>();
             fileName = string.Empty;
@@ -90,6 +96,12 @@ namespace FileObjectExtractor.Models
             if (StripInvalidCharacters(safeFileNameBuilder))
             {
                 fileNameWarnings.Add(StringConstants.WARNINGS.INVALID_CHARACTERS);
+            }
+
+            if (IsLinkedFile)
+            {
+                safeFileNameBuilder.Replace(" (Command Line)", "");
+                fileNameWarnings.Add(StringConstants.WARNINGS.LINKED_FILE);
             }
 
             safeFileName = safeFileNameBuilder.ToString();
@@ -175,8 +187,12 @@ namespace FileObjectExtractor.Models
                     sourcePath.Add(currentByte);
                 }
 
-                // Skip 4 bytes
-                bytes.DequeueMultiple(4);
+                // Tries to filter out files linked to
+                byte[] isLink = bytes.DequeueMultiple(4);
+                if (isLink.SequenceEqual(new byte[] { 0x00, 0x00, 0x01, 0x00 }))
+                {
+                    return new byte[0];
+                }
 
                 // Gets the temporary file path size
                 int dwSizeInt = BitConverter.ToInt32(bytes.DequeueMultiple(4), 0);

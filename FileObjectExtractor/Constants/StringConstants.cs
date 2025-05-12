@@ -6,11 +6,12 @@
 
         public static class WARNINGS
         {
-            public const string NO_EXPLICIT_NAME = "Original file name may not have an explicit file name.";
+            public const string NO_EXPLICIT_NAME = "File embeedded as content: file may not have a file name.";
             public const string GUESSED_EXTENSION = "The extension was guessed from the file contents.";
             public const string NO_EXTENSION = "Original file name does not appear to have an extension.";
             public const string INVALID_CHARACTERS = "Original file name has invalid characters for your operating system. These have been replaced with an underscore \"_\".";
             public const string LONG_FILENAME = "Original file name has been truncated.";
+            public const string LINKED_FILE = "This is a linked file and cannot be extracted.";
         }
 
         public static class CLI_ERRORS

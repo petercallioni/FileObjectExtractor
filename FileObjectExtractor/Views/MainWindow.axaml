@@ -314,7 +314,9 @@
 							<ListBox.ItemTemplate>
 								<DataTemplate>
 									<DockPanel LastChildFill="True" IsVisible="{Binding IsVisible}">
-										<CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+										<CheckBox
+											IsEnabled="{Binding !ExtractedFile.IsLinkedFile}"
+											IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
 										<Button
 											Background="Transparent" Padding="3"
 											IsVisible="{Binding NameChanged}"
@@ -339,6 +341,7 @@
 
 										<Button
 											DockPanel.Dock="Right"
+											IsEnabled="{Binding !ExtractedFile.IsLinkedFile}"
 											Background="Transparent"
 											Padding="3,3,3,3"
 											HorizontalAlignment="Right"
@@ -356,7 +359,7 @@
 										</Button>
 										<Button
 											Background="Transparent" Padding="0"
-											IsEnabled="{Binding !IsOpen}"
+											IsEnabled="{Binding CanOpen}"
 											Margin="5,0,0,0"
 											ToolTip.Tip="Open with default application. Exercise caution."
 											Command="{Binding OpenFileCommand}"

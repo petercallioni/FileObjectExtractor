@@ -26,7 +26,7 @@ namespace FileObjectExtractor.ViewModels.Design
                     extractedFileVM.ExtractedFile.FileNameWarnings.Add("Sample Warning 1");
                     extractedFileVM.ExtractedFile.FileNameWarnings.Add("Sample Warning 2");
                     extractedFileVM.ExtractedFile.FileName = $"This is a very long filename that is over 50 characters long.docx";
-                    extractedFileVM.IsOpen = true;
+                    extractedFileVM.CanOpen = true;
                 }
                 else
                 {

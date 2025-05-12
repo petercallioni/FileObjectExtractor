@@ -295,10 +295,10 @@ namespace FileObjectExtractor.ViewModels
             Action openFileAction = () =>
                 ExceptionSafe(async () =>
                 {
-                    extractedFileVM.IsOpen = true;
+                    extractedFileVM.CanOpen = false;
                     TrustToOpenFiles = true;
                     await fileController.OpenFile(extractedFileVM.ExtractedFile);
-                    extractedFileVM.IsOpen = false;
+                    extractedFileVM.CanOpen = true;
                 });
 
             if (!TrustToOpenFiles)

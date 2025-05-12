@@ -77,7 +77,14 @@ namespace FileObjectExtractor.CLI
 
             foreach (ExtractedFile embeddedFile in embeddedFiles)
             {
-                Console.WriteLine($"{embeddedFile.DocumentOrder} - {embeddedFile.SafeFileName}");
+                string line = $"{embeddedFile.DocumentOrder} - {embeddedFile.SafeFileName}";
+
+                if (embeddedFile.IsLinkedFile)
+                {
+                    line += " (Linked; Unselectable)";
+                }
+
+                Console.WriteLine(line);
             }
 
             return ExitCode.SUCCESS;
@@ -142,6 +149,12 @@ namespace FileObjectExtractor.CLI
 
         private void HandleFile(IFileController fileController, ExtractedFile embeddedFile, string? customName = null)
         {
+            if (embeddedFile.IsLinkedFile)
+            {
+                Console.WriteLine($"Skipping {embeddedFile.SafeFileName} (Linked; Unselectable)");
+                return;
+            }
+
             string outputMessage = $"Extracting {embeddedFile.SafeFileName}";
             string fileName = embeddedFile.SafeFileName;
 
