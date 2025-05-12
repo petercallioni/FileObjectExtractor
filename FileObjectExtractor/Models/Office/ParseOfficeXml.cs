@@ -25,24 +25,12 @@ namespace FileObjectExtractor.Models.Office
         protected List<ExtractedFile> CombineLists(
     Dictionary<string, OleObject> iconRids,
     Dictionary<string, string> fileRids,
-    List<ZipArchiveEntry> archiveFiles)
+    List<ZipArchiveEntry> embeddedFiles,
+    List<ZipArchiveEntry> mediaFiles)
         {
             int documentOrderCounter = 0;
             List<ExtractedFile> files = new List<ExtractedFile>();
             EmfParser parser = new EmfParser();
-
-            // Local helper to retrieve the ZipArchiveEntry using the given file path
-            ZipArchiveEntry GetEntry(string path)
-            {
-                // Strip the first element and try to find a match within the archive entries
-                string checkPath = StripFirstElement(path);
-                ZipArchiveEntry? entry = archiveFiles.FirstOrDefault(x => x.FullName.EndsWith(checkPath));
-                if (entry == null)
-                {
-                    throw new InvalidOperationException($"Could not find archive entry ending with '{checkPath}'.");
-                }
-                return entry;
-            }
 
             foreach (string key in iconRids.Keys)
             {
@@ -53,8 +41,8 @@ namespace FileObjectExtractor.Models.Office
                 bool hasIcon = currentOle.HasIcon;
 
                 // Get the corresponding archive entries for the icon & file
-                ZipArchiveEntry iconEntry = GetEntry(iconPath);
-                ZipArchiveEntry fileEntry = GetEntry(filePath);
+                ZipArchiveEntry iconEntry = GetEntry(iconPath, mediaFiles);
+                ZipArchiveEntry fileEntry = GetEntry(filePath, embeddedFiles);
 
                 // Determine the explicit display name by checking if it is an EMF file
                 string explicitName = IsEmf(iconEntry.Name)
@@ -90,6 +78,18 @@ namespace FileObjectExtractor.Models.Office
             }
 
             return files;
+        }
+
+        private ZipArchiveEntry GetEntry(string path, List<ZipArchiveEntry> embeddedFiles)
+        {
+            // Strip the first element and try to find a match within the archive entries
+            string checkPath = StripFirstElement(path);
+            ZipArchiveEntry? entry = embeddedFiles.FirstOrDefault(x => x.FullName.EndsWith(checkPath));
+            if (entry == null)
+            {
+                throw new InvalidOperationException($"Could not find archive entry ending with '{checkPath}'.");
+            }
+            return entry;
         }
 
         private bool IsEmf(string file)

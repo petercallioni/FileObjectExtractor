@@ -21,6 +21,7 @@ namespace FileObjectExtractor.Models.Office
         public override List<ExtractedFile> GetExtractedFiles(Uri filePath)
         {
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
+            List<ZipArchiveEntry> mediaFiles = new List<ZipArchiveEntry>();
             List<ExtractedFile> files = new List<ExtractedFile>();
             Dictionary<string, string> rIdsAndFiles = new Dictionary<string, string>();
             Dictionary<string, OleObject> rIdsIconsAndFiles = new Dictionary<string, OleObject>();
@@ -41,13 +42,17 @@ namespace FileObjectExtractor.Models.Office
                     {
                         rIdsAndFiles = ParseRelsFile(entry);
                     }
-                    else if (entry.FullName.Contains("embeddings") || entry.FullName.Contains("media"))
+                    else if (entry.FullName.Contains("embeddings"))
                     {
                         embeddedFiles.Add(entry);
                     }
+                    else if (entry.FullName.Contains("media"))
+                    {
+                        mediaFiles.Add(entry);
+                    }
                 }
 
-                files = CombineLists(rIdsIconsAndFiles, rIdsAndFiles, embeddedFiles);
+                files = CombineLists(rIdsIconsAndFiles, rIdsAndFiles, embeddedFiles, mediaFiles);
             }
 
             return files;
