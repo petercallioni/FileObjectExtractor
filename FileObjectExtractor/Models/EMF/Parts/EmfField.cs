@@ -3,6 +3,7 @@ using FileObjectExtractor.Extensions;
 using FileObjectExtractor.Models.EMF.Parts;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace FileObjectExtractor.Models.EMF.EmfPart
 {
@@ -78,7 +79,7 @@ namespace FileObjectExtractor.Models.EMF.EmfPart
                 RawValue = data.DequeueMultiple(ByteLength);
                 Value = typeof(T) switch
                 {
-                    Type t when t == typeof(string) => (T)(object)HexConverter.HexToString(RawValue),
+                    Type t when t == typeof(string) => (T)(object)HexConverter.HexToString(RawValue, Encoding.Unicode),
                     Type t when t == typeof(int) => (T)(object)HexConverter.LittleEndianHexToInt(RawValue),
                     Type t when t == typeof(uint) => (T)(object)HexConverter.LittleEndianHexToUInt(RawValue),
                     Type t when t == typeof(float) => (T)(object)HexConverter.LittleEndianHexToFloat(RawValue),

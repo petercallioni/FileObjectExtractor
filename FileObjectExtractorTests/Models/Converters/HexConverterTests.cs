@@ -1,4 +1,5 @@
 ﻿using FileObjectExtractor.Converters;
+using System.Text;
 
 namespace FileObjectExtractor.Models.Converters.Tests
 {
@@ -35,7 +36,7 @@ namespace FileObjectExtractor.Models.Converters.Tests
                 0x54, 0x00, 0x65, 0x00, 0x73, 0x00, 0x74, 0x00,
                 0x44, 0x00, 0x6F, 0x00, 0x63, 0x00, 0x78, 0x00
             };
-            Assert.IsTrue(HexConverter.HexToString(data).Equals("EmbeddedTestDocx"));
+            Assert.IsTrue(HexConverter.HexToString(data, Encoding.Unicode).Equals("EmbeddedTestDocx"));
         }
     }
 }

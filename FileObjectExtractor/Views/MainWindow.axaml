@@ -315,7 +315,7 @@
 								<DataTemplate>
 									<DockPanel LastChildFill="True" IsVisible="{Binding IsVisible}">
 										<CheckBox
-											IsEnabled="{Binding !ExtractedFile.IsLinkedFile}"
+											IsEnabled="{Binding ExtractedFile.HasFileContent}"
 											IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
 										<Button
 											Background="Transparent" Padding="3"
@@ -341,7 +341,7 @@
 
 										<Button
 											DockPanel.Dock="Right"
-											IsEnabled="{Binding !ExtractedFile.IsLinkedFile}"
+											IsEnabled="{Binding ExtractedFile.HasFileContent}"
 											Background="Transparent"
 											Padding="3,3,3,3"
 											HorizontalAlignment="Right"

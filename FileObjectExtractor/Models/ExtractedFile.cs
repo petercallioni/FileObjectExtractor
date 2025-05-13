@@ -20,12 +20,14 @@ namespace FileObjectExtractor.Models
         private List<string> fileNameWarnings;
         private int documentOrder;
         private bool isLinkedFile;
+        private bool hasFileContent;
+
         public string FileName
         {
             get => fileName; set
             {
                 fileName = value;
-                SetSafeFileName();
+                SetSafeFileNameAndWarnings();
             }
         }
 
@@ -37,6 +39,7 @@ namespace FileObjectExtractor.Models
         public List<string> FileNameWarnings { get => fileNameWarnings; set => fileNameWarnings = value; }
         public int DocumentOrder { get => documentOrder; set => documentOrder = value; }
         public bool IsLinkedFile { get => isLinkedFile; set => isLinkedFile = value; }
+        public bool HasFileContent { get => hasFileContent; set => hasFileContent = value; }
 
         public ExtractedFile(byte[] embeddedFile)
         {
@@ -46,25 +49,23 @@ namespace FileObjectExtractor.Models
             fileName = string.Empty;
             safeFileName = string.Empty;
             embeddedExtension = string.Empty;
+            hasFileContent = true;
         }
 
         public ExtractedFile(ZipArchiveEntry archivedFileEntry)
         {
+            isLinkedFile = false;
             embeddedExtension = Path.GetExtension(archivedFileEntry.Name);
             isBinary = embeddedExtension.Equals(".bin", StringComparison.OrdinalIgnoreCase);
-            embeddedFile = isBinary ? ExtractEmbeddedData(archivedFileEntry.GetBytes()) : archivedFileEntry.GetBytes();
-
-            if (embeddedFile.Length == 0)
-            {
-                isLinkedFile = true;
-            }
+            embeddedFile = isBinary ? ExtractEmbeddedData(archivedFileEntry.GetBytes(), out isLinkedFile) : archivedFileEntry.GetBytes();
+            hasFileContent = embeddedFile.Length != 0;
 
             fileNameWarnings = new List<string>();
             fileName = string.Empty;
             safeFileName = string.Empty;
         }
 
-        private void SetSafeFileName()
+        private void SetSafeFileNameAndWarnings()
         {
             StringBuilder safeFileNameBuilder = new StringBuilder(fileName);
             FileInfo fileInfo = new FileInfo(fileName);
@@ -113,9 +114,10 @@ namespace FileObjectExtractor.Models
             return filenameSanitiser.SanitiseFilename(stringBuilder);
         }
 
-        private byte[] ExtractEmbeddedData(byte[] inputBin)
+        private byte[] ExtractEmbeddedData(byte[] inputBin, out bool isLinkedFile)
         {
             byte[] contentArray = [];
+            bool isLinkedFileLocal = false;
             using (MemoryStream memoryStream = new MemoryStream(inputBin))
             {
                 CompoundFile cf = new CompoundFile(memoryStream);
@@ -143,22 +145,24 @@ namespace FileObjectExtractor.Models
                         else if (streamName.Equals("\u0001Ole10Native"))
                         {
                             // Parse the Ole10Native data to extract the original data
-                            contentArray = ExtractOle10NativeData(bytes);
+                            contentArray = ExtractOle10NativeData(bytes, out isLinkedFileLocal);
                             return;
                         }
                     }
                 }, false); // The second parameter indicates whether to visit sub-storages recursively                
             }
 
+            isLinkedFile = isLinkedFileLocal;
             return contentArray;
         }
 
-        private byte[] ExtractOle10NativeData(byte[] data)
+        private byte[] ExtractOle10NativeData(byte[] data, out bool isLinkedFile)
         {
             Queue<byte> bytes = new Queue<byte>(data);
             List<byte> fileName = new List<byte>();
             List<byte> sourcePath = new List<byte>();
             byte[] returnBytes;
+            isLinkedFile = false;
 
             // Total Size, not including these 4 bytes
             bytes.DequeueMultiple(4);
@@ -191,6 +195,13 @@ namespace FileObjectExtractor.Models
                 byte[] isLink = bytes.DequeueMultiple(4);
                 if (isLink.SequenceEqual(new byte[] { 0x00, 0x00, 0x01, 0x00 }))
                 {
+                    isLinkedFile = true;
+
+                    if (TryGetLinkedFile(Encoding.UTF8.GetString(sourcePath.ToArray()), out byte[] linkedFile))
+                    {
+                        return linkedFile;
+                    }
+
                     return new byte[0];
                 }
 
@@ -209,6 +220,20 @@ namespace FileObjectExtractor.Models
             }
 
             return returnBytes;
+        }
+
+        public bool TryGetLinkedFile(string path, out byte[] linkedFile)
+        {
+            if (File.Exists(path))
+            {
+                linkedFile = File.ReadAllBytes(path);
+                return true;
+            }
+            else
+            {
+                linkedFile = new byte[0];
+                return false;
+            }
         }
 
         public void TrimEndButOneNull(List<byte> byteList)

@@ -33,7 +33,7 @@ namespace FileObjectExtractor.ViewModels
         {
             get => isSelected; set
             {
-                if (value != isSelected && !extractedFile.IsLinkedFile)
+                if (value != isSelected && extractedFile.HasFileContent)
                 {
                     isSelected = value;
                     OnPropertyChanged();
@@ -60,10 +60,11 @@ namespace FileObjectExtractor.ViewModels
         {
             get
             {
-                if (extractedFile.IsLinkedFile)
+                if (!extractedFile.HasFileContent)
                 {
                     return false;
                 }
+
                 return canOpen;
             }
             set

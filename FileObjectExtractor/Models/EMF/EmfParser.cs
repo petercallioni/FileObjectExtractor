@@ -2,6 +2,7 @@
 using FileObjectExtractor.Extensions;
 using FileObjectExtractor.Models.EMF.EmfPart;
 using FileObjectExtractor.Models.EMF.Enums;
+using System;
 using System.Collections.Generic;
 
 namespace FileObjectExtractor.Models.EMF
@@ -82,17 +83,15 @@ namespace FileObjectExtractor.Models.EMF
 
         private void ParseTextRecords(EmfFile file, Queue<byte> dataQueue)
         {
-            while (SkipToTextRecord(dataQueue, out RecordType? recordType))
+            while (SkipToTextRecord(dataQueue, out RecordType recordType, out uint recordSize))
             {
-                // Extract the record size (after reading the record type which is already determined).
-                uint recordSize = HexConverter.LittleEndianHexToUInt(dataQueue.DequeueMultiple(4));
-                int recordBufferSize = (int)recordSize - 8; // Account for RecordType and Size fields.
+                uint recordBufferSize = recordSize - 8u; // Account for RecordType and Size fields.
 
                 // The math is easier if shift the whole record to a new buffer.
-                Queue<byte> recordBuffer = new Queue<byte>(dataQueue.DequeueMultiple(recordBufferSize));
+                Queue<byte> recordBuffer = new Queue<byte>(dataQueue.DequeueMultiple((int)recordBufferSize));
 
                 // Create and partially initialize a new text record.
-                EmfTextRecord textRecord = new EmfTextRecord(recordType!.Value, recordSize);
+                EmfTextRecord textRecord = new EmfTextRecord(recordType, (uint)recordBufferSize);
                 textRecord.Initialize(recordBuffer);
 
                 // Determine if there is a Rectangle field based on Options.
@@ -128,33 +127,56 @@ namespace FileObjectExtractor.Models.EMF
             }
         }
 
-        public bool SkipToTextRecord(Queue<byte> input, out RecordType? recordType)
+        public bool SkipToTextRecord(Queue<byte> input, out RecordType recordType, out uint recordSize)
         {
-            const int ShiftAmount = 4; // 4 bytes
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
 
-            Queue<byte> buffer = new Queue<byte>(ShiftAmount);
+            // Constants for the header bytes
+            const int recordTypeByteCount = 4;   // Bytes for RecordType field
+            const int recordSizeByteCount = 4;   // Bytes for RecordSize field
+            const int recordHeaderSize = recordTypeByteCount + recordSizeByteCount;
 
-            while (input.Count >= ShiftAmount)
+            // Initialize output parameters
+            recordType = RecordType.EMR_HEADER;
+            recordSize = 0;
+
+            // We must have at least header bytes to safely read a record header
+            while (input.Count >= recordHeaderSize)
             {
-                while (buffer.Count < ShiftAmount)
+                // Dequeue and convert record type
+                byte[] typeBytes = input.DequeueMultiple(recordTypeByteCount);
+                recordType = (RecordType)HexConverter.LittleEndianHexToInt(typeBytes);
+
+                // Dequeue and convert record size
+                byte[] sizeBytes = input.DequeueMultiple(recordSizeByteCount);
+                recordSize = HexConverter.LittleEndianHexToUInt(sizeBytes);
+
+                // Check for file termination marker
+                if (recordType == RecordType.EMR_EOF)
                 {
-                    buffer.Enqueue(input.Dequeue());
+                    input.Clear(); // clear any remaining bytes. We do not need the optional palettes.
+                    break;
                 }
 
-                int value = HexConverter.LittleEndianHexToInt(buffer.ToArray());
-                recordType = (RecordType)value;
-
+                // If the record is one of the text record types, return immediately
                 if (recordType == RecordType.EMR_EXTTEXTOUTW || recordType == RecordType.EMR_EXTTEXTOUTA)
                 {
                     return true;
                 }
 
-                // Remove one byte and continue
-                buffer.Dequeue();
+                // For other record types, skip the body of the record.
+                // Calculate remaining number of bytes to skip.
+                int remainingRecordBytes = (int)recordSize - recordHeaderSize;
+                if (remainingRecordBytes > 0)
+                {
+                    // Ensure that we don't attempt to skip more bytes than available.
+                    // This might indicate a malformed record.
+                    int bytesToSkip = Math.Min(remainingRecordBytes, input.Count);
+                    input.DequeueMultiple(bytesToSkip);
+                }
             }
 
-            recordType = null;
-            input.Clear();
             return false;
         }
     }

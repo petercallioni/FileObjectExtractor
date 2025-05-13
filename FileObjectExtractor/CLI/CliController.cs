@@ -149,7 +149,7 @@ namespace FileObjectExtractor.CLI
 
         private void HandleFile(IFileController fileController, ExtractedFile embeddedFile, string? customName = null)
         {
-            if (embeddedFile.IsLinkedFile)
+            if (embeddedFile.IsLinkedFile && embeddedFile.EmbeddedFile.Length == 0)
             {
                 Console.WriteLine($"Skipping {embeddedFile.SafeFileName} (Linked; Unselectable)");
                 return;

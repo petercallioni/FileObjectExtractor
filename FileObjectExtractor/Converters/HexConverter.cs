@@ -31,9 +31,9 @@ namespace FileObjectExtractor.Converters
             return BitConverter.ToSingle(data, 0);
         }
 
-        public static string HexToString(byte[] data)
+        public static string HexToString(byte[] data, Encoding encoding)
         {
-            return Encoding.Unicode.GetString(data);
+            return encoding.GetString(data);
         }
     }
 }
