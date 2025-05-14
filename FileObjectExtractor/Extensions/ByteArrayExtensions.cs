@@ -4,7 +4,7 @@ namespace FileObjectExtractor.Extensions
 {
     public static class ByteArrayExtensions
     {
-        public static bool ContainsSequence(byte[] haystack, byte[] needle)
+        public static bool ContainsSequence(this byte[] haystack, byte[] needle)
         {
             if (needle.Length == 0) return true; // An empty array is always contained.
             if (haystack.Length < needle.Length) return false;

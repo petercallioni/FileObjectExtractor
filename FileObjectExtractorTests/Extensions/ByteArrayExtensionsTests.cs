@@ -9,7 +9,7 @@
             byte[] haystack = { 0x01, 0x02, 0x03 };
             byte[] needle = Array.Empty<byte>();
 
-            bool result = FileObjectExtractor.Extensions.ByteArrayExtensions.ContainsSequence(haystack, needle);
+            bool result = haystack.ContainsSequence(needle);
 
             Assert.IsTrue(result);
         }
@@ -20,7 +20,7 @@
             byte[] haystack = Array.Empty<byte>();
             byte[] needle = { 0x01 };
 
-            bool result = FileObjectExtractor.Extensions.ByteArrayExtensions.ContainsSequence(haystack, needle);
+            bool result = haystack.ContainsSequence(needle);
 
             Assert.IsFalse(result);
         }
@@ -31,7 +31,7 @@
             byte[] haystack = { 0x01, 0x02 };
             byte[] needle = { 0x01, 0x02, 0x03 };
 
-            bool result = FileObjectExtractor.Extensions.ByteArrayExtensions.ContainsSequence(haystack, needle);
+            bool result = haystack.ContainsSequence(needle);
 
             Assert.IsFalse(result);
         }
@@ -42,7 +42,7 @@
             byte[] haystack = { 0x01, 0x02, 0x03 };
             byte[] needle = { 0x01, 0x02 };
 
-            bool result = FileObjectExtractor.Extensions.ByteArrayExtensions.ContainsSequence(haystack, needle);
+            bool result = haystack.ContainsSequence(needle);
 
             Assert.IsTrue(result);
         }
@@ -53,7 +53,7 @@
             byte[] haystack = { 0x01, 0x02, 0x03, 0x04 };
             byte[] needle = { 0x02, 0x03 };
 
-            bool result = FileObjectExtractor.Extensions.ByteArrayExtensions.ContainsSequence(haystack, needle);
+            bool result = haystack.ContainsSequence(needle);
 
             Assert.IsTrue(result);
         }
@@ -64,7 +64,7 @@
             byte[] haystack = { 0x01, 0x02, 0x03 };
             byte[] needle = { 0x02, 0x03 };
 
-            bool result = FileObjectExtractor.Extensions.ByteArrayExtensions.ContainsSequence(haystack, needle);
+            bool result = haystack.ContainsSequence(needle);
 
             Assert.IsTrue(result);
         }
@@ -75,7 +75,7 @@
             byte[] haystack = { 0x01, 0x02, 0x03 };
             byte[] needle = { 0x04 };
 
-            bool result = FileObjectExtractor.Extensions.ByteArrayExtensions.ContainsSequence(haystack, needle);
+            bool result = haystack.ContainsSequence(needle);
 
             Assert.IsFalse(result);
         }
@@ -86,7 +86,7 @@
             byte[] haystack = { 0x01, 0x02, 0x03 };
             byte[] needle = { 0x01, 0x02, 0x03 };
 
-            bool result = FileObjectExtractor.Extensions.ByteArrayExtensions.ContainsSequence(haystack, needle);
+            bool result = haystack.ContainsSequence(needle);
 
             Assert.IsTrue(result);
         }

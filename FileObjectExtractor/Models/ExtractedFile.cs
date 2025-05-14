@@ -226,8 +226,16 @@ namespace FileObjectExtractor.Models
         {
             if (File.Exists(path))
             {
-                linkedFile = File.ReadAllBytes(path);
-                return true;
+                try
+                {
+                    linkedFile = FileExtensions.ReadAllBytesReadOnly(path);
+                    return true;
+                }
+                catch // Dont try that hard to get the file
+                {
+                    linkedFile = new byte[0];
+                    return false;
+                }
             }
             else
             {

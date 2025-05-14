@@ -127,6 +127,14 @@ namespace FileObjectExtractor.Models.EMF
             }
         }
 
+        /// <summary>
+        /// Skip to the next text record in the input queue.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="recordType"></param>
+        /// <param name="recordSize"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public bool SkipToTextRecord(Queue<byte> input, out RecordType recordType, out uint recordSize)
         {
             if (input == null)
