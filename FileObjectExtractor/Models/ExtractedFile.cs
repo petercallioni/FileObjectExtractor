@@ -78,6 +78,7 @@ namespace FileObjectExtractor.Models
                 {
                     safeFileNameBuilder.Remove(IntContstants.MAX_FILE_NAME_CHARS, safeFileNameBuilder.Length - IntContstants.MAX_FILE_NAME_CHARS);
                     safeFileNameBuilder.Append("...");
+                    safeFileNameBuilder.Append(embeddedExtension);
                     fileNameWarnings.Add(StringConstants.WARNINGS.LONG_FILENAME);
                 }
             }

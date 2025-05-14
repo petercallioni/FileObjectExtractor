@@ -44,6 +44,10 @@ namespace FileObjectExtractor.Models
                     subProcess.Start();
                     subProcess.WaitForExit();
                 }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error opening file: {ex.Message}");
+                }
                 finally
                 {
                     File.Delete(tempFile);
