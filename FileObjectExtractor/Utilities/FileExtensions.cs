@@ -1,8 +1,9 @@
-﻿using System;
+﻿using FileObjectExtractor.Extensions;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace FileObjectExtractor.Extensions
+namespace FileObjectExtractor.Utilities
 {
     public static class FileExtensions
     {

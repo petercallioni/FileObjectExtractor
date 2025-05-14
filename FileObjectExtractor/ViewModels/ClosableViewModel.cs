@@ -4,16 +4,14 @@ namespace FileObjectExtractor.ViewModels
 {
     public abstract class ClosableViewModel : ViewModelBase
     {
-        protected IWindowService windowService;
-
-        protected ClosableViewModel(IWindowService windowService)
+        protected ClosableViewModel(IWindowService windowService) : base(windowService)
         {
-            this.windowService = windowService;
+
         }
 
         protected void Close()
         {
-            windowService.CloseWindow();
+            WindowService.CloseWindow();
         }
     }
 }

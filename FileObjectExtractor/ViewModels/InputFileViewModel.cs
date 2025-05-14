@@ -44,19 +44,19 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public InputFileViewModel()
+        public InputFileViewModel() : base(null!)
         {
             this.fileURI = null;
             this.officeType = OfficeType.UNKNOWN;
         }
 
-        public InputFileViewModel(Uri fileURI, OfficeType officeType)
+        public InputFileViewModel(Uri fileURI, OfficeType officeType) : base(null!)
         {
             this.fileURI = fileURI;
             this.officeType = officeType;
         }
 
-        public InputFileViewModel(Uri uri)
+        public InputFileViewModel(Uri uri) : base(null!)
         {
             this.fileURI = uri;
             this.officeType = OfficeType.UNKNOWN;

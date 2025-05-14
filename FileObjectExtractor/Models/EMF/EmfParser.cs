@@ -1,7 +1,7 @@
-﻿using FileObjectExtractor.Converters;
-using FileObjectExtractor.Extensions;
+﻿using FileObjectExtractor.Extensions;
 using FileObjectExtractor.Models.EMF.EmfPart;
 using FileObjectExtractor.Models.EMF.Enums;
+using FileObjectExtractor.Utilities;
 using System;
 using System.Collections.Generic;
 

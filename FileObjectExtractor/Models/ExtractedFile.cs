@@ -1,5 +1,6 @@
 ﻿using FileObjectExtractor.Constants;
 using FileObjectExtractor.Extensions;
+using FileObjectExtractor.Utilities;
 using OpenMcdf;
 using System;
 using System.Collections.Generic;

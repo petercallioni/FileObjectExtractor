@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using FileObjectExtractor.Models;
+using FileObjectExtractor.Services;
 using System;
 
 namespace FileObjectExtractor.ViewModels
@@ -84,7 +85,7 @@ namespace FileObjectExtractor.ViewModels
             FileName = originalSafeFileName;
         }
 
-        public ExtractedFileViewModel(ExtractedFile extractedFile, Action<ExtractedFileViewModel> saveFileOperation, Action<ExtractedFileViewModel> openFileOperation)
+        public ExtractedFileViewModel(IWindowService windowService, ExtractedFile extractedFile, Action<ExtractedFileViewModel> saveFileOperation, Action<ExtractedFileViewModel> openFileOperation) : base(windowService)
         {
             this.extractedFile = extractedFile;
             originalSafeFileName = extractedFile.SafeFileName;

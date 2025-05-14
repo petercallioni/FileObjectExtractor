@@ -7,15 +7,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FileObjectExtractor.ViewModels
 {
     public partial class MainWindowViewModel : ClosableViewModel
     {
+        // Sub ViewModels
         private InputFileViewModel inputFile;
         private MainMenuViewModel mainMenu;
         private ProgressIndicatorViewModel progressIndicator;
+
         private ProgressService progressService;
         private IBackgroundExecutor backgroundExecutor;
         private bool trustToOpenFiles;
@@ -179,7 +180,7 @@ namespace FileObjectExtractor.ViewModels
 
                          foreach (ExtractedFile file in embeddedFiles)
                          {
-                             ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(file, SaveFile, OpenFile);
+                             ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(WindowService, file, SaveFile, OpenFile);
 
                              // Update the UI when the IsSelected property changes
                              extractedFileVM.PropertyChanged += (sender, e) =>
@@ -325,36 +326,6 @@ namespace FileObjectExtractor.ViewModels
 
         }
 
-        private void ExceptionSafe(Action action, Action? rollback = null)
-        {
-            try
-            {
-                action.Invoke();
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, rollback);
-            }
-        }
-
-        private async Task ExceptionSafeAsync(Func<Task> actionAsync, Action? rollback = null)
-        {
-            try
-            {
-                await actionAsync().ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, rollback);
-            }
-        }
-
-        private void HandleException(Exception ex, Action? rollback)
-        {
-            rollback?.Invoke();
-            windowService.ShowErrorWindow(ex);
-        }
-
         private void SelectSort(SortOrder sort)
         {
             SortOrder = sort;
@@ -380,7 +351,7 @@ namespace FileObjectExtractor.ViewModels
 
         private void OpenFileTrustWindow(Action confirmAction)
         {
-            windowService.ShowFileTrustWindow(confirmAction);
+            WindowService.ShowFileTrustWindow(confirmAction);
         }
     }
 }

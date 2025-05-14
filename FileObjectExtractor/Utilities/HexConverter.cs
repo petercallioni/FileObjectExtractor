@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace FileObjectExtractor.Converters
+namespace FileObjectExtractor.Utilities
 {
     public static class HexConverter
     {

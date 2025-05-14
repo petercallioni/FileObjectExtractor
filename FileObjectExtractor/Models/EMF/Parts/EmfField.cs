@@ -1,6 +1,6 @@
-﻿using FileObjectExtractor.Converters;
-using FileObjectExtractor.Extensions;
+﻿using FileObjectExtractor.Extensions;
 using FileObjectExtractor.Models.EMF.Parts;
+using FileObjectExtractor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;

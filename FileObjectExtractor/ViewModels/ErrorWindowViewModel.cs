@@ -28,7 +28,6 @@ namespace FileObjectExtractor.ViewModels
         public ErrorWindowViewModel(Exception exception, IWindowService windowService) : base(windowService)
         {
             this.exception = exception;
-            this.windowService = windowService;
 
             this.title = GetWindowTitle(exception);
             displayText = exception.Message;

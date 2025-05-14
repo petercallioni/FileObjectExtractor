@@ -41,7 +41,7 @@
             }
         }
 
-        public ProgressIndicatorViewModel()
+        public ProgressIndicatorViewModel() : base(null)
         {
             progress = 0;
             maxProgress = 100;
@@ -49,7 +49,7 @@
             message = "";
         }
 
-        public ProgressIndicatorViewModel(int maxProgress, string initialMessage = "")
+        public ProgressIndicatorViewModel(int maxProgress, string initialMessage = "") : base(null)
         {
             progress = 0;
             this.maxProgress = maxProgress;

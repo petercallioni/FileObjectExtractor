@@ -1,4 +1,4 @@
-﻿using FileObjectExtractor.Converters;
+﻿using FileObjectExtractor.Utilities;
 using System.Text.Json.Serialization;
 
 namespace FileObjectExtractor.Models.MagicBytes

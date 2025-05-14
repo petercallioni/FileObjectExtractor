@@ -12,7 +12,6 @@ namespace FileObjectExtractor.ViewModels
 
         public FileTrustWindowViewModel(IWindowService windowService, Action confirmAction) : base(windowService)
         {
-            this.windowService = windowService;
             this.confirmAction = confirmAction;
             DismissCommand = new RelayCommand(Close);
             ConfirmCommand = new RelayCommand(Confirm);

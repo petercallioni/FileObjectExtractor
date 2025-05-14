@@ -5,23 +5,22 @@ namespace FileObjectExtractor.ViewModels
 {
     public class MainMenuViewModel : ViewModelBase
     {
-        private IWindowService windowService;
         public IRelayCommand ExitCommand => new RelayCommand(Exit);
         public IRelayCommand AboutCommand => new RelayCommand(About);
 
-        public MainMenuViewModel(IWindowService windowService)
+        public MainMenuViewModel(IWindowService windowService) : base(windowService)
         {
-            this.windowService = windowService;
+
         }
 
         private void Exit()
         {
-            windowService.CloseWindow();
+            WindowService.CloseWindow();
         }
 
         private void About()
         {
-            windowService.ShowAboutWindow();
+            WindowService.ShowAboutWindow();
         }
     }
 }

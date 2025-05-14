@@ -1,6 +1,7 @@
 ﻿using Avalonia.Platform.Storage;
 using FileObjectExtractor.Extensions;
 using FileObjectExtractor.Services;
+using FileObjectExtractor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,13 +32,13 @@ namespace FileObjectExtractor.Models
         public async Task OpenFile(ExtractedFile extractedFile)
         {
             string tempPath = Path.GetTempPath();
-            string tempFile = Path.Combine(tempPath, extractedFile.SafeFileName);
-            File.WriteAllBytes(tempFile, extractedFile.EmbeddedFile);
+            string tempFile = TemporaryFiles.CreateTemporaryFile(extractedFile.SafeFileName).FullName;
 
             await Task.Run(() =>
             {
                 try
                 {
+                    File.WriteAllBytes(tempFile, extractedFile.EmbeddedFile);
                     Process subProcess = new Process();
                     subProcess.StartInfo.UseShellExecute = true;
                     subProcess.StartInfo.FileName = tempFile;
