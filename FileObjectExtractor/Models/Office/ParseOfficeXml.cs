@@ -55,16 +55,6 @@ namespace FileObjectExtractor.Models.Office
                 // Create the new ExtractedFile instance based on the file entry.
                 ExtractedFile extractedFile = new ExtractedFile(fileEntry);
 
-                // If no explicit name was provided, try guessing the extension using magic bytes.
-                if (fileDisplayName.Equals(EMPTY_NAME))
-                {
-                    if (MagicBytes.FileType.GuessFileType(fileEntry.GetBytes(), out string extension))
-                    {
-                        fileDisplayName += extension;
-                        extractedFile.FileNameWarnings.Add(StringConstants.WARNINGS.GUESSED_EXTENSION);
-                    }
-                }
-
                 extractedFile.FileName = fileDisplayName;
                 extractedFile.DocumentOrder = documentOrderCounter++;
 
