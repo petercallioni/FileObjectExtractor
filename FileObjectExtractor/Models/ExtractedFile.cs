@@ -92,7 +92,17 @@ namespace FileObjectExtractor.Models
                 }
                 else
                 {
-                    fileNameWarnings.Add(StringConstants.WARNINGS.NO_EXTENSION);
+
+                    // If no explicit name was provided, try guessing the extension using magic bytes.
+                    if (MagicBytes.FileType.GuessFileType(embeddedFile, out string extension))
+                    {
+                        safeFileNameBuilder.Append(extension);
+                        fileNameWarnings.Add(StringConstants.WARNINGS.GUESSED_EXTENSION);
+                    }
+                    else
+                    {
+                        fileNameWarnings.Add(StringConstants.WARNINGS.NO_EXTENSION);
+                    }
                 }
             }
 
