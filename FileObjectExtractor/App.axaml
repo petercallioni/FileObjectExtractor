@@ -2,6 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="FileObjectExtractor.App"
              xmlns:local="using:FileObjectExtractor"
+			 xmlns:controls="using:FileObjectExtractor.Views.Controls"
+			 xmlns:vm="using:FileObjectExtractor.ViewModels"
              RequestedThemeVariant="Light">
 	<!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 

@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using FileObjectExtractor.Services;
-using FileObjectExtractor.Utilities;
 
 namespace FileObjectExtractor.ViewModels
 {
@@ -8,6 +7,7 @@ namespace FileObjectExtractor.ViewModels
     {
         private int fileCount;
         private string fileSize;
+        private string tempDirectory;
 
         private IRelayCommand clearFilesCommand;
         public int FileCount
@@ -30,24 +30,26 @@ namespace FileObjectExtractor.ViewModels
         }
 
         public IRelayCommand ClearFilesCommand { get => clearFilesCommand; set => clearFilesCommand = value; }
+        public string TempDirectory { get => tempDirectory; set => tempDirectory = value; }
 
         public TemporaryFilesViewModel(IWindowService windowService) : base(windowService)
         {
             fileCount = 0;
             fileSize = string.Empty;
             clearFilesCommand = new RelayCommand(ClearTemporaryFiles);
+            tempDirectory = Utilities.TemporaryFiles.GetTemporaryDirectory().FullName;
             RefreshTemporaryFilesInfo();
         }
 
         public void RefreshTemporaryFilesInfo()
         {
-            FileCount = TemporaryFiles.GetTemporaryFiles().Count;
-            FileSize = TemporaryFiles.GetTemporaryFilesSizeHumanReadable();
+            FileCount = Utilities.TemporaryFiles.GetTemporaryFiles().Count;
+            FileSize = Utilities.TemporaryFiles.GetTemporaryFilesSizeHumanReadable();
         }
 
         public void ClearTemporaryFiles()
         {
-            ExceptionSafe(() => TemporaryFiles.ClearTemporaryFiles());
+            ExceptionSafe(() => Utilities.TemporaryFiles.ClearTemporaryFiles());
             RefreshTemporaryFilesInfo();
         }
     }

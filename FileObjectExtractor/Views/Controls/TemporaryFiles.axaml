@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:controls="using:FileObjectExtractor.Views.Controls"
+             mc:Ignorable="d"
+			 xmlns:vm="using:FileObjectExtractor.ViewModels"
+			 xmlns:design="using:FileObjectExtractor.ViewModels.Design"
+			 x:DataType="vm:TemporaryFilesViewModel"
+             x:Class="FileObjectExtractor.Views.Controls.TemporaryFiles"
+			 ToolTip.Tip="{Binding TempDirectory}">
+
+	<Design.DataContext>
+		<design:DesignTemporaryFilesViewModel/>
+	</Design.DataContext>
+
+	<StackPanel Orientation="Horizontal">
+		<TextBlock FontSize="1"  VerticalAlignment="Center" Margin="0,0,3,0">
+			<Run FontSize="16" Text="Cached Files: "/>
+			<Run FontSize="16" Text="{Binding FileCount}"/>
+			<Run FontSize="16" Text=" ("/>
+			<Run FontSize="16" Text="{Binding FileSize}"/>
+			<Run FontSize="16" Text=")"/>
+		</TextBlock>
+
+		<Button
+			Content="Clear"
+			Background="LightGray"
+			Command="{Binding ClearFilesCommand}">
+		</Button>
+	</StackPanel>
+</UserControl>

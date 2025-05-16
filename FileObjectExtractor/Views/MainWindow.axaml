@@ -277,33 +277,40 @@
 					</CheckBox>
 				</DockPanel>
 
-				<Panel
+				<DockPanel LastChildFill="True"
 					Margin="0,0,10,10"
-					DockPanel.Dock="Bottom"
-					IsVisible="{Binding ProgressIndicator.ShowProgress}">
-					<ProgressBar
-						HorizontalAlignment="Stretch"
-						Height="23"
-						Value="{Binding ProgressIndicator.Progress}"
-						Background="LightGray"
-						Foreground="{Binding InputFile.OfficeColour, Mode=OneWay}"
-						Maximum="{Binding ProgressIndicator.MaxProgress}"/>
+					DockPanel.Dock="Bottom">
 
-					<TextBlock
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"
-						FontSize="0.1"
-						Foreground="{Binding ProgressIndicator.Progress, Converter={StaticResource ProgressTextColourConverter}}, ConverterParameter={Binding ProgressIndicator.MaxProgress}">
-						<TextBlock.Inlines>
-							<Run FontSize="14" Text="{Binding ProgressIndicator.Message}"/>
-							<Run FontSize="14" Text=" ("/>
-							<Run FontSize="14" Text="{Binding ProgressIndicator.Progress}"/>
-							<Run FontSize="14" Text="/"/>
-							<Run FontSize="14" Text="{Binding ProgressIndicator.MaxProgress}"/>
-							<Run FontSize="14" Text=")"/>
-						</TextBlock.Inlines>
-					</TextBlock>
-				</Panel>
+					<Panel DockPanel.Dock="Right">
+						<uc:TemporaryFiles DataContext="{Binding TemporaryFilesViewModel}"/>
+					</Panel>
+
+					<Panel IsVisible="{Binding ProgressIndicator.ShowProgress}">
+						<ProgressBar
+	HorizontalAlignment="Stretch"
+	Height="23"
+	Value="{Binding ProgressIndicator.Progress}"
+	Background="LightGray"
+	Foreground="{Binding InputFile.OfficeColour, Mode=OneWay}"
+	Maximum="{Binding ProgressIndicator.MaxProgress}"/>
+
+						<TextBlock
+							HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							FontSize="0.1"
+							Foreground="{Binding ProgressIndicator.Progress, Converter={StaticResource ProgressTextColourConverter}}, ConverterParameter={Binding ProgressIndicator.MaxProgress}">
+							<TextBlock.Inlines>
+								<Run FontSize="14" Text="{Binding ProgressIndicator.Message}"/>
+								<Run FontSize="14" Text=" ("/>
+								<Run FontSize="14" Text="{Binding ProgressIndicator.Progress}"/>
+								<Run FontSize="14" Text="/"/>
+								<Run FontSize="14" Text="{Binding ProgressIndicator.MaxProgress}"/>
+								<Run FontSize="14" Text=")"/>
+							</TextBlock.Inlines>
+						</TextBlock>
+					</Panel>
+
+				</DockPanel>
 
 				<Border BorderBrush="{Binding InputFile.OfficeColour, Mode=OneWay}" BorderThickness="1" CornerRadius="10" Background="{Binding InputFile.OfficeColour, Mode=OneWay}" Margin="0,10,10,10" Padding="10,10,10,10" DockPanel.Dock="Bottom">
 					<Panel>

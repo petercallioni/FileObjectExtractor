@@ -16,6 +16,7 @@ namespace FileObjectExtractor.ViewModels
         private InputFileViewModel inputFile;
         private MainMenuViewModel mainMenu;
         private ProgressIndicatorViewModel progressIndicator;
+        private TemporaryFilesViewModel temporaryFilesViewModel;
 
         private ProgressService progressService;
         private IBackgroundExecutor backgroundExecutor;
@@ -134,12 +135,23 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public TemporaryFilesViewModel TemporaryFilesViewModel
+        {
+            get => temporaryFilesViewModel;
+            set
+            {
+                temporaryFilesViewModel = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindowViewModel(IFileController fileController, IWindowService windowService, IBackgroundExecutor backgroundExecutor) : base(windowService)
         {
             // VMs
             mainMenu = new MainMenuViewModel(windowService);
             progressIndicator = new ProgressIndicatorViewModel();
             progressService = new ProgressService(ProgressIndicator);
+            temporaryFilesViewModel = new TemporaryFilesViewModel(windowService);
 
             // Initialisers
             inputFile = new InputFileViewModel();
@@ -167,6 +179,7 @@ namespace FileObjectExtractor.ViewModels
             {
                 IsLoadingFile = true;
 
+                // This is incredibly ugly and should be refactored
                 await ExceptionSafeAsync(async () =>
                 {
                     await backgroundExecutor.ExecuteAsync(() =>
@@ -239,12 +252,10 @@ namespace FileObjectExtractor.ViewModels
 
         private void UpdateFilteredCollection()
         {
-            // Get items from the base collection that pass the filter
             List<ExtractedFileViewModel> filtered = extractedFiles.Where(x => x.IsVisible).ToList();
 
-            // Option A: Clear and re-add (straightforward, though can cause a UI refresh)
             FilteredExtractedFiles.Clear();
-            foreach (ExtractedFileViewModel? item in filtered)
+            foreach (ExtractedFileViewModel item in filtered)
             {
                 FilteredExtractedFiles.Add(item);
             }
@@ -299,6 +310,7 @@ namespace FileObjectExtractor.ViewModels
                     extractedFileVM.CanOpen = false;
                     TrustToOpenFiles = true;
                     await fileController.OpenFile(extractedFileVM.ExtractedFile);
+                    temporaryFilesViewModel.RefreshTemporaryFilesInfo();
                     extractedFileVM.CanOpen = true;
                 });
 

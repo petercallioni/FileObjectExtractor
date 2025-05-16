@@ -29,6 +29,8 @@ namespace FileObjectExtractor
                 BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
             }
+
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
@@ -72,6 +74,11 @@ namespace FileObjectExtractor
             {
                 FreeConsole();
             }
+        }
+
+        static void OnProcessExit(object? sender, EventArgs e)
+        {
+            Utilities.TemporaryFiles.ClearTemporaryFiles();
         }
     }
 }
