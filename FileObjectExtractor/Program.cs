@@ -1,22 +1,41 @@
 ﻿using Avalonia;
 using FileObjectExtractor.CLI;
+using FileObjectExtractor.Constants;
 using FileObjectExtractor.Models;
+using FileObjectExtractor.Models.ApplicationOptions;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace FileObjectExtractor
 {
     internal sealed class Program
     {
+        public static bool StartedFromUpdate = false;
+        public static ApplicationOptions ApplicationOptions { get; } = ApplicationOptionsManager.LoadOptions();
+
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
         [STAThread]
         public static void Main(string[] args)
         {
+            if (args.Length == 1)
+            {
+                if (args[0].Equals("_UPDATED_"))
+                {
+                    // This is a special case where the application is relaunched after an update.
+                    StartedFromUpdate = true;
+                    args = Array.Empty<string>();
+                }
+            }
+
             if (args.Length > 0)
             {
                 AttachConsoleOnWindows();
+
+                // TODO CREATE AND PASS UPDATE SERVICE TO CLI
                 FileController fileController = new FileController(null);
                 CliController cliController = new CliController(args, fileController);
                 int exitCode = (int)cliController.StartCLI();
@@ -31,6 +50,28 @@ namespace FileObjectExtractor
             }
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
+        }
+
+        public static void CleanUpUpdate()
+        {
+            IEnumerable<FileInfo> files = new DirectoryInfo(Directory.GetCurrentDirectory()).EnumerateFiles();
+
+            foreach (FileInfo file in files)
+            {
+                if (file.Name.EndsWith(StringConstants.TEMP_FILE_EXTENSION))
+                {
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch (Exception ex) // Non-critical error
+                    {
+                        {
+                            Console.WriteLine($"Failed to delete file {file.Name}: {ex.Message}");
+                        }
+                    }
+                }
+            }
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.

@@ -25,17 +25,31 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '9.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Restore dependencies for main project
+        run: dotnet restore FileObjectExtractor/FileObjectExtractor.csproj
 
       - name: Build main project
         run: dotnet build FileObjectExtractor/FileObjectExtractor.csproj --configuration Release
 
+      - name: Restore dependencies for UpdateHelper
+        run: dotnet restore UpdateHelper/UpdateHelper.csproj
+
+      - name: Build UpdateHelper
+        run: dotnet build UpdateHelper/UpdateHelper.csproj --configuration Release
+
       - name: Publish main project
         run: |
           dotnet publish FileObjectExtractor/FileObjectExtractor.csproj --configuration Release --runtime ${{ matrix.runtime }} --self-contained true --output ./output
+
+      - name: Publish UpdateHelper
+        run: |
+          dotnet publish UpdateHelper/UpdateHelper.csproj --configuration Release --runtime ${{ matrix.runtime }} --self-contained true --output ./updatehelper_output
+
+      - name: Copy UpdateHelper artifacts to main project output
+        run: |
+          cp -r updatehelper_output/* output/
 
       # Zip the contents of the output folder, so the zip doesn’t include the top-level "output" folder.
       - name: Zip artifacts on Linux
@@ -43,7 +57,6 @@ jobs:
         run: |
           cd output
           zip -r ../FileObjectExtractor-${{ matrix.runtime }}.zip .
-      
       - name: Zip artifacts on Windows
         if: runner.os == 'Windows'
         shell: pwsh
@@ -74,6 +87,11 @@ jobs:
         with:
           name: release-zip-linux-x64
           path: .
+
+      - name: Generate Checksums File
+        run: |
+          # Generate a SHA256 hash for each release artifact and write them to checksums.txt
+          sha256sum FileObjectExtractor-win-x64.zip FileObjectExtractor-linux-x64.zip > checksums.txt
 
       - name: Create Release
         id: create_release
@@ -107,3 +125,13 @@ jobs:
           asset_path: FileObjectExtractor-linux-x64.zip
           asset_name: FileObjectExtractor-linux-x64.zip
           asset_content_type: application/zip
+
+      - name: Upload Checksums Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: checksums.txt
+          asset_name: checksums.txt
+          asset_content_type: text/plain

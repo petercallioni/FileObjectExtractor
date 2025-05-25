@@ -12,6 +12,14 @@ namespace FileObjectExtractor.Converters
             {
                 return ByteSizeFormatter.Format(byteArray);
             }
+            else if (value is long byteCount)
+            {
+                return ByteSizeFormatter.Format(byteCount);
+            }
+            else if (value is int intValue)
+            {
+                return ByteSizeFormatter.Format(intValue);
+            }
 
             return "0 B";
         }

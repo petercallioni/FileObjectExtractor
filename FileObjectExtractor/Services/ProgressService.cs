@@ -26,7 +26,7 @@ namespace FileObjectExtractor.Services
             });
         }
 
-        public void SetProgress(int progress)
+        public void SetProgress(double progress)
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {
@@ -34,7 +34,7 @@ namespace FileObjectExtractor.Services
             });
         }
 
-        public void SetMaximum(int maximum)
+        public void SetMaximum(double maximum)
         {
             Avalonia.Threading.Dispatcher.UIThread.Post(() =>
             {

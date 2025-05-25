@@ -3,9 +3,9 @@
     public interface IProgressService
     {
         void HideProgress();
-        void SetMaximum(int maximum);
+        void SetMaximum(double maximum);
         void SetMessage(string message);
-        void SetProgress(int progress);
+        void SetProgress(double progress);
         void ShowProgress();
     }
 }

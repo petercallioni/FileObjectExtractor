@@ -1,0 +1,114 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:FileObjectExtractor.ViewModels"
+		xmlns:design="using:FileObjectExtractor.ViewModels.Design"
+		xmlns:conv="using:FileObjectExtractor.Converters"
+		xmlns:sys="clr-namespace:System;assembly=netstandard"
+        mc:Ignorable="d" d:DesignWidth="{StaticResource Width}" d:DesignHeight="{StaticResource Height}"
+		Width="{StaticResource Width}"
+		Height="{StaticResource Height}"
+		SystemDecorations="BorderOnly"
+        x:Class="FileObjectExtractor.Views.UpdatesWindow"
+		x:DataType="vm:UpdatesViewModel"
+		CanResize="True"
+        Title="Updates">
+
+	<Window.Resources>
+		<sys:Double x:Key="Height">300</sys:Double>
+		<sys:Double x:Key="Width">500</sys:Double>
+		<conv:ProgressTextColourConverter x:Key="ProgressTextColourConverter"/>
+		<conv:ByteSizeConverter x:Key="ByteSizeConverter"/>
+
+		<sys:Double x:Key="BodyText">16</sys:Double>
+		<sys:Double x:Key="HeaderText">20</sys:Double>
+	</Window.Resources>
+
+	<Window.Styles>
+		<Style Selector="Button">
+			<Setter Property="Background" Value="LightGray"/>
+		</Style>
+	</Window.Styles>
+
+	<Design.DataContext>
+		<design:DesignUpdatesViewModel/>
+	</Design.DataContext>
+
+	<Panel
+		Margin="10">
+		<Border
+			BorderBrush="Black"
+			BorderThickness="1">
+		</Border>
+
+		<DockPanel Margin="10" LastChildFill="True">
+			<DockPanel DockPanel.Dock="Bottom">
+				<Button
+					HorizontalAlignment="Left"
+					Command="{Binding CloseCommand}">
+					Close
+				</Button>
+				<Button
+					HorizontalAlignment="Right"
+					Command="{Binding DownloadAndInstallCommand}">
+					Download and Install
+				</Button>
+			</DockPanel>
+
+			<!-- Progress Bar -->
+			<Panel
+				DockPanel.Dock="Bottom"
+				Margin="0,0,0,20"
+				IsVisible="{Binding ProgressIndicatorViewModel.ShowProgress}">
+				<ProgressBar
+					HorizontalAlignment="Stretch"
+					Height="23"
+					Value="{Binding ProgressIndicatorViewModel.Progress}"
+					Background="LightGray"
+					Maximum="{Binding ProgressIndicatorViewModel.MaxProgress}"/>
+
+				<TextBlock
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					FontSize="0.1"
+					Foreground="{Binding ProgressIndicatorViewModel.Progress,
+					Converter={StaticResource ProgressTextColourConverter}}, 
+					ConverterParameter={Binding ProgressIndicatorViewModel.MaxProgress}">
+
+					<TextBlock.Inlines>
+						<Run FontSize="14" Text="{Binding ProgressIndicatorViewModel.Message}"/>
+					</TextBlock.Inlines>
+				</TextBlock>
+			</Panel>
+
+			<ScrollViewer>
+				<StackPanel>
+					<TextBlock FontSize="{StaticResource HeaderText}" FontWeight="Bold">
+						<Run Text="New Version Available"/>
+					</TextBlock>
+
+					<TextBlock Margin="0,10,0,0" FontSize="{StaticResource BodyText}">
+						<Run Text="{Binding CurrentVersion}" FontWeight="Bold" Foreground="Red"/>
+						<Run Text="->" FontWeight="Bold"/>
+						<Run Text="{Binding Update.Version}" FontWeight="Bold" Foreground="Green"/>
+						<Run Text="Created at" FontStyle="Italic"/>
+						<Run Text="{Binding Update.CreatedAt}"  FontStyle="Italic"/>
+					</TextBlock>
+
+					<TextBlock TextWrapping="Wrap" Margin="0,10,0,0" FontSize="1">
+						<TextBlock.Inlines>
+							<Run FontSize="{StaticResource BodyText}" Text="Do you want to download"/>
+							<Run FontSize="{StaticResource BodyText}" Text=" ("/>
+							<Run Text=""/>
+							<Run FontSize="{StaticResource BodyText}" Text="{Binding Update.Size, Converter={StaticResource ByteSizeConverter}}"/>
+							<Run Text=""/>
+							<Run FontSize="{StaticResource BodyText}" Text=") "/>
+							<Run FontSize="{StaticResource BodyText}" Text="and install the new version? This will download the update and then close to apply it. The application will restart automatically after the update is downloaded."/>
+						</TextBlock.Inlines>
+					</TextBlock>
+				</StackPanel>
+			</ScrollViewer>
+		</DockPanel>
+	</Panel>
+</Window>

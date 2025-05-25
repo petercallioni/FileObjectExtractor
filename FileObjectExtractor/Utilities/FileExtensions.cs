@@ -17,7 +17,7 @@ namespace FileObjectExtractor.Utilities
                 FileShare.ReadWrite))
             {
                 fileBytes = new byte[stream.Length];
-                stream.Read(fileBytes, 0, fileBytes.Length);
+                stream.ReadExactly(fileBytes);
             }
             ;
 
@@ -34,7 +34,7 @@ namespace FileObjectExtractor.Utilities
                 FileShare.ReadWrite))
             {
                 fileBytes = new byte[stream.Length];
-                stream.Read(fileBytes, 0, fileBytes.Length);
+                stream.ReadExactly(fileBytes);
             }
             ;
 
@@ -54,7 +54,7 @@ namespace FileObjectExtractor.Utilities
                 true))
             {
                 fileBytes = new byte[stream.Length];
-                await stream.ReadAsync(fileBytes, 0, fileBytes.Length);
+                await stream.ReadExactlyAsync(fileBytes);
             }
             return fileBytes;
         }
@@ -71,7 +71,7 @@ namespace FileObjectExtractor.Utilities
                 true))
             {
                 fileBytes = new byte[stream.Length];
-                await stream.ReadAsync(fileBytes, 0, fileBytes.Length);
+                await stream.ReadExactlyAsync(fileBytes);
             }
             return fileBytes;
         }

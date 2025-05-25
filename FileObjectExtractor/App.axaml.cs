@@ -4,6 +4,7 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using FileObjectExtractor.Models;
 using FileObjectExtractor.Services;
+using FileObjectExtractor.Updates;
 using FileObjectExtractor.ViewModels;
 using FileObjectExtractor.Views;
 
@@ -27,8 +28,12 @@ namespace FileObjectExtractor
                 MainWindow window = new MainWindow();
                 WindowService windowService = new WindowService(window);
                 FileController fileController = new FileController(windowService);
+
+                UpdateService updateService = new UpdateService();
+
                 BackgroundExecutor backgroundExecutor = new BackgroundExecutor(new System.Threading.SynchronizationContext());
-                MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(fileController, windowService, backgroundExecutor);
+                MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(fileController, windowService, updateService, backgroundExecutor);
+
                 window.DataContext = mainWindowViewModel;
 
                 desktop.MainWindow = window;

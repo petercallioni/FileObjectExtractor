@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using FileObjectExtractor.Services;
+﻿using FileObjectExtractor.Services;
 
 namespace FileObjectExtractor.ViewModels
 {
@@ -7,7 +6,6 @@ namespace FileObjectExtractor.ViewModels
     {
         private string versionNumber;
         private string author;
-        public IRelayCommand CloseCommand => new RelayCommand(Close);
 
         public string VersionNumber { get => versionNumber; set => versionNumber = value; }
         public string Author { get => author; set => author = value; }
@@ -15,7 +13,7 @@ namespace FileObjectExtractor.ViewModels
         public AboutViewModel(IWindowService windowService) : base(windowService)
         {
             author = "Peter Callioni";
-            versionNumber = Models.VersionNumber.GetVersion();
+            versionNumber = Utilities.VersionNumber.VersionString();
         }
     }
 }

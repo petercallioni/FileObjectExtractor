@@ -124,23 +124,9 @@
 	</Window.Styles>
 
 	<DockPanel LastChildFill="True">
-		<Menu DockPanel.Dock="Top"
-			  BorderBrush="LightGray"
-			  BorderThickness="0,0,0,1">
-			<MenuItem Header="_File">
-				<MenuItem Header="_Exit" Command="{Binding MainMenu.ExitCommand}" />
-			</MenuItem>
-			<MenuItem Header="_Select">
-				<MenuItem Header="_Open" Command="{Binding SelectFileCommand}" />
-				<MenuItem Header="_Export Selected" Command="{Binding SaveSelectedCommand}"/>
-				<Separator/>
-				<MenuItem Header="_All" Command="{Binding SelectAllCommand}" />
-				<MenuItem Header="_None" Command="{Binding SelectNoneCommand}" />
-			</MenuItem>
-			<MenuItem Header="_Help">
-				<MenuItem Header="_About" Command="{Binding MainMenu.AboutCommand}" />
-			</MenuItem>
-		</Menu>
+		<uc:MainMenu DockPanel.Dock="Top"
+			DataContext="{Binding MainMenu}"/>
+
 		<Panel Margin="10" Width="400">
 			<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
 				<StackPanel DockPanel.Dock="Top" Margin="5,5,0,5" Orientation="Horizontal">

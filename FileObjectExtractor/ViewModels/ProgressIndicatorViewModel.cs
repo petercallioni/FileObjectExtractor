@@ -2,11 +2,11 @@
 {
     public class ProgressIndicatorViewModel : ViewModelBase
     {
-        private int progress;
-        private int maxProgress;
+        private double progress;
+        private double maxProgress;
         private string message;
         private bool showProgress;
-        public int Progress
+        public double Progress
         {
             get => progress; set
             {
@@ -23,7 +23,7 @@
             }
         }
 
-        public int MaxProgress
+        public double MaxProgress
         {
             get => maxProgress; set
             {

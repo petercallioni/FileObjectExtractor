@@ -3,20 +3,24 @@ using ExCSS;
 using FileObjectExtractor.Models;
 using FileObjectExtractor.Models.Office;
 using FileObjectExtractor.Services;
+using FileObjectExtractor.Updates;
+using FileObjectExtractor.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FileObjectExtractor.ViewModels
 {
-    public partial class MainWindowViewModel : ClosableViewModel
+    public partial class MainWindowViewModel : ViewModelBase, IMainViewItemSelection
     {
         // Sub ViewModels
         private InputFileViewModel inputFile;
         private MainMenuViewModel mainMenu;
         private ProgressIndicatorViewModel progressIndicator;
         private TemporaryFilesViewModel temporaryFilesViewModel;
+        private UpdatesViewModel updatesViewModel;
 
         private ProgressService progressService;
         private IBackgroundExecutor backgroundExecutor;
@@ -27,6 +31,7 @@ namespace FileObjectExtractor.ViewModels
 
         private string filter;
         private bool isLoadingFile;
+
         public IRelayCommand SelectAllCommand { get; init; }
         public IRelayCommand SelectNoneCommand { get; init; }
         public IRelayCommand SaveSelectedCommand { get; init; }
@@ -145,13 +150,26 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public MainWindowViewModel(IFileController fileController, IWindowService windowService, IBackgroundExecutor backgroundExecutor) : base(windowService)
+        public UpdatesViewModel UpdatesViewModel
+        {
+            get => updatesViewModel;
+            set
+            {
+                updatesViewModel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public MainWindowViewModel(IFileController fileController, IWindowService windowService, IUpdateService updateService, IBackgroundExecutor backgroundExecutor) : base(windowService)
         {
             // VMs
-            mainMenu = new MainMenuViewModel(windowService);
             progressIndicator = new ProgressIndicatorViewModel();
-            progressService = new ProgressService(ProgressIndicator);
             temporaryFilesViewModel = new TemporaryFilesViewModel(windowService);
+            updatesViewModel = new UpdatesViewModel(windowService, updateService);
+            mainMenu = new MainMenuViewModel(windowService, updatesViewModel, this); // This is ugly, and is hard to refactor
+
+            // Services
+            progressService = new ProgressService(ProgressIndicator);
 
             // Initialisers
             inputFile = new InputFileViewModel();
@@ -167,8 +185,8 @@ namespace FileObjectExtractor.ViewModels
             // Commands
             SelectAllCommand = new RelayCommand(SelectAll);
             SelectNoneCommand = new RelayCommand(SelectNone);
-            SelectFileCommand = new RelayCommand(SelectFile);
-            SaveSelectedCommand = new RelayCommand(SaveSelectedFiles);
+            SelectFileCommand = new AsyncRelayCommand(SelectFile);
+            SaveSelectedCommand = new AsyncRelayCommand(SaveSelectedFiles);
             SelectSortCommand = new RelayCommand<SortOrder>(SelectSort);
         }
 
@@ -249,6 +267,33 @@ namespace FileObjectExtractor.ViewModels
                     item.IsSelected = false;
             }
         }
+        public async Task SaveSelectedFiles()
+        {
+
+            await ExceptionSafeAsync(async () =>
+            {
+                bool saveSuccess = await fileController.AskSaveMultipleFiles(
+                    ExtractedFiles
+                    .Where(x => x.IsSelected)
+                    .Select(x => x.ExtractedFile
+                ).ToList(), progressService);
+            });
+
+        }
+
+        public async Task SelectFile()
+        {
+            await ExceptionSafeAsync(
+                async () =>
+                {
+                    Avalonia.Platform.Storage.IStorageFile? file = await fileController.AskOpenFileAsync();
+
+                    if (file != null)
+                    {
+                        ProcessInputFile(file.Path);
+                    }
+                });
+        }
 
         private void UpdateFilteredCollection()
         {
@@ -280,19 +325,6 @@ namespace FileObjectExtractor.ViewModels
             });
         }
 
-        private async void SelectFile()
-        {
-            await ExceptionSafeAsync(
-                async () =>
-                {
-                    Avalonia.Platform.Storage.IStorageFile? file = await fileController.AskOpenFileAsync();
-
-                    if (file != null)
-                    {
-                        ProcessInputFile(file.Path);
-                    }
-                });
-        }
 
         private async void SaveFile(ExtractedFileViewModel extractedFileVM)
         {
@@ -305,14 +337,14 @@ namespace FileObjectExtractor.ViewModels
         private void OpenFile(ExtractedFileViewModel extractedFileVM)
         {
             Action openFileAction = () =>
-                ExceptionSafe(async () =>
+                ExceptionSafe((Action)(async () =>
                 {
                     extractedFileVM.CanOpen = false;
                     TrustToOpenFiles = true;
                     await fileController.OpenFile(extractedFileVM.ExtractedFile);
                     temporaryFilesViewModel.RefreshTemporaryFilesInfo();
                     extractedFileVM.CanOpen = true;
-                });
+                }));
 
             if (!TrustToOpenFiles)
             {
@@ -322,20 +354,6 @@ namespace FileObjectExtractor.ViewModels
             {
                 openFileAction();
             }
-        }
-
-        private async void SaveSelectedFiles()
-        {
-
-            await ExceptionSafeAsync(async () =>
-            {
-                bool saveSuccess = await fileController.AskSaveMultipleFiles(
-                    ExtractedFiles
-                    .Where(x => x.IsSelected)
-                    .Select(x => x.ExtractedFile
-                ).ToList(), progressService);
-            });
-
         }
 
         private void SelectSort(SortOrder sort)

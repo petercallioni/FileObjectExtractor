@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using FileObjectExtractor.Extensions;
+using FileObjectExtractor.Updates;
 using FileObjectExtractor.ViewModels;
 using FileObjectExtractor.Views;
 using System;
@@ -48,6 +49,28 @@ namespace FileObjectExtractor.Services
                 AboutViewModel aboutViewModel = new AboutViewModel(new WindowService(aboutWindow));
                 aboutWindow.DataContext = aboutViewModel;
                 aboutWindow.ShowDialog(window);
+            });
+        }
+
+        public void ShowUpdatesWindow(IUpdateService updateService)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                UpdatesWindow updatesWindow = new UpdatesWindow(window);
+                UpdatesViewModel updatesViewModel = new UpdatesViewModel(new WindowService(updatesWindow), updateService);
+                updatesWindow.DataContext = updatesViewModel;
+                updatesWindow.ShowDialog(window);
+            });
+        }
+
+        public void ShowUpdatesWindow(IUpdateService updateService, Update? update)
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                UpdatesWindow updatesWindow = new UpdatesWindow(window);
+                UpdatesViewModel updatesViewModel = new UpdatesViewModel(new WindowService(updatesWindow), updateService, update);
+                updatesWindow.DataContext = updatesViewModel;
+                updatesWindow.ShowDialog(window);
             });
         }
 

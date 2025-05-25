@@ -21,7 +21,7 @@
 	<Border
 		BorderBrush="Gray"
 		BorderThickness="1"
-		Margin="5">
+		Margin="10">
 		<DockPanel LastChildFill="True"
 			   PointerMoved="InputElement_OnPointerMoved"
 			   PointerPressed="InputElement_OnPointerPressed"

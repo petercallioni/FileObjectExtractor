@@ -3,6 +3,7 @@
     public static class StringConstants
     {
         public const string DEFAULT_DROP_TEXT = "Drop\n+\nHere";
+        public const string TEMP_FILE_EXTENSION = ".fox_old";
 
         public static class WARNINGS
         {

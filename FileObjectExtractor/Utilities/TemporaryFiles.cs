@@ -26,6 +26,34 @@ namespace FileObjectExtractor.Utilities
             return tempDir;
         }
 
+        public static DirectoryInfo GetTemporaryUpdateDirectory(Updates.Version? version = null)
+        {
+            return GetTemporaryUpdateDirectory(version?.ToString());
+        }
+
+        public static DirectoryInfo GetTemporaryUpdateDirectory(string? version = null)
+        {
+            DirectoryInfo tempDir = GetTemporaryDirectory();
+            string updateDirName = "Update";
+            DirectoryInfo updateDir = new DirectoryInfo(Path.Combine(tempDir.FullName, updateDirName));
+            if (!updateDir.Exists)
+            {
+                updateDir.Create();
+            }
+
+            if (version != null)
+            {
+                string versionDirName = version.Replace(".", "_");
+                updateDir = new DirectoryInfo(Path.Combine(updateDir.FullName, versionDirName));
+                if (!updateDir.Exists)
+                {
+                    updateDir.Create();
+                }
+            }
+
+            return updateDir;
+        }
+
         public static FileInfo CreateTemporaryFile(string fileName)
         {
             return new FileInfo(Path.Combine(GetTemporaryDirectory().FullName, fileName));
