@@ -366,3 +366,8 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /FileObjectExtractorTests/Resources
+/FileObjectExtractorTests/Updates/Resources/checksums.txt
+/FileObjectExtractorTests/Updates/Resources/FileObjectExtractor-linux-x64.zip
+/FileObjectExtractorTests/Updates/Resources/FileObjectExtractor-win-x64.zip
+/build-output
+*.ps1
