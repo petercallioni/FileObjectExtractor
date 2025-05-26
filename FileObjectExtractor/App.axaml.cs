@@ -30,7 +30,6 @@ namespace FileObjectExtractor
                 FileController fileController = new FileController(windowService);
 
                 UpdateService updateService = new UpdateService();
-
                 BackgroundExecutor backgroundExecutor = new BackgroundExecutor(new System.Threading.SynchronizationContext());
                 MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(fileController, windowService, updateService, backgroundExecutor);
 

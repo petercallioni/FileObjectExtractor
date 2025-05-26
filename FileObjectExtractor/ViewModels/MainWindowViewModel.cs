@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using ExCSS;
 using FileObjectExtractor.Models;
+using FileObjectExtractor.Models.ApplicationOptions;
 using FileObjectExtractor.Models.Office;
 using FileObjectExtractor.Services;
 using FileObjectExtractor.Updates;
@@ -160,12 +161,24 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
-        public MainWindowViewModel(IFileController fileController, IWindowService windowService, IUpdateService updateService, IBackgroundExecutor backgroundExecutor) : base(windowService)
+        public MainWindowViewModel(
+            IFileController fileController,
+            IWindowService windowService,
+            IUpdateService updateService,
+            IBackgroundExecutor backgroundExecutor
+            ) : base(windowService)
         {
             // VMs
             progressIndicator = new ProgressIndicatorViewModel();
             temporaryFilesViewModel = new TemporaryFilesViewModel(windowService);
+
             updatesViewModel = new UpdatesViewModel(windowService, updateService);
+
+            if (ApplicationOptionsManager.Options.CheckForUpdateOnStartup)
+            {
+                Task.Run(() => updatesViewModel.CheckForUpdates().RunSynchronously());
+            }
+
             mainMenu = new MainMenuViewModel(windowService, updatesViewModel, this); // This is ugly, and is hard to refactor
 
             // Services

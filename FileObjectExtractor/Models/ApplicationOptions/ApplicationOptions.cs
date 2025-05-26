@@ -14,14 +14,14 @@ namespace FileObjectExtractor.Models.ApplicationOptions
             PropertyChanged += HandlePropertyChanged;
         }
 
-        private bool _checkForUpdateOnStartup = false;
+        private bool checkForUpdateOnStartup = false;
         public bool CheckForUpdateOnStartup
         {
-            get => _checkForUpdateOnStartup;
-            set => SetProperty(_checkForUpdateOnStartup, value);
+            get => checkForUpdateOnStartup;
+            set => SetProperty(ref checkForUpdateOnStartup, value);
         }
 
-        protected bool SetProperty<T>(T field, T newValue, [CallerMemberName] string? propertyName = null)
+        protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string? propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(field, newValue))
                 return false;
@@ -48,6 +48,5 @@ namespace FileObjectExtractor.Models.ApplicationOptions
         {
             ApplicationOptionsManager.SaveOptions(this);
         }
-
     }
 }

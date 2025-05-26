@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using FileObjectExtractor.Models.ApplicationOptions;
 using FileObjectExtractor.Services;
 using FileObjectExtractor.Updates;
 using FileObjectExtractor.ViewModels.Interfaces;
@@ -18,6 +19,16 @@ namespace FileObjectExtractor.ViewModels
         public IAsyncRelayCommand SaveSelectedFilesCommand => new AsyncRelayCommand(mainViewItemSelection.SaveSelectedFiles);
         public IAsyncRelayCommand SelectFileCommand => new AsyncRelayCommand(mainViewItemSelection.SelectFile);
         public IRelayCommand OpenUpdatesWindowCommand => new RelayCommand(OpenUpdatesWindow);
+
+        public bool CheckForUpdatesOnStartup
+        {
+            get => ApplicationOptionsManager.Options.CheckForUpdateOnStartup;
+            set
+            {
+                ApplicationOptionsManager.Options.CheckForUpdateOnStartup = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainMenuViewModel(IWindowService windowService, IUpdatesViewModel updatesViewModel, IMainViewItemSelection mainViewItemSelection) : base(windowService)
         {

@@ -17,42 +17,57 @@
 	</Design.DataContext>
 
 	<StackPanel>
-		<Menu BorderBrush="LightGray"
+		<Panel>
+			<Menu BorderBrush="LightGray"
 	  BorderThickness="0,0,0,1">
-			<MenuItem Header="_File">
-				<MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
-			</MenuItem>
-			<MenuItem Header="_Select">
-				<MenuItem Header="_Open" Command="{Binding SelectFileCommand}" />
-				<MenuItem Header="_Export Selected" Command="{Binding SaveSelectedFilesCommand}"/>
-				<Separator/>
-				<MenuItem Header="_All" Command="{Binding SelectAllCommand}" />
-				<MenuItem Header="_None" Command="{Binding SelectNoneCommand}" />
-			</MenuItem>
-			<MenuItem Header="_About">
-				<MenuItem Header="_About" Command="{Binding AboutCommand}" />
-			</MenuItem>
+				<MenuItem Header="_File">
+					<MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
+				</MenuItem>
+				<MenuItem Header="_Select">
+					<MenuItem Header="_Open" Command="{Binding SelectFileCommand}" />
+					<MenuItem Header="_Export Selected" Command="{Binding SaveSelectedFilesCommand}"/>
+					<Separator/>
+					<MenuItem Header="_All" Command="{Binding SelectAllCommand}" />
+					<MenuItem Header="_None" Command="{Binding SelectNoneCommand}" />
+				</MenuItem>
+				<MenuItem Header="_About">
+					<MenuItem Header="_About" Command="{Binding AboutCommand}" />
+				</MenuItem>
 
-			<MenuItem
-				Command="{Binding OpenUpdatesWindowCommand}"
-				IsEnabled="{Binding HasUpdate}">
+				<MenuItem
+					Command="{Binding OpenUpdatesWindowCommand}"
+					IsEnabled="{Binding HasUpdate}">
 
-				<MenuItem.Header>
-					<StackPanel
-						Orientation="Horizontal"
-						ToolTip.Tip="{Binding UpdateTooltip}">
+					<MenuItem.Header>
+						<StackPanel
+							Orientation="Horizontal"
+							ToolTip.Tip="{Binding UpdateTooltip}">
 
-						<AccessText Text="_Update" />
-						<Ellipse
-							Width="7"
-							Height="7"
-							Fill="Red"
-							Margin="5,0,0,0"
-							IsVisible="{Binding HasUpdate}">
-						</Ellipse>
-					</StackPanel>
-				</MenuItem.Header>
-			</MenuItem>
-		</Menu>
+							<AccessText Text="_Update" />
+							<Ellipse
+								Width="7"
+								Height="7"
+								Fill="Red"
+								Margin="5,0,0,0"
+								IsVisible="{Binding HasUpdate}">
+							</Ellipse>
+						</StackPanel>
+					</MenuItem.Header>
+				</MenuItem>
+			</Menu>
+			<StackPanel Orientation="Horizontal"
+						Margin="0,0,5,0"
+						HorizontalAlignment="Right">
+				<TextBlock
+					Margin="0,0,5,0"
+					VerticalAlignment="Center">
+					Check For Updates On Startup
+				</TextBlock>
+				<CheckBox
+					IsChecked="{Binding CheckForUpdatesOnStartup}"
+					VerticalAlignment="Center"/>
+			</StackPanel>
+
+		</Panel>
 	</StackPanel>
 </UserControl>

@@ -18,4 +18,7 @@ public partial class MainMenu : UserControl
         this.Focus();
     }
 
+    private void Binding(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+    }
 }

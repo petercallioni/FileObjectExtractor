@@ -2,7 +2,6 @@
 using FileObjectExtractor.CLI;
 using FileObjectExtractor.Constants;
 using FileObjectExtractor.Models;
-using FileObjectExtractor.Models.ApplicationOptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +12,6 @@ namespace FileObjectExtractor
     internal sealed class Program
     {
         public static bool StartedFromUpdate = false;
-        public static ApplicationOptions ApplicationOptions { get; } = ApplicationOptionsManager.LoadOptions();
 
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
