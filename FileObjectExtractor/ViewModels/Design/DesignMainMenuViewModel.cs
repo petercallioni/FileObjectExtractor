@@ -6,7 +6,5 @@
         {
 
         }
-
-        public new bool HasUpdate = true;
     }
 }

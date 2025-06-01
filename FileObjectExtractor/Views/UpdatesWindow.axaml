@@ -42,7 +42,10 @@
 			BorderThickness="1">
 		</Border>
 
-		<DockPanel Margin="10" LastChildFill="True">
+		<DockPanel Margin="10" LastChildFill="True"
+			   PointerMoved="InputElement_OnPointerMoved"
+			   PointerPressed="InputElement_OnPointerPressed"
+			   PointerReleased="InputElement_OnPointerReleased">
 			<DockPanel DockPanel.Dock="Bottom">
 				<Button
 					HorizontalAlignment="Left"
@@ -104,7 +107,7 @@
 							<Run FontSize="{StaticResource BodyText}" Text="{Binding Update.Size, Converter={StaticResource ByteSizeConverter}}"/>
 							<Run Text=""/>
 							<Run FontSize="{StaticResource BodyText}" Text=") "/>
-							<Run FontSize="{StaticResource BodyText}" Text="and install the new version? This will download from GitHub) the update and then close to apply it. The application will restart automatically after the update is downloaded."/>
+							<Run FontSize="{StaticResource BodyText}" Text="and install the new version? This will download the update from GitHub, update, and then close to apply it. The application will restart automatically after the update is applied."/>
 						</TextBlock.Inlines>
 					</TextBlock>
 				</StackPanel>

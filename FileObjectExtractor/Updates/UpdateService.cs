@@ -1,6 +1,7 @@
 ﻿using FileObjectExtractor.Constants;
 using FileObjectExtractor.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -17,6 +18,54 @@ namespace FileObjectExtractor.Updates
 {
     public class UpdateService : IUpdateService
     {
+        public record CleanUpResult(bool Status, List<string> FileRemovalFailures);
+        public static async Task<CleanUpResult> CleanUpPostUpdate()
+        {
+            List<string> fileRemovalFailures = new List<string>();
+            DirectoryInfo updateFileDir = TemporaryFiles.GetTemporaryUpdateDirectory(VersionNumber.Version());
+
+            try
+            {
+
+                if (updateFileDir.Exists)
+                {
+                    await Task.Run(() => updateFileDir.Delete(recursive: true));
+                }
+            }
+            catch
+            {
+                fileRemovalFailures.Add(updateFileDir.FullName);
+            }
+
+            DirectoryInfo currentDir = new DirectoryInfo(Directory.GetCurrentDirectory());
+
+            await Task.Run(() =>
+            {
+                foreach (FileInfo? file in currentDir.EnumerateFiles().AsParallel())
+                {
+                    if (file != null && file.Extension.Equals(StringConstants.TEMP_FILE_EXTENSION) && file.Exists)
+                    {
+                        try
+                        {
+                            file.Delete();
+                        }
+                        catch
+                        {
+                            fileRemovalFailures.Add(file.FullName);
+                            continue;
+                        }
+
+                    }
+                }
+            });
+
+            return new CleanUpResult(
+                fileRemovalFailures.Count == 0,
+                fileRemovalFailures
+            );
+        }
+
+
         public async Task<Update> CheckForUpdate()
         {
             // GitHub "latest release" API endpoint for the repository

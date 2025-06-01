@@ -1,6 +1,7 @@
 ﻿using FileObjectExtractor.Constants;
 using FileObjectExtractor.Models;
 using FileObjectExtractor.Models.Office;
+using FileObjectExtractor.Updates;
 using FileObjectExtractor.Utilities;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,11 @@ namespace FileObjectExtractor.CLI
             CommandLineParser commandLineParser = new CommandLineParser();
             options = commandLineParser.Parse(args);
             this.fileCcontroller = fileController;
+
+            if (Global.StartedFromUpdate)
+            {
+                UpdateService.CleanUpPostUpdate().Wait();
+            }
         }
 
         public ExitCode StartCLI()

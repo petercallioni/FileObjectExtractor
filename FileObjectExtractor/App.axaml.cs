@@ -34,7 +34,6 @@ namespace FileObjectExtractor
                 MainWindowViewModel mainWindowViewModel = new MainWindowViewModel(fileController, windowService, updateService, backgroundExecutor);
 
                 window.DataContext = mainWindowViewModel;
-
                 desktop.MainWindow = window;
             }
 

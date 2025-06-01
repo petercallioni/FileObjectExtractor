@@ -201,6 +201,11 @@ namespace FileObjectExtractor.ViewModels
             SelectFileCommand = new AsyncRelayCommand(SelectFile);
             SaveSelectedCommand = new AsyncRelayCommand(SaveSelectedFiles);
             SelectSortCommand = new RelayCommand<SortOrder>(SelectSort);
+
+            if (Global.StartedFromUpdate)
+            {
+                _ = UpdateService.CleanUpPostUpdate();
+            }
         }
 
         private async void ProcessInputFile(Uri uri)

@@ -75,11 +75,12 @@ public class Program
 
     public static void RelaunchMainApplication()
     {
+        Console.WriteLine("Relaunching main application...");
         string mainApp = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? MAIN_APP_WINDOWS : MAIN_APP_LINUX;
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
             FileName = mainApp,
-            Arguments = "_UPDATED_",
+            Arguments = "UPDATED",
             UseShellExecute = true
         };
         Process.Start(startInfo);
