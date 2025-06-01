@@ -119,10 +119,10 @@ namespace FileObjectExtractor.Updates
             }
         }
 
-        public async Task InstallUpdate(Update update, DownloadedUpdateFiles files)
+        public async Task InstallUpdate(Update update, DownloadedUpdateFiles files, bool noRestart = false)
         {
             await UpdateUpdater(update, files.ArchiveFile);
-            RunUpdater(update, files);
+            RunUpdater(update, files, noRestart);
         }
 
         public async Task<DownloadedUpdateFiles> DownloadUpdate(Update update, IProgress<DownloadProgressReport>? progress = null)
@@ -189,7 +189,7 @@ namespace FileObjectExtractor.Updates
             }
         }
 
-        public void RunUpdater(Update update, DownloadedUpdateFiles downloadedUpdateFiles)
+        public void RunUpdater(Update update, DownloadedUpdateFiles downloadedUpdateFiles, bool noRestart)
         {
             string updaterName = update.Os == UpdateOS.WINDOWS ? UpdateAssetFiles.UPDATE_HELPER_WINDOWS : UpdateAssetFiles.UPDATE_HELPER_LINUX;
 
@@ -210,6 +210,7 @@ namespace FileObjectExtractor.Updates
 
                 startInfo.ArgumentList.Add(update.UpdateDirectory.FullName);
                 startInfo.ArgumentList.Add(verifiedChecksum);
+                startInfo.ArgumentList.Add(noRestart ? "NO_RESTART" : "RESTART");
 
                 Process updaterProcess = new Process { StartInfo = startInfo };
                 updaterProcess.Start();

@@ -13,10 +13,12 @@ namespace FileObjectExtractor.CLI
     {
         private readonly ParsedOptions options;
         private readonly IFileController fileCcontroller;
-        public CliController(string[] args, IFileController fileController)
+        private readonly IUpdateService updateService;
+        public CliController(string[] args, IFileController fileController, IUpdateService updateService)
         {
             CommandLineParser commandLineParser = new CommandLineParser();
             options = commandLineParser.Parse(args);
+            this.updateService = updateService;
             this.fileCcontroller = fileController;
 
             if (Global.StartedFromUpdate)
@@ -42,6 +44,46 @@ namespace FileObjectExtractor.CLI
             if (options.Version)
             {
                 return DisplayVersion();
+            }
+
+            if (options.CheckForUpdate)
+            {
+                Update update = updateService.CheckForUpdate().Result;
+
+                if (update.IsUpgrade)
+                {
+                    Console.WriteLine($"Update available: {update.Version}");
+                    Console.WriteLine($"Do you wish to install the update now? Y/N");
+
+                    string? response = Console.ReadLine()?.Trim().ToLowerInvariant();
+
+                    while (response != "yes" && response != "no" && response != "y" && response != "n")
+                    {
+                        Console.WriteLine("Please enter 'Y' or 'N' to confirm your choice.");
+                        response = Console.ReadLine()?.Trim().ToLowerInvariant();
+                    }
+
+                    if (response == "yes" || response == "y")
+                    {
+                        options.InstallUpdate = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Update will not be installed.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No updates available.");
+                }
+
+                if (options.InstallUpdate)
+                {
+                    DownloadedUpdateFiles files = updateService.DownloadUpdate(update).Result;
+                    updateService.InstallUpdate(update, files, true).Wait();
+                }
+
+                return ExitCode.SUCCESS;
             }
 
             if (options.List)
@@ -231,7 +273,13 @@ namespace FileObjectExtractor.CLI
                 }),
                 new OptionDefinition(["-n", "-name", "--name"], 1, (opts, parameters) => opts.CustomName = parameters[0]),
                 new OptionDefinition(["-s", "-select", "--select"], 1, (opts, parameters) => opts.SelectItem = parameters[0]),
-                new OptionDefinition(["-o", "-output", "--output"], 1, (opts, parameters) => opts.OutputDirectory = parameters[0])
+                new OptionDefinition(["-o", "-output", "--output"], 1, (opts, parameters) => opts.OutputDirectory = parameters[0]),
+                new OptionDefinition(["-u", "-check-for-update", "--check-for-update"], 0, (opts, _) => opts.CheckForUpdate = true),
+                new OptionDefinition(["-uy", "-check-for-update-and-install", "--check-for-update-and-install"], 0, (opts, _) =>
+                {
+                    opts.CheckForUpdate = true;
+                    opts.InstallUpdate = true;
+                })
             };
 
             // For fast lookup, create a dictionary that maps every alias to its definition.

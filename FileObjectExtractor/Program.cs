@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using FileObjectExtractor.CLI;
 using FileObjectExtractor.Models;
+using FileObjectExtractor.Updates;
 using System;
 using System.Runtime.InteropServices;
 
@@ -29,7 +30,8 @@ namespace FileObjectExtractor
                 AttachConsoleOnWindows();
 
                 FileController fileController = new FileController(null);
-                CliController cliController = new CliController(args, fileController);
+                UpdateService updateService = new UpdateService();
+                CliController cliController = new CliController(args, fileController, updateService);
                 int exitCode = (int)cliController.StartCLI();
                 DetachConsoleOnWindows();
 

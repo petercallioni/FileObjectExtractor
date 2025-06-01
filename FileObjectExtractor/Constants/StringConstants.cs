@@ -43,16 +43,23 @@ Options:
                                         Requires -i and -o options.
   -n, -name, --name [new file name]     Save the selected file with a new name. Used in conjunction with 
                                         -s. Requires -i, -o, and -s options.
+  -u, -check-for-update,                Check if a new version of the application is available.
+  --check-for-update                    Prompt to install the update if available.
+
+  -uy, -check-for-update-and-install,   Check for updates and automatically install if available.
+  --check-for-update-and-install        
 
 Examples:
   [application-name] -i input.docx -o output/
   [application-name] -i input.docx -l
   [application-name] -i input.docx -o output/ -s 3
   [application-name] -i input.docx -o output/ -s 3 -n newfile.txt
+  [application-name] -u
+  [application-name] -uy
 
 Notes:
   - Options can be combined in various orders.
-  - The -i (input) option is mandatory for any operation.
+  - The -i (input) option is mandatory for any operation except update checks.
   - Ensure the output directory exists before running the extraction.
 
 ";

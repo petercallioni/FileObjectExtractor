@@ -18,14 +18,24 @@ public class Program
 
     public static void Main(string[] args)
     {
-        if (args.Length != 2)
+        if (args.Length != 3)
         {
-            Console.WriteLine("Usage: UpdateHelper <update folder> <update checksum>");
+            Console.WriteLine("Usage: UpdateHelper <update folder> <update checksum> <NO_RESTART|RESTART>");
             return;
         }
 
         string tempFolder = args[0];
         string checkSumFromMainApplication = args[1];
+        string restartArg = args[2];
+
+        if (!(restartArg.Equals("NO_RESTART", StringComparison.OrdinalIgnoreCase) || restartArg.Equals("NO_RESTART", StringComparison.OrdinalIgnoreCase)))
+        {
+            Console.WriteLine("Invalid argument for restart option. Use 'NO_RESTART' or 'RESTART'.");
+            return;
+        }
+
+        bool noRestart = restartArg.Equals("NO_RESTART", StringComparison.OrdinalIgnoreCase);
+
         string mainApp = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? MAIN_APP_WINDOWS : MAIN_APP_LINUX;
         string updaterApp = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? UPDATE_HELPER_WINDOWS : UPDATE_HELPER_LINUX;
         string archive = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? WINDOWS_ARCHIVE_NAME : MAIN_APP_LINUX;
@@ -70,7 +80,15 @@ public class Program
             return;
         }
 
-        RelaunchMainApplication();
+        if (noRestart)
+        {
+            Console.WriteLine("Update completed without restart.");
+            return;
+        }
+        else
+        {
+            RelaunchMainApplication();
+        }
     }
 
     public static void RelaunchMainApplication()

@@ -7,6 +7,6 @@ namespace FileObjectExtractor.Updates
     {
         Task<Update> CheckForUpdate();
         Task<DownloadedUpdateFiles> DownloadUpdate(Update update, IProgress<DownloadProgressReport>? progress = null);
-        Task InstallUpdate(Update update, DownloadedUpdateFiles files);
+        Task InstallUpdate(Update update, DownloadedUpdateFiles files, bool noRestart = false);
     }
 }

@@ -17,5 +17,8 @@ namespace FileObjectExtractor.CLI
 
         // Any extra, positional arguments can be captured here
         public List<string> PositionalArguments { get; } = new List<string>();
+
+        public bool CheckForUpdate { get; set; } = false;
+        public bool InstallUpdate { get; set; } = false;
     }
 }

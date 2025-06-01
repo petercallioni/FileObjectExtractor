@@ -116,10 +116,6 @@ namespace FileObjectExtractor.ViewModels
                 progressService.SetProgress(report.Fraction);
                 progressService.SetMessage(
                     $"{ByteSizeFormatter.Format(report.BytesDownloaded)} of {ByteSizeFormatter.Format(report.TotalBytes)} Downloaded");
-
-                //progressIndicatorViewModel.Progress = report.Fraction;
-                //progressIndicatorViewModel.Message =
-                //    $"{ByteSizeFormatter.Format(report.BytesDownloaded)} of {ByteSizeFormatter.Format(report.TotalBytes)} downloaded";
             });
 
             await ExceptionSafeAsync(async () =>
