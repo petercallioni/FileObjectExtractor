@@ -15,6 +15,7 @@ namespace FileObjectExtractor.ViewModels
         private Update? update;
         private bool hasUpdate;
         private string newVersion = string.Empty;
+        private string updateTooltip = string.Empty;
         private readonly ProgressIndicatorViewModel progressIndicatorViewModel;
         private readonly ProgressService progressService;
 
@@ -54,6 +55,7 @@ namespace FileObjectExtractor.ViewModels
             {
                 hasUpdate = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(UpdateTooltip));
             }
         }
         public string NewVersion
@@ -64,6 +66,11 @@ namespace FileObjectExtractor.ViewModels
                 newVersion = value;
                 OnPropertyChanged();
             }
+        }
+
+        public string UpdateTooltip
+        {
+            get => HasUpdate ? $"New version available: {NewVersion}" : "No updates available";
         }
 
         public Update? Update

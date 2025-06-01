@@ -21,7 +21,7 @@ namespace FileObjectExtractor.Updates
             this.checksumUrl = new Uri(checksumUrl);
             this.releaseUrl = new Uri(releaseUrl);
             this.version = new Version(version);
-            this.isUpgrade = VersionNumber.Version() > this.version;
+            this.isUpgrade = VersionNumber.Version() < this.version;
             this.os = os;
             updateDirectory = TemporaryFiles.GetTemporaryUpdateDirectory(version);
             this.size = size;

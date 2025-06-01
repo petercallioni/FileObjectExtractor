@@ -7,5 +7,6 @@ namespace FileObjectExtractor.ViewModels.Interfaces
         bool HasUpdate { get; set; }
         string NewVersion { get; set; }
         Update? Update { get; }
+        string UpdateTooltip { get; }
     }
 }

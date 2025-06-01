@@ -59,6 +59,7 @@ public class Program
             {
                 if (!zipArchiveEntry.Name.Equals(updaterApp))
                 {
+                    Console.WriteLine($"Updating file: {zipArchiveEntry.Name}");
                     UpdateFile(zipArchiveEntry, Directory.GetCurrentDirectory());
                 }
             }
@@ -161,7 +162,7 @@ public class Program
     public static bool VerifyChecksum(byte[] checksumFile, byte[] archiveFile, string archiveFileName, string checksumFromMainApplication)
     {
         // Convert checksum file content to a string
-        string checksumFileContent = Encoding.Unicode.GetString(checksumFile);
+        string checksumFileContent = Encoding.UTF8.GetString(checksumFile);
         checksumFileContent = checksumFileContent.TrimStart('\uFEFF');
 
         // Split into lines

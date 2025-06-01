@@ -34,12 +34,12 @@ namespace FileObjectExtractor.ViewModels
         {
             this.windowService = windowService;
             this.mainViewItemSelection = mainViewItemSelection;
-            this.updatesViewModel = updatesViewModel; // This what this class should use for updates functionality
+            this.updatesViewModel = updatesViewModel; // This what this class should use for updates functionality     
         }
 
         private void OpenUpdatesWindow()
         {
-            windowService.ShowUpdatesWindow(new UpdateService(), updatesViewModel.Update);
+            windowService.ShowUpdatesWindow(new UpdateService(), UpdatesViewModel.Update);
         }
 
         private void Exit()
@@ -52,14 +52,6 @@ namespace FileObjectExtractor.ViewModels
             windowService.ShowAboutWindow();
         }
 
-        public bool HasUpdate
-        {
-            get => updatesViewModel.HasUpdate;
-        }
-
-        public string UpdateTooltip
-        {
-            get => updatesViewModel.HasUpdate ? $"New version available: {updatesViewModel.NewVersion}" : "No updates available";
-        }
+        public IUpdatesViewModel UpdatesViewModel => updatesViewModel;
     }
 }

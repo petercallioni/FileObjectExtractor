@@ -36,12 +36,12 @@
 
 				<MenuItem
 					Command="{Binding OpenUpdatesWindowCommand}"
-					IsEnabled="{Binding HasUpdate}">
+					IsEnabled="{Binding UpdatesViewModel.HasUpdate}">
 
 					<MenuItem.Header>
 						<StackPanel
 							Orientation="Horizontal"
-							ToolTip.Tip="{Binding UpdateTooltip}">
+							ToolTip.Tip="{Binding UpdatesViewModel.UpdateTooltip}">
 
 							<AccessText Text="_Update" />
 							<Ellipse
@@ -49,7 +49,7 @@
 								Height="7"
 								Fill="Red"
 								Margin="5,0,0,0"
-								IsVisible="{Binding HasUpdate}">
+								IsVisible="{Binding UpdatesViewModel.HasUpdate}">
 							</Ellipse>
 						</StackPanel>
 					</MenuItem.Header>

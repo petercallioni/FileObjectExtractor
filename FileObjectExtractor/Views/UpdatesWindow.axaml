@@ -104,7 +104,7 @@
 							<Run FontSize="{StaticResource BodyText}" Text="{Binding Update.Size, Converter={StaticResource ByteSizeConverter}}"/>
 							<Run Text=""/>
 							<Run FontSize="{StaticResource BodyText}" Text=") "/>
-							<Run FontSize="{StaticResource BodyText}" Text="and install the new version? This will download the update and then close to apply it. The application will restart automatically after the update is downloaded."/>
+							<Run FontSize="{StaticResource BodyText}" Text="and install the new version? This will download from GitHub) the update and then close to apply it. The application will restart automatically after the update is downloaded."/>
 						</TextBlock.Inlines>
 					</TextBlock>
 				</StackPanel>

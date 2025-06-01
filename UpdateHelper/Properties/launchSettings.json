@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "UpdateHelper": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\Peter\\AppData\\Local\\Temp\\FileObjectExtractor\\Update\\v1_1_3\\\r\n60f4a59da5ebfad5f22ab6219bdcdefb3336b312bc60e97b36b4759805146b9b",
+      "workingDirectory": "C:\\Users\\Peter\\source\\repos\\FileObjectExtractor\\build-output\\FileObjectExtractor-win-x64"
+    }
+  }
+}

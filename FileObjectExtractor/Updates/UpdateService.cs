@@ -48,11 +48,11 @@ namespace FileObjectExtractor.Updates
 
                 // Extract the tag name (e.g., "v1.2.3") and the release URL.
                 string tagName = gitHubRelease.TagName;
-                string checkumsUrl = gitHubRelease.Assets.Where(x => x.Name.Equals(UpdateAssetFiles.CHECKSUMS)).FirstOrDefault()?.Url ?? string.Empty;
+                string checkumsUrl = gitHubRelease.Assets.Where(x => x.Name.Equals(UpdateAssetFiles.CHECKSUMS)).FirstOrDefault()?.BrowserDownloadUrl ?? string.Empty;
 
                 UpdateOS updateOS = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? UpdateOS.WINDOWS : UpdateOS.LINUX;
                 string targetAsset = updateOS == UpdateOS.WINDOWS ? UpdateAssetFiles.WINDOWS_ARCHIVE_NAME : UpdateAssetFiles.LINUX_ARCHIVE_NAME;
-                string releaseUrl = gitHubRelease.Assets.Where(x => x.Name.Equals(targetAsset)).FirstOrDefault()?.Url ?? string.Empty;
+                string releaseUrl = gitHubRelease.Assets.Where(x => x.Name.Equals(targetAsset)).FirstOrDefault()?.BrowserDownloadUrl ?? string.Empty;
 
                 if (string.IsNullOrEmpty(tagName))
                 {
@@ -74,35 +74,6 @@ namespace FileObjectExtractor.Updates
         {
             await UpdateUpdater(update, files.ArchiveFile);
             RunUpdater(update, files);
-        }
-
-        public async Task<DownloadedUpdateFiles> DownloadUpdate(Update update)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                // Send GET request to the URL
-                HttpResponseMessage getChecksumFile = await client.GetAsync(update.ChecksumUrl);
-                getChecksumFile.EnsureSuccessStatusCode(); // Throw if response is not successful
-
-                // Read file bytes
-                byte[] checksumFileBytes = await getChecksumFile.Content.ReadAsByteArrayAsync();
-
-                HttpResponseMessage getReleaseArchive = await client.GetAsync(update.ReleaseUrl);
-                getReleaseArchive.EnsureSuccessStatusCode(); // Throw if response is not successful
-
-                // Read file bytes
-                byte[] archiveFileBytes = await getReleaseArchive.Content.ReadAsByteArrayAsync();
-
-                string archiveFileName = update.Os == UpdateOS.WINDOWS ? UpdateAssetFiles.WINDOWS_ARCHIVE_NAME : UpdateAssetFiles.LINUX_ARCHIVE_NAME;
-                FileInfo checksumFile = new FileInfo(Path.Combine(TemporaryFiles.GetTemporaryUpdateDirectory(update.Version).FullName, UpdateAssetFiles.CHECKSUMS));
-                FileInfo archiveFile = new FileInfo(Path.Combine(TemporaryFiles.GetTemporaryUpdateDirectory(update.Version).FullName, archiveFileName));
-
-                // Write file to disk
-                await File.WriteAllBytesAsync(checksumFile.FullName, checksumFileBytes);
-                await File.WriteAllBytesAsync(archiveFile.FullName, archiveFileBytes);
-
-                return new DownloadedUpdateFiles(checksumFile, archiveFile);
-            }
         }
 
         public async Task<DownloadedUpdateFiles> DownloadUpdate(Update update, IProgress<DownloadProgressReport>? progress = null)
@@ -184,15 +155,16 @@ namespace FileObjectExtractor.Updates
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
                     FileName = updaterName,
-                    Arguments = $"\"{update.UpdateDirectory.FullName}\" {verifiedChecksum}",
                     UseShellExecute = false,
-                    CreateNoWindow = true
+                    CreateNoWindow = false
                 };
 
-                Process updaterProcess = new Process();
-                updaterProcess.StartInfo = startInfo;
+                startInfo.ArgumentList.Add(update.UpdateDirectory.FullName);
+                startInfo.ArgumentList.Add(verifiedChecksum);
 
+                Process updaterProcess = new Process { StartInfo = startInfo };
                 updaterProcess.Start();
+
                 Environment.Exit(0); // Exit the current process
             }
             else
@@ -205,26 +177,29 @@ namespace FileObjectExtractor.Updates
         {
             string path = Directory.GetCurrentDirectory();
             string updaterName = update.Os == UpdateOS.WINDOWS ? UpdateAssetFiles.UPDATE_HELPER_WINDOWS : UpdateAssetFiles.UPDATE_HELPER_LINUX;
+            string updaterPath = Path.Combine(path, updaterName);
 
-            FileInfo currentUpdaterApplication = new FileInfo(Path.Combine(path, updaterName));
+            FileInfo currentUpdaterApplication = new FileInfo(updaterPath);
 
-            ZipArchive zipArchive = ZipFile.Open(archiveFile.FullName, ZipArchiveMode.Read);
-            ZipArchiveEntry? entry = zipArchive.Entries.FirstOrDefault(e => e.Name.Equals(updaterName, StringComparison.OrdinalIgnoreCase));
-
-            if (entry == null)
+            using (ZipArchive zipArchive = ZipFile.Open(archiveFile.FullName, ZipArchiveMode.Read))
             {
-                throw new FileNotFoundException($"The file {updaterName} was not found in the archive.");
+                ZipArchiveEntry? entry = zipArchive.Entries.FirstOrDefault(e => e.Name.Equals(updaterName, StringComparison.OrdinalIgnoreCase));
+
+                if (entry == null)
+                {
+                    throw new FileNotFoundException($"The file {updaterName} was not found in the archive.");
+                }
+
+                if (currentUpdaterApplication.Exists)
+                {
+                    currentUpdaterApplication.MoveTo(Path.Combine(path, $"{updaterName}{StringConstants.TEMP_FILE_EXTENSION}"), true);
+                }
+
+                await Task.Run(() =>
+                {
+                    entry.ExtractToFile(updaterPath, true);
+                });
             }
-
-            if (currentUpdaterApplication.Exists)
-            {
-                currentUpdaterApplication.MoveTo(Path.Combine(path, $"{updaterName}{StringConstants.TEMP_FILE_EXTENSION}"));
-            }
-
-            await Task.Run(() =>
-            {
-                entry.ExtractToFile(currentUpdaterApplication.FullName, true);
-            });
 
             return true;
         }
@@ -234,7 +209,7 @@ namespace FileObjectExtractor.Updates
             verifiedChecksum = string.Empty;
 
             // Convert checksum file content to a string
-            string checksumFileContent = Encoding.Unicode.GetString(checksumFile);
+            string checksumFileContent = Encoding.UTF8.GetString(checksumFile);
             checksumFileContent = checksumFileContent.TrimStart('\uFEFF');
 
             // Split into lines
