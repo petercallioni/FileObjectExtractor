@@ -34,16 +34,13 @@
 					<MenuItem Header="_About" Command="{Binding AboutCommand}" />
 				</MenuItem>
 
-				<MenuItem
-					Command="{Binding OpenUpdatesWindowCommand}"
-					IsEnabled="{Binding UpdatesViewModel.HasUpdate}">
-
+				<MenuItem>
 					<MenuItem.Header>
 						<StackPanel
 							Orientation="Horizontal"
 							ToolTip.Tip="{Binding UpdatesViewModel.UpdateTooltip}">
 
-							<AccessText Text="_Update" />
+							<AccessText Text="_Updates" />
 							<Ellipse
 								Width="7"
 								Height="7"
@@ -53,21 +50,39 @@
 							</Ellipse>
 						</StackPanel>
 					</MenuItem.Header>
-				</MenuItem>
-			</Menu>
-			<StackPanel Orientation="Horizontal"
-						Margin="0,0,5,0"
-						HorizontalAlignment="Right">
-				<TextBlock
-					Margin="0,0,5,0"
-					VerticalAlignment="Center">
-					Check For Updates On Startup
-				</TextBlock>
-				<CheckBox
-					IsChecked="{Binding CheckForUpdatesOnStartup}"
-					VerticalAlignment="Center"/>
-			</StackPanel>
 
+					<MenuItem Header="_View Update"
+							  Command="{Binding OpenUpdatesWindowCommand}"
+							  IsEnabled="{Binding UpdatesViewModel.HasUpdate}"/>
+
+					<MenuItem Header="_Check For Updates Now"
+							  Command="{Binding UpdatesViewModel.CheckForUpdatesCommand}"
+							  IsEnabled="{Binding !UpdatesViewModel.HasUpdate}"/>
+
+					<MenuItem
+						Command="{Binding ToggleCheckForUpdatesOnStartupCommand}">
+						<MenuItem.Header>
+							<StackPanel Orientation="Horizontal">
+								<AccessText
+									Margin="0,-2,10,-7"
+									VerticalAlignment="Center">
+									Check For Updates On _Startup
+								</AccessText>
+
+								<!--Push as far right as it can go-->
+								<CheckBox
+									Margin="0,-2,-1000,-7"
+									IsChecked="{Binding CheckForUpdatesOnStartup}"
+									VerticalAlignment="Center"/>
+							</StackPanel>
+						</MenuItem.Header>
+					</MenuItem>
+
+				</MenuItem>
+				<MenuItem Header="{Binding UpdateMenuItemText}"
+						  IsEnabled="False"
+						  />
+			</Menu>
 		</Panel>
 	</StackPanel>
 </UserControl>

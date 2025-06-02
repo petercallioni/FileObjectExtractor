@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 using FileObjectExtractor.Models.ApplicationOptions;
 using FileObjectExtractor.Services;
 using FileObjectExtractor.Updates;
+using FileObjectExtractor.Utilities;
 using FileObjectExtractor.ViewModels.Interfaces;
 
 namespace FileObjectExtractor.ViewModels
@@ -19,6 +20,14 @@ namespace FileObjectExtractor.ViewModels
         public IAsyncRelayCommand SaveSelectedFilesCommand => new AsyncRelayCommand(mainViewItemSelection.SaveSelectedFiles);
         public IAsyncRelayCommand SelectFileCommand => new AsyncRelayCommand(mainViewItemSelection.SelectFile);
         public IRelayCommand OpenUpdatesWindowCommand => new RelayCommand(OpenUpdatesWindow);
+        public IRelayCommand ToggleCheckForUpdatesOnStartupCommand => new RelayCommand(ToggleCheckForUpdatesOnStartup);
+
+        private void ToggleCheckForUpdatesOnStartup()
+        {
+            CheckForUpdatesOnStartup = !CheckForUpdatesOnStartup;
+        }
+
+        private string updateMenuItemText;
 
         public bool CheckForUpdatesOnStartup
         {
@@ -34,7 +43,16 @@ namespace FileObjectExtractor.ViewModels
         {
             this.windowService = windowService;
             this.mainViewItemSelection = mainViewItemSelection;
-            this.updatesViewModel = updatesViewModel; // This what this class should use for updates functionality     
+            this.updatesViewModel = updatesViewModel;
+
+            if (updatesViewModel.HasUpdate)
+            {
+                updateMenuItemText = $"Update to {updatesViewModel.NewVersion}";
+            }
+            else
+            {
+                updateMenuItemText = VersionNumber.Version().ToString();
+            }
         }
 
         private void OpenUpdatesWindow()
@@ -53,5 +71,15 @@ namespace FileObjectExtractor.ViewModels
         }
 
         public IUpdatesViewModel UpdatesViewModel => updatesViewModel;
+
+        public string UpdateMenuItemText
+        {
+            get => updateMenuItemText;
+            set
+            {
+                updateMenuItemText = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

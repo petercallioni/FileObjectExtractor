@@ -17,8 +17,4 @@ public partial class MainMenu : UserControl
         // Needed as the menu bar is a sub control and does not receive focus initially.
         this.Focus();
     }
-
-    private void Binding(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-    }
 }

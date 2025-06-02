@@ -100,7 +100,7 @@ namespace FileObjectExtractor.ViewModels
             NewVersion = update.Version.ToString();
         }
 
-        public async Task DownloadAndInstall()
+        private async Task DownloadAndInstall()
         {
             if (update == null)
             {

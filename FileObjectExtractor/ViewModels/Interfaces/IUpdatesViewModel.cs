@@ -1,4 +1,5 @@
-﻿using FileObjectExtractor.Updates;
+﻿using CommunityToolkit.Mvvm.Input;
+using FileObjectExtractor.Updates;
 
 namespace FileObjectExtractor.ViewModels.Interfaces
 {
@@ -8,5 +9,6 @@ namespace FileObjectExtractor.ViewModels.Interfaces
         string NewVersion { get; set; }
         Update? Update { get; }
         string UpdateTooltip { get; }
+        IAsyncRelayCommand CheckForUpdatesCommand { get; }
     }
 }
