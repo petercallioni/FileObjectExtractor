@@ -1,6 +1,7 @@
 ﻿using FileObjectExtractor.Constants;
 using FileObjectExtractor.Models;
 using FileObjectExtractor.Models.Office;
+using FileObjectExtractor.Services;
 using FileObjectExtractor.Updates;
 using FileObjectExtractor.Utilities;
 using System;
@@ -14,12 +15,14 @@ namespace FileObjectExtractor.CLI
         private readonly ParsedOptions options;
         private readonly IFileController fileCcontroller;
         private readonly IUpdateService updateService;
-        public CliController(string[] args, IFileController fileController, IUpdateService updateService)
+        private readonly IProgressService progressService;
+        public CliController(string[] args, IFileController fileController, IUpdateService updateService, IProgressService progressService)
         {
             CommandLineParser commandLineParser = new CommandLineParser();
             options = commandLineParser.Parse(args);
             this.updateService = updateService;
             this.fileCcontroller = fileController;
+            this.progressService = progressService;
 
             if (Global.StartedFromUpdate)
             {
@@ -48,42 +51,7 @@ namespace FileObjectExtractor.CLI
 
             if (options.CheckForUpdate)
             {
-                Update update = updateService.CheckForUpdate().Result;
-
-                if (update.IsUpgrade)
-                {
-                    Console.WriteLine($"Update available: {update.Version}");
-                    Console.WriteLine($"Do you wish to install the update now? Y/N");
-
-                    string? response = Console.ReadLine()?.Trim().ToLowerInvariant();
-
-                    while (response != "yes" && response != "no" && response != "y" && response != "n")
-                    {
-                        Console.WriteLine("Please enter 'Y' or 'N' to confirm your choice.");
-                        response = Console.ReadLine()?.Trim().ToLowerInvariant();
-                    }
-
-                    if (response == "yes" || response == "y")
-                    {
-                        options.InstallUpdate = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Update will not be installed.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No updates available.");
-                }
-
-                if (options.InstallUpdate)
-                {
-                    DownloadedUpdateFiles files = updateService.DownloadUpdate(update).Result;
-                    updateService.InstallUpdate(update, files, true).Wait();
-                }
-
-                return ExitCode.SUCCESS;
+                return HandleUpdateCheck();
             }
 
             if (options.List)
@@ -97,6 +65,73 @@ namespace FileObjectExtractor.CLI
             }
 
             return ExitCode.UNKNOWN;
+        }
+
+        private ExitCode HandleUpdateCheck()
+        {
+            Update update = updateService.CheckForUpdate().Result;
+
+            if (update.IsUpgrade)
+            {
+                Console.WriteLine($"Update available: {update.Version}");
+
+                // Only ask for confirmation if not using -uy flag
+                if (!options.InstallUpdate)
+                {
+                    Console.Write("Do you wish to install the update now? [Y/N]: ");
+
+                    ConsoleKeyInfo key;
+                    do
+                    {
+                        key = Console.ReadKey(intercept: true);
+                        char input = char.ToLower(key.KeyChar);
+
+                        if (input == 'y' || input == 'n')
+                        {
+                            Console.WriteLine(input);
+                            options.InstallUpdate = (input == 'y');
+                            break;
+                        }
+                    } while (true);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No updates available.");
+                return ExitCode.SUCCESS;
+            }
+
+            if (options.InstallUpdate)
+            {
+                progressService.ShowProgress();
+                progressService.SetMaximum(1.0);
+
+                IProgress<DownloadProgressReport> progress = new Progress<DownloadProgressReport>(report =>
+                {
+                    progressService.SetProgress(report.Fraction);
+                    progressService.SetMessage(
+                        $"{ByteSizeFormatter.Format(report.BytesDownloaded)} of {ByteSizeFormatter.Format(report.TotalBytes)} Downloaded");
+                });
+
+                try
+                {
+                    DownloadedUpdateFiles files = updateService.DownloadUpdate(update, progress).Result;
+                    progressService.HideProgress();
+                    updateService.InstallUpdate(update, files, true).Wait();
+                }
+                catch (Exception)
+                {
+                    progressService.HideProgress();
+                    throw;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Update will not be installed.");
+            }
+
+            Console.WriteLine(); // Add an extra line break before exit
+            return ExitCode.SUCCESS;
         }
 
         private ExitCode DisplayHelp()

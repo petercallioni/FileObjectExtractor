@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using FileObjectExtractor.CLI;
 using FileObjectExtractor.Models;
+using FileObjectExtractor.Services;
 using FileObjectExtractor.Updates;
 using System;
 using System.Runtime.InteropServices;
@@ -27,21 +28,45 @@ namespace FileObjectExtractor
 
             if (args.Length > 0)
             {
-                AttachConsoleOnWindows();
+                bool attachedToParent = false;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // Try to attach to the parent's console and remember if it succeeded.
+                    attachedToParent = AttachConsole(ATTACH_PARENT_PROCESS);
+                    if (!attachedToParent)
+                    {
+                        AllocConsole();
+                    }
+                }
 
-                FileController fileController = new FileController(null);
-                UpdateService updateService = new UpdateService();
-                CliController cliController = new CliController(args, fileController, updateService);
-                int exitCode = (int)cliController.StartCLI();
-                DetachConsoleOnWindows();
+                try
+                {
+                    FileController fileController = new FileController(null);
+                    UpdateService updateService = new UpdateService();
+                    CliProgressService cliProgressService = new CliProgressService();
+                    CliController cliController = new CliController(args, fileController, updateService, cliProgressService);
+                    int exitCode = (int)cliController.StartCLI();
 
-                Environment.Exit(exitCode);
+                    Environment.Exit(exitCode);
+                }
+                finally
+                {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        // Only free the console if we allocated it.
+                        if (!attachedToParent)
+                        {
+                            FreeConsole();
+                        }
+                    }
+                }
             }
             else
             {
                 BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+                    .StartWithClassicDesktopLifetime(args);
             }
+
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
         }
@@ -55,39 +80,14 @@ namespace FileObjectExtractor
 
         // Constant for attaching to the parent process's console
         private const int ATTACH_PARENT_PROCESS = -1;
+        [DllImport("kernel32.dll")]
+        private static extern bool AllocConsole();
 
-        // Import the Windows API function AttachConsole
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool AttachConsole(int dwProcessId);
 
-        // Import the Windows API function AttachConsole
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool FreeConsole();
-
-        private static void AttachConsoleOnWindows()
-        {
-            // Check if we are running on Windows.
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // Attempt to attach to the parent console.
-                // This will succeed if there's a console, such as when the user runs the app from the command line.
-                if (!AttachConsole(ATTACH_PARENT_PROCESS))
-                {
-                    // Optionally, handle the error here.
-                    int errorCode = Marshal.GetLastWin32Error();
-                    Console.Error.WriteLine($"Could not attach to parent console. Error code: {errorCode}");
-                }
-            }
-        }
-
-        private static void DetachConsoleOnWindows()
-        {
-            // Check if we are running on Windows.
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                FreeConsole();
-            }
-        }
 
         static void OnProcessExit(object? sender, EventArgs e)
         {

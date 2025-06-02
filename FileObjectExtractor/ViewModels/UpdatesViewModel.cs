@@ -17,7 +17,7 @@ namespace FileObjectExtractor.ViewModels
         private string newVersion = string.Empty;
         private string updateTooltip = string.Empty;
         private readonly ProgressIndicatorViewModel progressIndicatorViewModel;
-        private readonly ProgressService progressService;
+        private readonly IProgressService progressService;
 
         private readonly Version currentVersion;
 
@@ -79,7 +79,7 @@ namespace FileObjectExtractor.ViewModels
             set => update = value;
         }
         public ProgressIndicatorViewModel ProgressIndicatorViewModel => progressIndicatorViewModel;
-        public ProgressService ProgressService => progressService;
+        public IProgressService ProgressService => progressService;
 
         public Version CurrentVersion => currentVersion;
 

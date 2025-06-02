@@ -146,7 +146,7 @@ namespace FileObjectExtractor.Updates
                 using (Stream contentStream = await getReleaseArchive.Content.ReadAsStreamAsync())
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    int bufferSize = 8192;
+                    int bufferSize = 16384;
                     byte[] buffer = new byte[bufferSize];
                     long totalBytesRead = 0;
                     int bytesRead;

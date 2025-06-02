@@ -49,5 +49,10 @@ namespace FileObjectExtractorTests.Updates
         {
             throw new NotImplementedException();
         }
+
+        public Task InstallUpdate(Update update, DownloadedUpdateFiles files, bool noRestart = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

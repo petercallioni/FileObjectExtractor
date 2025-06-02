@@ -1,4 +1,6 @@
 ﻿using FileObjectExtractor.Constants;
+using FileObjectExtractor.Services;
+using FileObjectExtractor.Updates;
 using FileObjectExtractorTests;
 using FileObjectExtractorTests.Models;
 using System.Reflection;
@@ -145,7 +147,7 @@ namespace FileObjectExtractor.CLI.Tests
         private ReturnResult GetConsoleOutput(string[] args)
         {
             MockFileController mockFileController = new MockFileController();
-            CliController cliController = new CliController(args, mockFileController);
+            CliController cliController = new CliController(args, mockFileController, new UpdateService(), new CliProgressService());
             string returnText;
             ExitCode exitCode;
 
