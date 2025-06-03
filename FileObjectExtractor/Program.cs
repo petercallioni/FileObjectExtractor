@@ -64,7 +64,7 @@ namespace FileObjectExtractor
             else
             {
                 BuildAvaloniaApp()
-                    .StartWithClassicDesktopLifetime(args);
+                .StartWithClassicDesktopLifetime(args);
             }
 
 

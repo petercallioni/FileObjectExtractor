@@ -9,8 +9,8 @@ namespace FileObjectExtractor.Converters
     {
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            int current = (int)(value ?? 0);
-            int maximum = (int)(parameter ?? 1);
+            double current = (double)(value ?? 0.0);
+            double maximum = (double)(parameter ?? 1.0);
 
             if (current >= (maximum / 2d)) // If the progress is over 50%
             {

@@ -17,11 +17,10 @@ namespace FileObjectExtractor.ViewModels.Design
                 );
 
             HasUpdate = true;
-            ProgressIndicatorViewModel.ShowProgress = true;
             ProgressIndicatorViewModel.Progress = .6;
-            ProgressIndicatorViewModel.MaxProgress = 1;
+            ProgressIndicatorViewModel.MaxProgress = 1.0;
             ProgressIndicatorViewModel.Message = $"{ByteSizeFormatter.Format(12345678)} of {ByteSizeFormatter.Format(23456789)} Downloaded";
-
+            ProgressIndicatorViewModel.ShowProgress = true;
             // NewVersion = "v1.2.3";
         }
     }
