@@ -90,14 +90,11 @@ namespace FileObjectExtractor.ViewModels
                 update = await updateService.CheckForUpdate();
             });
 
-            if (update == null)
+            if (update != null)
             {
-                windowService.ShowErrorWindow(new Exception("Failed to check for updates."));
-                return;
+                HasUpdate = update.IsUpgrade;
+                NewVersion = update.Version.ToString();
             }
-
-            HasUpdate = update.IsUpgrade;
-            NewVersion = update.Version.ToString();
         }
 
         private async Task DownloadAndInstall()

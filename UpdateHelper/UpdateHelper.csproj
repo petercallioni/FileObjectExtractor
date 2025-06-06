@@ -9,5 +9,7 @@
 		<SelfContained>true</SelfContained>
 		<PlatformTarget>x64</PlatformTarget>
 		<Platforms>AnyCPU;x64</Platforms>
+		<PublishTrimmed>true</PublishTrimmed>
+		<JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
 	</PropertyGroup>
 </Project>
