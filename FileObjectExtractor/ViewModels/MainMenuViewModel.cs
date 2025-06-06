@@ -47,7 +47,7 @@ namespace FileObjectExtractor.ViewModels
 
             if (updatesViewModel.HasUpdate)
             {
-                updateMenuItemText = $"Update to {updatesViewModel.NewVersion}";
+                updateMenuItemText = $"Update to {updatesViewModel.NewVersion} ({VersionNumber.VersionString()})";
             }
             else
             {

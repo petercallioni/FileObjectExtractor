@@ -69,7 +69,7 @@ namespace FileObjectExtractor.CLI
 
         private ExitCode HandleUpdateCheck()
         {
-            Update update = updateService.CheckForUpdate().Result;
+            Update update = updateService.CheckForUpdateAsync().Result;
 
             if (update.IsUpgrade)
             {

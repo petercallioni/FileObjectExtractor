@@ -21,7 +21,7 @@ namespace FileObjectExtractor.ViewModels
 
         private readonly Version currentVersion;
 
-        public IAsyncRelayCommand CheckForUpdatesCommand => new AsyncRelayCommand(CheckForUpdates);
+        public IAsyncRelayCommand CheckForUpdatesCommand => new AsyncRelayCommand(CheckForUpdatesAsync);
         public IAsyncRelayCommand DownloadAndInstallCommand => new AsyncRelayCommand(DownloadAndInstall);
 
         public UpdatesViewModel(IWindowService windowService, IUpdateService updateService) : base(windowService)
@@ -83,11 +83,32 @@ namespace FileObjectExtractor.ViewModels
 
         public Version CurrentVersion => currentVersion;
 
-        public async Task CheckForUpdates()
+        /// <summary>
+        /// Checks for available updates in a asynchronous but unsafe manner.
+        /// This method should be avoided in favor of CheckForUpdatesAsync.
+        /// </summary>
+        /// <remarks>
+        /// This method does not catch any exceptions.
+        /// </remarks>
+        public void CheckForUpdatesUnsafe()
+        {
+            update = updateService.CheckForUpdate();
+
+            if (update != null)
+            {
+                HasUpdate = update.IsUpgrade;
+                NewVersion = update.Version.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously checks for available updates using the update service.
+        /// </summary>
+        public async Task CheckForUpdatesAsync()
         {
             await ExceptionSafeAsync(async () =>
             {
-                update = await updateService.CheckForUpdate();
+                update = await updateService.CheckForUpdateAsync();
             });
 
             if (update != null)

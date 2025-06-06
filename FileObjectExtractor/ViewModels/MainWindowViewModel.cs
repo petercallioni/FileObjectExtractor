@@ -175,7 +175,15 @@ namespace FileObjectExtractor.ViewModels
 
             if (ApplicationOptionsManager.Options.CheckForUpdateOnStartup)
             {
-                Task.Run(() => updatesViewModel.CheckForUpdates().RunSynchronously());
+                try
+                {
+                    updatesViewModel.CheckForUpdatesUnsafe();
+                }
+                catch (Exception ex)
+                {
+                    windowService.ShowErrorWindow(new AggregateException("Failed to check for updates.\nChecking for updates at start up has been disabled.", ex));
+                    ApplicationOptionsManager.Options.CheckForUpdateOnStartup = false;
+                }
             }
 
             mainMenu = new MainMenuViewModel(windowService, updatesViewModel, this); // This is ugly, and is hard to refactor

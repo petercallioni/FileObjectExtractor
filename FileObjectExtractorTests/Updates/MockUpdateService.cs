@@ -9,7 +9,7 @@ namespace FileObjectExtractorTests.Updates
     /// </summary>
     public class MockUpdateService : IUpdateService
     {
-        public Task<Update> CheckForUpdate()
+        public Task<Update> CheckForUpdateAsync()
         {
             return Task.Run(() =>
             {

@@ -65,9 +65,15 @@ namespace FileObjectExtractor.Updates
             );
         }
 
-
-        public async Task<Update> CheckForUpdate()
+        public Update CheckForUpdate()
         {
+            return CheckForUpdateAsync(true).GetAwaiter().GetResult();
+        }
+
+        public async Task<Update> CheckForUpdateAsync(bool runSynchronously = false)
+        {
+            runSynchronously = !runSynchronously; // Invert the flag to run asynchronously by default, as the variable name suggests.
+
             // GitHub "latest release" API endpoint for the repository
             string url = "https://api.github.com/repos/petercallioni/FileObjectExtractor/releases/latest";
 
@@ -77,7 +83,7 @@ namespace FileObjectExtractor.Updates
                 client.DefaultRequestHeaders.Add("User-Agent", "FileObjectExtractorApp");
 
                 // Execute the GET request synchronously.
-                HttpResponseMessage response = await client.GetAsync(url);
+                HttpResponseMessage response = await client.GetAsync(url).ConfigureAwait(runSynchronously);
 
                 if (!response.IsSuccessStatusCode)
                 {
