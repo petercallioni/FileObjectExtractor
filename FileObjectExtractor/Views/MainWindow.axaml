@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:conv="using:FileObjectExtractor.Converters"
-		mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="450"
+		mc:Ignorable="d" d:DesignWidth="1600" d:DesignHeight="450"
 		xmlns:custom="using:FileObjectExtractor.Components"
 		xmlns:uc="using:FileObjectExtractor.Views.Controls"
         x:Class="FileObjectExtractor.Views.MainWindow"
@@ -175,7 +175,8 @@
 						<TextBlock Text="Sort" Classes="ControlExplanation"/>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="Document Order" VerticalAlignment="Center"/>
-							<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+							<StackPanel Orientation="Vertical" VerticalAlignment="Center"
+										Margin="2,0,0,0">
 								<Button
 									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT}}"
 									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.DOCUMENT}}"
@@ -192,7 +193,8 @@
 										CommandParameter="{x:Static vm:SortOrder.DOCUMENT_DESC}"/>
 							</StackPanel>
 							<TextBlock Text="Alphabetically" VerticalAlignment="Center"/>
-							<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+							<StackPanel Orientation="Vertical" VerticalAlignment="Center"
+										Margin="2,0,0,0">
 								<Button
 									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL}}"
 									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.ALPHABETICAL}}"
@@ -208,7 +210,8 @@
 									CommandParameter="{x:Static vm:SortOrder.ALPHABETICAL_DESC}"/>
 							</StackPanel>
 							<TextBlock Text="Size" VerticalAlignment="Center"/>
-							<StackPanel Orientation="Vertical" VerticalAlignment="Center">
+							<StackPanel Orientation="Vertical" VerticalAlignment="Center"
+										Margin="2,0,0,0">
 								<Button
 									Classes.SortButton="{Binding SortOrder, Converter={StaticResource EnumToBoolConverterNegated}, ConverterParameter={x:Static vm:SortOrder.SIZE}}"
 									Classes.SortButtonSelected="{Binding SortOrder, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static vm:SortOrder.SIZE}}"
@@ -228,10 +231,13 @@
 
 					<Rectangle Classes ="VerticalSeperator"/>
 
-					<TextBox Width="200" Watermark="Filter" VerticalContentAlignment="Center"
+					<TextBox Width="200" 
+							 Height="50"
+							 Watermark="Filter" 
+							 VerticalContentAlignment="Center"
 							 Text="{Binding Filter, Mode=TwoWay}"/>
 
-					<Button Height="40" Margin="10,0,0,0"
+					<Button Height="50" Margin="10,0,0,0"
 							ToolTip.Tip="Save all selected file names with names as shown. If a file already exists, it will have a number appended to the name."
 							IsEnabled="{Binding HasSelectedItems}"
 							Command="{Binding SaveSelectedCommand}">
@@ -244,9 +250,24 @@
 					</Button>
 
 					<Button
+						Margin="5,0,0,0"
 						IsEnabled="{Binding CanGoBack}"
+						IsVisible="{Binding CanGoBack}"
+						Height="50"
+						Background="Beige"
 						Command="{Binding GoBackCommand}">
-						Go Back
+						<Button.Content>
+							<StackPanel Orientation="Vertical">
+								<TextBlock 
+									Padding="0"
+									VerticalAlignment="Center" 
+									Text="Go Back To Parent File"/>
+								<Svg 
+									Stretch="UniformToFill" 
+									Width="25"
+									Path="/Assets/reset.svg"/>
+							</StackPanel>
+						</Button.Content>
 					</Button>
 					<Panel>
 						<Svg Width="40"
