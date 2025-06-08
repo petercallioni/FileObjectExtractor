@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using ExCSS;
 using FileObjectExtractor.Models;
 using FileObjectExtractor.Models.ApplicationOptions;
 using FileObjectExtractor.Models.Office;
@@ -31,12 +32,16 @@ namespace FileObjectExtractor.ViewModels
 
         private string filter;
         private bool isLoadingFile;
+        private Stack<NagivationState> navigationStack;
+
+        private bool canGoBack;
 
         public IRelayCommand SelectAllCommand { get; init; }
         public IRelayCommand SelectNoneCommand { get; init; }
         public IRelayCommand SaveSelectedCommand { get; init; }
         public IRelayCommand SelectFileCommand { get; init; }
         public IRelayCommand SelectSortCommand { get; init; }
+        public IRelayCommand GoBackCommand { get; init; }
 
         private SortOrder sortOrder;
         public List<ExtractedFileViewModel> ExtractedFiles
@@ -160,6 +165,20 @@ namespace FileObjectExtractor.ViewModels
             }
         }
 
+        public Stack<NagivationState> NavigationStack { get => navigationStack; set => navigationStack = value; }
+
+        public bool CanGoBack
+        {
+            get => canGoBack;
+            set
+            {
+                canGoBack = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private NagivationState currentNavigationState;
+
         public MainWindowViewModel(
             IFileController fileController,
             IWindowService windowService,
@@ -201,6 +220,7 @@ namespace FileObjectExtractor.ViewModels
             trustToOpenFiles = false;
             this.fileController = fileController;
             this.backgroundExecutor = backgroundExecutor;
+            navigationStack = new Stack<NagivationState>();
 
             // Commands
             SelectAllCommand = new RelayCommand(SelectAll);
@@ -208,11 +228,67 @@ namespace FileObjectExtractor.ViewModels
             SelectFileCommand = new AsyncRelayCommand(SelectFile);
             SaveSelectedCommand = new AsyncRelayCommand(SaveSelectedFiles);
             SelectSortCommand = new RelayCommand<SortOrder>(SelectSort);
+            GoBackCommand = new RelayCommand(PopFromNaviagationStack);
 
             if (Global.StartedFromUpdate)
             {
                 _ = UpdateService.CleanUpPostUpdate();
             }
+        }
+
+        private async void OpenFileInFox(ExtractedFileViewModel extractedFileVM)
+        {
+            InputFileViewModel? inputFile = null;
+
+            IsLoadingFile = true;
+            // This is incredibly ugly and should be refactored
+            await ExceptionSafeAsync(async () =>
+            {
+                await backgroundExecutor.ExecuteAsync(() =>
+                {
+                    navigationStack.Push(currentNavigationState);
+
+                    IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(extractedFileVM.FileName);
+                    inputFile = new InputFileViewModel(new Uri($"file:///{extractedFileVM.FileName}"), parseOffice.OfficeType);
+
+                    List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(extractedFileVM.ExtractedFile.EmbeddedFile).ToList();
+
+                    ExtractedFiles = new List<ExtractedFileViewModel>();
+
+                    foreach (ExtractedFile file in embeddedFiles)
+                    {
+                        ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(WindowService, file, SaveFile, OpenFile, OpenFileInFox);
+
+                        // Update the UI when the IsSelected property changes
+                        extractedFileVM.PropertyChanged += (sender, e) =>
+                        {
+                            if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
+                            {
+                                OnPropertyChanged(nameof(HasSelectedItems));
+                                OnPropertyChanged(nameof(SelectedFilesContainWarnings));
+                            }
+                        };
+
+                        ExtractedFiles.Add(extractedFileVM);
+                    }
+
+                    return () =>
+                    {
+                        InputFile = inputFile;
+                        IsLoadingFile = false;
+                        CanGoBack = navigationStack.Count > 1;
+                        ApplyFilter();
+                        SortExtractedFiles(FilteredExtractedFiles);
+                        currentNavigationState = new NagivationState(ExtractedFiles, InputFile);
+                    };
+                });
+            },
+            () =>
+            {
+                IsLoadingFile = false;
+                navigationStack.Pop();
+                CanGoBack = navigationStack.Count > 1;
+            });
         }
 
         private async void ProcessInputFile(Uri uri)
@@ -226,45 +302,58 @@ namespace FileObjectExtractor.ViewModels
                 await ExceptionSafeAsync(async () =>
                 {
                     await backgroundExecutor.ExecuteAsync(() =>
-                     {
-                         IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(uri);
+                    {
+                        IParseOffice parseOffice = OfficeParserPicker.GetOfficeParser(uri);
 
-                         inputFile = new InputFileViewModel(uri, parseOffice.OfficeType);
-                         List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(uri).ToList();
+                        inputFile = new InputFileViewModel(uri, parseOffice.OfficeType);
+                        List<ExtractedFile> embeddedFiles = parseOffice.GetExtractedFiles(uri).ToList();
 
-                         ExtractedFiles.Clear();
+                        ExtractedFiles.Clear();
 
-                         foreach (ExtractedFile file in embeddedFiles)
-                         {
-                             ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(WindowService, file, SaveFile, OpenFile);
+                        foreach (ExtractedFile file in embeddedFiles)
+                        {
+                            ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(WindowService, file, SaveFile, OpenFile, OpenFileInFox);
 
-                             // Update the UI when the IsSelected property changes
-                             extractedFileVM.PropertyChanged += (sender, e) =>
-                             {
-                                 if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
-                                 {
-                                     OnPropertyChanged(nameof(HasSelectedItems));
-                                     OnPropertyChanged(nameof(SelectedFilesContainWarnings));
-                                 }
-                             };
+                            // Update the UI when the IsSelected property changes
+                            extractedFileVM.PropertyChanged += (sender, e) =>
+                            {
+                                if (e.PropertyName == nameof(ExtractedFileViewModel.IsSelected))
+                                {
+                                    OnPropertyChanged(nameof(HasSelectedItems));
+                                    OnPropertyChanged(nameof(SelectedFilesContainWarnings));
+                                }
+                            };
 
-                             ExtractedFiles.Add(extractedFileVM);
-                         }
+                            ExtractedFiles.Add(extractedFileVM);
+                        }
 
-                         return () =>
-                         {
-                             InputFile = inputFile;
-                             IsLoadingFile = false;
-                             ApplyFilter();
-                             SortExtractedFiles(FilteredExtractedFiles);
-                         };
-                     });
+                        return () =>
+                        {
+                            InputFile = inputFile;
+                            IsLoadingFile = false;
+                            navigationStack = new Stack<NagivationState>();
+                            navigationStack.Push(new NagivationState(ExtractedFiles, InputFile));
+                            ApplyFilter();
+                            SortExtractedFiles(FilteredExtractedFiles);
+                        };
+                    });
                 },
                 () =>
                 {
                     IsLoadingFile = false;
                 });
             }
+        }
+
+        private void PopFromNaviagationStack()
+        {
+            navigationStack.Pop();
+            currentNavigationState = navigationStack.Peek();
+            ExtractedFiles = currentNavigationState.ExtractedFiles ?? new List<ExtractedFileViewModel>();
+            InputFile = currentNavigationState.InputFile ?? new InputFileViewModel();
+            ApplyFilter();
+            SortExtractedFiles(FilteredExtractedFiles);
+            CanGoBack = navigationStack.Count > 1;
         }
 
         public void SelectFile(Uri filePath)

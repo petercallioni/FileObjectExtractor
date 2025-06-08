@@ -7,6 +7,7 @@ namespace FileObjectExtractor.Models.Office
     public abstract class ParseOffice : IParseOffice
     {
         public abstract List<ExtractedFile> GetExtractedFiles(Uri filePath);
+        public abstract List<ExtractedFile> GetExtractedFiles(byte[] inputFile);
         public OfficeType OfficeType { get; init; } = OfficeType.UNKNOWN;
 
         protected byte[] OpenOfficeFile(Uri filepath)

@@ -1,11 +1,13 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using FileObjectExtractor.Extensions;
+using FileObjectExtractor.Models.Office;
 using FileObjectExtractor.Updates;
 using FileObjectExtractor.ViewModels;
 using FileObjectExtractor.Views;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FileObjectExtractor.Services
@@ -74,12 +76,33 @@ namespace FileObjectExtractor.Services
             });
         }
 
+        private static readonly FilePickerFileType[] OfficeFileTypes = new FilePickerFileType[]
+        {
+            new FilePickerFileType("All Office Files")
+            {
+                Patterns = OfficeParserPicker.ALL_EXTENSIONS.Select(ext => $"*{ext}").ToList()
+            },
+            new FilePickerFileType("Word Files")
+            {
+                Patterns = OfficeParserPicker.WORD_EXTENSIONS.Select(ext => $"*{ext}").ToList()
+            },
+            new FilePickerFileType("Excel Files")
+            {
+                Patterns = OfficeParserPicker.EXCEL_EXTENSIONS.Select(ext => $"*{ext}").ToList()
+            },
+            new FilePickerFileType("PowerPoint Files")
+            {
+                Patterns = OfficeParserPicker.POWERPOINT_EXTENSIONS.Select(ext => $"*{ext}").ToList()
+            }
+        };
+
         public async Task<IStorageFile?> OpenFileAsync(string title)
         {
             IReadOnlyList<IStorageFile> files = await window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = title,
-                AllowMultiple = false
+                AllowMultiple = false,
+                FileTypeFilter = OfficeFileTypes
             });
 
             IEnumerator<IStorageFile> enumerator = files.GetEnumerator();

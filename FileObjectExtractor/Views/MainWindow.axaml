@@ -243,6 +243,11 @@
 						</Button.Content>
 					</Button>
 
+					<Button
+						IsEnabled="{Binding CanGoBack}"
+						Command="{Binding GoBackCommand}">
+						Go Back
+					</Button>
 					<Panel>
 						<Svg Width="40"
 							 VerticalAlignment="Center"
@@ -350,6 +355,7 @@
 												</DockPanel>
 											</Button.Content>
 										</Button>
+										
 										<Button
 											Background="Transparent" Padding="0"
 											IsEnabled="{Binding CanOpen}"
@@ -363,6 +369,19 @@
 														 Path="/Assets/open.svg"
 														 Width="30"/>
 												</StackPanel>
+											</Button.Content>
+										</Button>										
+										<Button
+											IsVisible="{Binding ExtractedFile.OpenableInFox}"
+											Command="{Binding OpenFileInFoxCommand}"
+											DockPanel.Dock="Right" 
+											ToolTip.Tip="Open file in this program."
+											Padding="5"
+											Margin="0,0,-10,0">
+											<Button.Content>
+												<Svg Stretch="Uniform"
+															 Path="/Assets/fox.svg"
+															 Width="25"/>
 											</Button.Content>
 										</Button>
 										<TextBox

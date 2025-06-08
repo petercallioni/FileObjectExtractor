@@ -13,13 +13,15 @@ namespace FileObjectExtractor.ViewModels.Design
             ProgressIndicator.Progress = 60;
             ProgressIndicator.Message = "Current File.docx";
 
+            CanGoBack = true;
             SortOrder = SortOrder.DOCUMENT;
 
             for (int i = 1; i < 7; i++)
             {
                 ExtractedFile extractedFile = new ExtractedFile(new byte[1000 * i]);
-                ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(null!, extractedFile, null!, null!);
+                ExtractedFileViewModel extractedFileVM = new ExtractedFileViewModel(null!, extractedFile, null!, null!, null!);
                 extractedFileVM.IsSelected = i % 2 != 0;
+                extractedFile.OpenableInFox = i % 2 != 0;
 
                 if (i == 3)
                 {

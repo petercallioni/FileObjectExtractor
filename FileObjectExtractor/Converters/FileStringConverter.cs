@@ -15,16 +15,7 @@ namespace FileObjectExtractor.Converters
             if (uri != null && uri.IsAbsoluteUri)
             {
                 FileInfo fileInfo = new FileInfo(uri.UnescapedString());
-
-                // Is a file, truncate it
-                if (fileInfo.Exists)
-                {
-                    return fileInfo.Name;
-                }
-                else
-                {
-                    return value;
-                }
+                return fileInfo.Name;
             }
 
             return Constants.StringConstants.DEFAULT_DROP_TEXT;

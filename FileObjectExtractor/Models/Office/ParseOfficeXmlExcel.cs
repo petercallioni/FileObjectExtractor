@@ -18,13 +18,12 @@ namespace FileObjectExtractor.Models.Office
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public override List<ExtractedFile> GetExtractedFiles(Uri filePath)
+        public override List<ExtractedFile> GetExtractedFiles(byte[] inputFile)
         {
             List<ZipArchiveEntry> embeddedFiles = new List<ZipArchiveEntry>();
             List<ZipArchiveEntry> mediaFiles = new List<ZipArchiveEntry>();
             List<ExtractedFile> files = new List<ExtractedFile>();
 
-            byte[] inputFile = OpenOfficeFile(filePath);
             ThrowIfPassworded(inputFile);
 
             using (MemoryStream byteStream = new MemoryStream(inputFile))
@@ -66,8 +65,19 @@ namespace FileObjectExtractor.Models.Office
                     }
                 }
             }
-
             return files;
+        }
+
+        /// <summary>
+        /// Opens up the file and gets the initial list of objects.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public override List<ExtractedFile> GetExtractedFiles(Uri filePath)
+        {
+            byte[] inputFile = OpenOfficeFile(filePath);
+
+            return GetExtractedFiles(inputFile);
         }
 
         private Dictionary<string, OleObject> ParseSheetFile(ZipArchiveEntry archiveEntry)

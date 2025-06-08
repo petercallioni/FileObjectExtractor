@@ -1,5 +1,6 @@
 ﻿using FileObjectExtractor.Constants;
 using FileObjectExtractor.Extensions;
+using FileObjectExtractor.Models.Office;
 using FileObjectExtractor.Utilities;
 using OpenMcdf;
 using System;
@@ -22,6 +23,7 @@ namespace FileObjectExtractor.Models
         private int documentOrder;
         private bool isLinkedFile;
         private bool hasFileContent;
+        private bool openableInFox;
 
         public string FileName
         {
@@ -41,6 +43,7 @@ namespace FileObjectExtractor.Models
         public int DocumentOrder { get => documentOrder; set => documentOrder = value; }
         public bool IsLinkedFile { get => isLinkedFile; set => isLinkedFile = value; }
         public bool HasFileContent { get => hasFileContent; set => hasFileContent = value; }
+        public bool OpenableInFox { get => openableInFox; set => openableInFox = value; }
 
         public ExtractedFile(byte[] embeddedFile)
         {
@@ -51,6 +54,7 @@ namespace FileObjectExtractor.Models
             safeFileName = string.Empty;
             embeddedExtension = string.Empty;
             hasFileContent = true;
+            OpenableInFox = false;
         }
 
         public ExtractedFile(ZipArchiveEntry archivedFileEntry)
@@ -60,6 +64,7 @@ namespace FileObjectExtractor.Models
             isBinary = embeddedExtension.Equals(".bin", StringComparison.OrdinalIgnoreCase);
             embeddedFile = isBinary ? ExtractEmbeddedData(archivedFileEntry.GetBytes(), out isLinkedFile) : archivedFileEntry.GetBytes();
             hasFileContent = embeddedFile.Length != 0;
+            openableInFox = OfficeParserPicker.IsOfficeFile(archivedFileEntry.Name);
 
             fileNameWarnings = new List<string>();
             fileName = string.Empty;
@@ -70,6 +75,7 @@ namespace FileObjectExtractor.Models
         {
             StringBuilder safeFileNameBuilder = new StringBuilder(fileName);
             FileInfo fileInfo = new FileInfo(fileName);
+            bool alreadyAppendedExtension = false;
 
             if (safeFileNameBuilder.Length > IntContstants.MAX_FILE_NAME_CHARS)
             {
@@ -81,12 +87,13 @@ namespace FileObjectExtractor.Models
                     safeFileNameBuilder.Append("...");
                     safeFileNameBuilder.Append(embeddedExtension);
                     fileNameWarnings.Add(StringConstants.WARNINGS.LONG_FILENAME);
+                    alreadyAppendedExtension = true;
                 }
             }
 
             if (fileInfo.Extension.Equals(""))
             {
-                if (!isBinary)
+                if (!isBinary && !alreadyAppendedExtension)
                 {
                     safeFileNameBuilder.Append(embeddedExtension);
                 }

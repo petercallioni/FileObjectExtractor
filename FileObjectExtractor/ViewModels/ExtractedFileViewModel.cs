@@ -12,6 +12,7 @@ namespace FileObjectExtractor.ViewModels
         private bool isVisible;
         private readonly IRelayCommand saveFileCommand;
         private readonly IRelayCommand openFileCommand;
+        private readonly IRelayCommand openFileInFoxCommand;
         private readonly string originalSafeFileName;
         private bool canOpen;
         public IRelayCommand ResetCommand => new RelayCommand(ResetName);
@@ -29,6 +30,7 @@ namespace FileObjectExtractor.ViewModels
 
         public IRelayCommand SaveFileCommand => saveFileCommand;
         public IRelayCommand OpenFileCommand => openFileCommand;
+        public IRelayCommand OpenFileInFoxCommand => openFileInFoxCommand;
         public ExtractedFile ExtractedFile { get => extractedFile; set => extractedFile = value; }
         public bool IsSelected
         {
@@ -85,12 +87,19 @@ namespace FileObjectExtractor.ViewModels
             FileName = originalSafeFileName;
         }
 
-        public ExtractedFileViewModel(IWindowService windowService, ExtractedFile extractedFile, Action<ExtractedFileViewModel> saveFileOperation, Action<ExtractedFileViewModel> openFileOperation) : base(windowService)
+        public ExtractedFileViewModel(
+            IWindowService windowService,
+            ExtractedFile extractedFile,
+            Action<ExtractedFileViewModel> saveFileOperation,
+            Action<ExtractedFileViewModel> openFileOperation,
+            Action<ExtractedFileViewModel> openFileInFoxOperation
+            ) : base(windowService)
         {
             this.extractedFile = extractedFile;
             originalSafeFileName = extractedFile.SafeFileName;
             saveFileCommand = new RelayCommand(() => saveFileOperation(this));
             openFileCommand = new RelayCommand(() => openFileOperation(this));
+            openFileInFoxCommand = new RelayCommand(() => openFileInFoxOperation(this));
             IsSelected = false;
             IsVisible = true;
             CanOpen = true;
