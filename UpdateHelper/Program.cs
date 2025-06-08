@@ -28,7 +28,7 @@ public class Program
         string checkSumFromMainApplication = args[1];
         string restartArg = args[2];
 
-        if (!(restartArg.Equals("NO_RESTART", StringComparison.OrdinalIgnoreCase) || restartArg.Equals("NO_RESTART", StringComparison.OrdinalIgnoreCase)))
+        if (!(restartArg.Equals("NO_RESTART", StringComparison.OrdinalIgnoreCase) || restartArg.Equals("RESTART", StringComparison.OrdinalIgnoreCase)))
         {
             Console.WriteLine("Invalid argument for restart option. Use 'NO_RESTART' or 'RESTART'.");
             return;
