@@ -120,7 +120,7 @@ namespace FileObjectExtractor.Updates
                     tagName,
                     updateOS,
                     gitHubRelease.Assets.Where(x => x.Name.Equals(targetAsset)).FirstOrDefault()?.Size ?? -1L,
-                    gitHubRelease.CreatedAt
+                    gitHubRelease.CreatedAt.ToLocalTime()
                     );
             }
         }
