@@ -220,6 +220,7 @@ namespace FileObjectExtractor.ViewModels
             trustToOpenFiles = false;
             this.fileController = fileController;
             this.backgroundExecutor = backgroundExecutor;
+            currentNavigationState = new NagivationState(null, null);
             navigationStack = new Stack<NagivationState>();
 
             // Commands
@@ -250,7 +251,6 @@ namespace FileObjectExtractor.ViewModels
             {
                 await backgroundExecutor.ExecuteAsync(() =>
                 {
-                    navigationStack.Push(currentNavigationState);
                     return ProcessFileAndUpdateUI(
                         extractedFileVM.FileName,
                         () => OfficeParserPicker.GetOfficeParser(extractedFileVM.FileName)
@@ -345,10 +345,7 @@ namespace FileObjectExtractor.ViewModels
                 }
 
                 NagivationState state = new NagivationState(ExtractedFiles, InputFile);
-                if (!isNavigating)
-                {
-                    navigationStack.Push(state);
-                }
+                navigationStack.Push(state);
 
                 CanGoBack = navigationStack.Count > 1;
                 currentNavigationState = state;

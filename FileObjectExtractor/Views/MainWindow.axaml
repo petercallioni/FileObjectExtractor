@@ -254,7 +254,7 @@
 						IsEnabled="{Binding CanGoBack}"
 						IsVisible="{Binding CanGoBack}"
 						Height="50"
-						Background="Beige"
+						Background="LightGray"
 						Command="{Binding GoBackCommand}">
 						<Button.Content>
 							<StackPanel Orientation="Vertical">
