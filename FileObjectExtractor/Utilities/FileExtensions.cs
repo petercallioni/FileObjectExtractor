@@ -56,6 +56,7 @@ namespace FileObjectExtractor.Utilities
                 fileBytes = new byte[stream.Length];
                 await stream.ReadExactlyAsync(fileBytes);
             }
+
             return fileBytes;
         }
 
@@ -73,6 +74,7 @@ namespace FileObjectExtractor.Utilities
                 fileBytes = new byte[stream.Length];
                 await stream.ReadExactlyAsync(fileBytes);
             }
+
             return fileBytes;
         }
     }

@@ -6,15 +6,16 @@ namespace FileObjectExtractor.Extensions
     {
         public static string UnescapedString(this Uri uri)
         {
-            // Decode the URI to get the unescaped string
-            string unescapedString = Uri.UnescapeDataString(uri.ToString());
-            // Remove the "file:///" prefix if present
-            if (unescapedString.StartsWith("file:///"))
-            {
-                unescapedString = unescapedString.Substring(8);
-            }
+            if (uri == null)
+                throw new ArgumentNullException(nameof(uri));
 
-            return unescapedString;
+            if (!uri.IsFile)
+                throw new ArgumentException("The provided URI is not a file URI.", nameof(uri));
+
+            // For UNC paths, LocalPath returns the correct \\server\share\path format on Windows
+            // For Linux, LocalPath returns /path/to/file
+            // For Windows local files, returns C:\path\to\file
+            return uri.LocalPath;
         }
     }
 }
